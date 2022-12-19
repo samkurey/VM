@@ -1,0 +1,39 @@
+// Jpnhg3PymtEnq.idl : IDL source for Jpnhg3PymtEnq.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (Jpnhg3PymtEnq.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(4A115E47-B717-461C-BF08-1C82295523DC),
+		dual,
+		helpstring("IJpnhg3PymtEnqService Interface"),
+		pointer_default(unique)
+	]
+	interface IJpnhg3PymtEnqService : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	uuid(CA78620E-4294-4CA6-B6D3-1935D90AF5FB),
+	version(1.0),
+	helpstring("Jpnhg3PymtEnq 1.0 Type Library")
+]
+library JPNHG3PYMTENQLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(749E1A93-8DE2-412A-8AD6-72B7FFA32F2C),
+		helpstring("Jpnhg3PymtEnqService Class")
+	]
+	coclass Jpnhg3PymtEnqService
+	{
+		[default] interface IJpnhg3PymtEnqService;
+	};
+};

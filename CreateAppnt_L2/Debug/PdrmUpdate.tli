@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (3b983e52).
+//
+// d:\mtscomponents_context\createappnt1\debug\PdrmUpdate.tli
+//
+// Wrapper implementations for Win32 type library PdrmUpdate.tlb
+// compiler-generated file created 02/26/14 at 17:24:55 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IPDRMUpdateService wrapper method implementations
+//
+
+inline HRESULT IPDRMUpdateService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

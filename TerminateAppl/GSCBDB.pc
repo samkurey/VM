@@ -1,0 +1,186 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <stdlib.h>
+#include "gscbdef.h"
+#include <sqlca.h>
+
+//EXEC SQL INCLUDE SQLCA;
+
+extern "C" void userlog(char* szFormatString, ...);
+
+
+
+/************************************************************************************/
+/* Function Name:	EnableThreads()         										*/
+/* Input		:	None							              					*/
+/* Return Values:   None															*/
+/* Description	:	This function enables oracle thread support.					*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+void EnableThreads()
+{
+//	EXEC SQL INCLUDE SQLCA;
+	
+	//#ifdef DEBUG
+	//	userlog("Inside EnableThreads");
+	//#endif
+	//struct sqlca sqlca = {0};
+	EXEC SQL ENABLE THREADS;
+}
+
+/************************************************************************************/
+/* Function Name:	LoginToOracle()         										*/
+/* Input		:	1. sql context							              			*/
+/*					2. User id														*/
+/*					3. Password														*/
+/* Return Values:   GMPC_GOOD/oracle error											*/
+/* Description	:	This function connects to oracle using the userid and password	*/
+/*					read from the registry											*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+
+int LoginToOracle(sql_context *ctx)
+{
+
+	struct sqlca sqlca = {0};
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	char connectstring[CONNECTSTRING_SIZE];
+	char passwd[PASSWD_SIZE];
+
+	sql_context pcctx;
+	EXEC SQL END DECLARE SECTION;
+     
+	READ_REG_GENERIC_T other_data;
+
+	memset((char *)&other_data, 0, sizeof(READ_REG_GENERIC_T));
+
+		
+	/* Allocate memory for reading from registry	*/
+	strcpy(other_data.value_name,"ConnectString");
+	if (NULL == (other_data.value = (unsigned char *)malloc(CONNECTSTRING_SIZE)))
+	{
+		/* Log into Ulog */
+		userlog("ora_connect: Malloc failed for connect string: errno %d", errno);
+		return FAILURE;
+	}
+	
+
+	/* Get the Oracle connect string				*/
+	/* Using Service id 0 to get the default value	*/
+	if(GMPC_GOOD != read_registry(0, NULL, &other_data))
+	{
+		free(other_data.value);
+		userlog("ora_connect: Read registry failed for ConnectString",
+			   errno);
+		return FAILURE;
+	}
+	else
+	{
+		strcpy(connectstring, (const char *)other_data.value);
+		free(other_data.value);
+	}
+
+	
+
+	/* Malloc for Password	*/
+	if(NULL == (other_data.value = (unsigned char *) malloc(PASSWD_SIZE)))
+	{
+		userlog("ora_connect: Unable to malloc for password: errno %d", errno);
+		return FAILURE;
+	}
+
+	/* Get the Oracle password */
+	/* Using Service id 0 to get the default value */
+	strcpy(other_data.value_name,"Password");
+	if(GMPC_GOOD != read_registry(0, NULL, &other_data))
+	{
+		free(other_data.value);	
+		userlog("ora_connect: Read registry failed for Password");
+		return FAILURE;
+	}
+	else
+	{
+		strcpy(passwd, (const char *)other_data.value);
+		free(other_data.value);
+	}
+
+
+	EXEC SQL CONTEXT ALLOCATE :pcctx;
+
+	*ctx = pcctx;
+
+#ifdef DEBUG
+	userlog("Using sql context %u", *ctx);
+#endif
+
+	EXEC SQL CONTEXT USE :pcctx;
+
+	EXEC SQL CONNECT :connectstring IDENTIFIED BY :passwd;
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not connected !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	else 
+	{
+		//setcontex(Ctx);
+		userlog("connected !!");
+		return GMPC_GOOD;
+	}
+}
+
+/************************************************************************************/
+/* Function Name:	LogoutFromOracle()         										*/
+/* Input		:	1. sql context							              			*/
+/* Return Values:   GMPC_GOOD/oracle error											*/
+/* Description	:	This function disconnects from oracle							*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+int LogoutFromOracle(void * ctx)
+{
+
+
+	struct sqlca sqlca = {0};
+
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	sql_context pcctx;
+	EXEC SQL END DECLARE SECTION;
+
+
+	pcctx = ctx;
+	EXEC SQL CONTEXT USE:pcctx;
+
+	EXEC SQL COMMIT WORK RELEASE;
+
+	#ifdef DEBUG
+		userlog("Using sql context %u", ctx);
+	#endif
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not disconnected !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	
+	EXEC SQL CONTEXT FREE :pcctx;
+
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not freed !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	else 
+		userlog("termination ok !!");
+
+	return GMPC_GOOD;
+
+}
+

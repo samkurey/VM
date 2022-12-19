@@ -1,0 +1,15 @@
+COMMANDS
+proc $(InputDir)\$(InputName) unsafe_null=yes dbms=v8 sqlcheck=full parse=full userid=gscb/gscb890@gscb include=D:\GMPC\GSCB_SERVICES\COMMON_FILES sys_include="D:\Program Files\Microsoft Visual Studio\VC98\Include" sys_include=D:\Oracle\Ora81\PRECOMP\PUBLIC sys_include="D:\Program Files\BEA Systems\Tuxedo\include"
+
+OUTPUTS
+$(InputDir)\$(TargetName).c
+
+
+
+proc iname=$(InputName).pc userid="gscb_d2/gscb_d2@gscb" dbms=v8 unsafe_null=yes parse=full sqlcheck=full include="d:\Microsoft Visual Studio\VC98\include" include=d:\orant\precomp\public include=d:\tuxedo\include  include="d:\delivery2\code\common" include="D:\Delivery2\Code\get_pdrm_data" include="D:\Delivery2\Code\Simulation\commonfiles" 
+
+
+
+
+
+D:\GMPC\GSCB_SERVICES\LEGACY_INTERFACE

@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (a4556174).
+//
+// RevGmpcAppl.tlh
+//
+// C++ source equivalent of Win32 type library RevGmpcAppl.tlb
+// compiler-generated file created 08/23/05 at 13:30:03 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ RevGmpcApplService;
+struct __declspec(uuid("500f2b9d-0b9d-4bff-a5a6-9757c6f9b948"))
+/* dual interface */ IRevGmpcApplService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IRevGmpcApplService, __uuidof(IRevGmpcApplService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("50e16411-6ba0-4052-95f2-5a2c400fab4d"))
+RevGmpcApplService;
+    // [ default ] interface IRevGmpcApplService
+
+struct __declspec(uuid("500f2b9d-0b9d-4bff-a5a6-9757c6f9b948"))
+IRevGmpcApplService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "RevGmpcAppl.tli"
+
+#pragma pack(pop)

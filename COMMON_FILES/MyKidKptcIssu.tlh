@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (e2645cf9).
+//
+// MyKidKptcIssu.tlh
+//
+// C++ source equivalent of Win32 type library MyKidKptcIssu.tlb
+// compiler-generated file created 03/13/09 at 12:25:20 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ MyKidKptcIssuService;
+struct __declspec(uuid("7f060c1d-17e4-466d-8506-6ab2348585f9"))
+/* dual interface */ IMyKidKptcIssuService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IMyKidKptcIssuService, __uuidof(IMyKidKptcIssuService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("957695ff-c8ef-4b06-966f-67a03e8ae7a9"))
+MyKidKptcIssuService;
+    // [ default ] interface IMyKidKptcIssuService
+
+struct __declspec(uuid("7f060c1d-17e4-466d-8506-6ab2348585f9"))
+IMyKidKptcIssuService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "MyKidKptcIssu.tli"
+
+#pragma pack(pop)

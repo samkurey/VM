@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (b0e7a4c5).
+//
+// GetProbRec.tlh
+//
+// C++ source equivalent of Win32 type library GetProbRec.tlb
+// compiler-generated file created 12/03/10 at 11:53:46 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ GetProbRecService;
+struct __declspec(uuid("0e06959a-ca0d-4734-a5b1-4f35efd62eab"))
+/* dual interface */ IGetProbRecService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IGetProbRecService, __uuidof(IGetProbRecService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("5454603f-b741-439c-991f-34c69977d334"))
+GetProbRecService;
+    // [ default ] interface IGetProbRecService
+
+struct __declspec(uuid("0e06959a-ca0d-4734-a5b1-4f35efd62eab"))
+IGetProbRecService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "GetProbRec.tli"
+
+#pragma pack(pop)

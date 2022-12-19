@@ -1,0 +1,45 @@
+// GetProbRec.idl : IDL source for GetProbRec.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (GetProbRec.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+//0E06959A-CA0D-4734-A5B1-4F35EFD62EAB
+//892D20CA-4C15-43EC-BEDB-42E730719ABB
+	[
+		object,
+		uuid(892D20CA-4C15-43EC-BEDB-42E730719ABB),
+		dual,
+		helpstring("IGetProbRecService_L1 Interface"),
+		pointer_default(unique)
+	]
+	interface IGetProbRecService_L1 : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	//E301F441-2B38-4A72-A9F7-A428ADCB350B
+	//3B44B414-90E0-4792-AF93-61C2BDEE8B0E
+	uuid(3B44B414-90E0-4792-AF93-61C2BDEE8B0E),
+	version(1.0),
+	helpstring("GetProbRec 1.0 Type Library")
+]
+library GETPROBRECLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		//5454603F-B741-439C-991F-34C69977D334
+		//DFCFEFBC-6B7B-4EDD-80DF-46ADE7E6DBF2
+		uuid(DFCFEFBC-6B7B-4EDD-80DF-46ADE7E6DBF2),
+		helpstring("GetProbRecService_L1 Class")
+	]
+	coclass GetProbRecService_L1
+	{
+		[default] interface IGetProbRecService_L1;
+	};
+};

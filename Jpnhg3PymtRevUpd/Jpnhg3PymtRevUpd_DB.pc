@@ -1,0 +1,1427 @@
+/* $Header$ */
+/***************************************************************/
+/* Filename		:jpnhg3PymtRevUpd_DB.pc		                   */
+/* Author		:Srinivasa Reddy   					           */
+/* Description	:This file has all database functions          */
+/*				 required for the service JPNHG3_PYMT_REV_UPD  */
+/***************************************************************/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sqlca.h>
+
+#define LOG_DEFINED
+//#include "field_id.h"
+#include "gscbdef.h"
+#include "gscbio.h"
+#include "gscblog.h"
+#include "gscblookupdef.h"
+
+#include "kPPdef.h"
+#include "KPPStruct.h"
+#include "kPPproto.h"
+#include "userlog.h"
+
+#include "jpnhg3_pymt_rev_upd_io.h"
+#include "jpnhg3_pymt_rev_upd.h"
+
+
+APPL_EXCEP_LOG_T excep_log = { {""},{""},{""},{""},{""},{""}, 0,{""}} ;
+PROG_ACCESS_LOG_T prog_log = { {""},{""},{""},{""},{""},{""},{""},{""} };
+TXN_LOG_T tran_log;
+READ_REG_GENERIC_T gen_reg;
+
+
+char sqlmsg[SQL_MSG_SIZE] = {"\0"};
+
+
+int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq, 
+					JPNHG3_PYMT_REV_UPD_RESP_T **pResp, long *pRespSize,void * ctx)
+{
+	
+	JPNHG3_PYMT_REV_UPD_REQ_T *req;
+	JPNHG3_PYMT_REV_UPD_RESP_T *resp;//,*new_resp,*orig_resp;
+	
+	
+	char curr_date_time[DATE_TIME_SIZE];
+	int ret_val = 0;
+	char program_id[PROG_ID_SIZE];
+	long resp_len = 0;
+
+	
+	memset(&prog_log, 0, PROG_LOG_SIZE);
+	memset(&excep_log, 0, APPL_EXCEP_LOG_SIZE);
+		
+	/* Initialize the variables used for logging	*/
+	/* Get current date-time for logging			*/
+	strcpy(curr_date_time, get_date_time());
+
+	/* Assign request buffer	*/
+	req = (JPNHG3_PYMT_REV_UPD_REQ_T *) pReq;
+
+
+	/* Program access log variable */
+	itoa(JPNHG3_PYMT_REV_UPD_ID, program_id, 10);
+	strcpy(prog_log.program_id, program_id);
+	strcpy(prog_log.user_id, req->header.user_id);
+	strcpy(prog_log.workstation_id, req->header.workstation_id);
+	strcpy(prog_log.branch_code, req->header.branch_code);
+	strcpy(prog_log.access_start_time, curr_date_time);
+	strcpy(prog_log.remarks, "");
+	strcpy(prog_log.application_id, req->header.application_id);
+	
+	/* Application exception log variable */
+	strcpy(excep_log.program_id, program_id);
+	strcpy(excep_log.user_id, req->header.user_id); 	
+	strcpy(excep_log.workstation_id, req->header.workstation_id);
+	strcpy(excep_log.branch_code, req->header.branch_code);
+	strcpy(excep_log.error_date, curr_date_time);
+	strcpy(excep_log.error_msg, "");
+	strcpy(excep_log.application_id, req->header.application_id); 	
+	excep_log.severity = '\0';	
+	excep_log.termination_flag = 'Y';	
+
+	strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD: Initiated");
+	
+	resp_len = sizeof(JPNHG3_PYMT_REV_UPD_RESP_T);
+
+	/* Allocate response buffer	*/
+	if(NULL == (resp = (JPNHG3_PYMT_REV_UPD_RESP_T *) malloc(resp_len)))
+	{
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD_RESP : Memory allocation for response buffer failed");
+		sprintf(excep_log.error_msg,"JPNHG3_PYMT_REV_UPD_RESP : ");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		//tpreturn(TPFAIL, RESP_BUF_ERR, (char *) NULL, 0, 0);
+		return RESP_BUF_ERR;
+	}
+
+	memset(resp, '\0', resp_len);
+
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD : req->header.application_id:%s:",req->header.application_id);
+			userlog("JPNHG3_PYMT_REV_UPD : req->header.branch_code:%s:", req->header.branch_code);
+			userlog("JPNHG3_PYMT_REV_UPD : req->header.service_id:%d:", req->header.service_id);
+			userlog("JPNHG3_PYMT_REV_UPD : req->header.user_id:%s:", req->header.user_id);
+			userlog("JPNHG3_PYMT_REV_UPD : req->header.workstation_id:%s:", req->header.workstation_id);
+			userlog("JPNHG3_PYMT_REV_UPD : req->applid:%s:",req->applid);			
+			userlog("JPNHG3_PYMT_REV_UPD : req->oldapplid:%s:",req->oldapplid);
+			userlog("JPNHG3_PYMT_REV_UPD : req->kptno:%s:",req->kptno);
+			userlog("JPNHG3_PYMT_REV_UPD : req->origamt:%.2f:",req->origamt);
+			userlog("JPNHG3_PYMT_REV_UPD : req->paidamt:%.2f:",req->paidamt);
+			userlog("JPNHG3_PYMT_REV_UPD : req->txncode:%s:",req->txncode);
+			userlog("JPNHG3_PYMT_REV_UPD : req->legtxncode:%s:",req->legtxncode);
+			userlog("JPNHG3_PYMT_REV_UPD : req->txnserno:%c:",req->txnserno);
+			userlog("JPNHG3_PYMT_REV_UPD : req->agencyrevncode:%d:",req->agencyrevncode);
+			userlog("JPNHG3_PYMT_REV_UPD : req->supvuid:%s:",req->supvuid);
+			userlog("JPNHG3_PYMT_REV_UPD : req->supvremarks:%s:",req->supvremarks);
+			userlog("JPNHG3_PYMT_REV_UPD : req->problreasoncode:%s:",req->problreasoncode);
+			userlog("JPNHG3_PYMT_REV_UPD : req->formname:%s:",req->formname);
+			userlog("JPNHG3_PYMT_REV_UPD : req->userid:%s:",req->userid);
+			userlog("JPNHG3_PYMT_REV_UPD : req->wsid:%s:",req->wsid);
+			userlog("JPNHG3_PYMT_REV_UPD : req->timestamp:%s:",req->timestamp);
+			userlog("JPNHG3_PYMT_REV_UPD : req->indicator1:%s:",req->indicator1);
+			userlog("JPNHG3_PYMT_REV_UPD : req->indicator2:%s:",req->indicator2);
+
+			//added by samsuri on 20 sept 2022 - USK COMPUND FEE
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskApplid:%s:",req->uskApplid);
+			userlog("JPNHG3_PYMT_REV_UPD : req->idType:%s:",req->idType);
+			userlog("JPNHG3_PYMT_REV_UPD : req->idNo: %s", req->idNo);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->gmpcName: %s", req->gmpcName);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->feeType: %s", req->feeType);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->lostReasonCode: %s", req->lostReasonCode);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->cardLostCount: %d", req->cardLostCount);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskOrigAmt: %.2f", req->uskOrigAmt);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskReduction: %.2f", req->uskReduction);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskPayAmt: %.2f", req->uskPayAmt);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskagencyRevCode: %d", req->uskagencyRevCode);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskRemark: %s", req->uskRemark);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskUserID: %s", req->uskUserID);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskWsId: %s", req->uskWsId);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->uskDateTime: %s", req->uskDateTime);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->panelDateTime: %s", req->panelDateTime);
+			
+			userlog("JPNHG3_PYMT_REV_UPD : req->paymDateTime: %s", req->paymDateTime);
+
+	#endif
+
+
+	resp->header = req->header;
+			
+	if((ret_val = check_header(req->header,ctx)) != SUCCESS)
+	{
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD : check header failed");
+	#endif
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ : check header failed");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_len, 0);
+			*pRespSize = resp_len;
+				//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+				return ret_val;
+	}
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD :check header Successful");
+	#endif
+
+	
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_REV_UPD :");		
+	#endif
+	
+	
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_REV_UPD :Before the enq_processing function");
+	#endif
+
+		
+		if(SUCCESS != gscbbegin_trans(ctx))
+		{
+			userlog("JPNHG3_PYMT_REV_UPD : Begin transaction failed!!");
+		
+			*pRespSize = resp_len;			
+			*pResp = resp;
+			return END_TRAN_ERROR;
+		}
+		
+		/* transaction processing function */		
+		ret_val = transaction_processing(req,resp,ctx);
+		if(ret_val != SUCCESS)
+		{
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD :enq_processing function failed");
+		#endif
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD : enq_processing function failed");
+		strcpy(excep_log.error_msg,"JPNHG3_PYMT_REV_UPD : enq_processing function failed");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+		
+		*pRespSize = resp_len;		
+			*pResp = resp;
+		return ret_val;
+		}
+		
+		if(ret_val == SUCCESS)
+		{
+			if(SUCCESS != gscbcommit_trans(ctx))
+			{
+				userlog("JPNHG3_PYMT_REV_UPD : Commit transaction failed!!");
+			
+				*pRespSize = resp_len;			
+				*pResp = resp;
+				return END_TRAN_ERROR;
+			}
+		}
+
+	#ifdef DEBUG
+		userlog(" ");
+		userlog("JPNHG3_PYMT_REV_UPD :Service Completed");
+		userlog(" ");
+	#endif
+	
+		*pRespSize = resp_len;	
+		*pResp = resp;
+		 return GMPC_GOOD;
+}
+
+
+/*************************************************************************/
+/* Function Name:enq_processing								             */
+/* Description  :Updates few tables related to fee based on applid       */	
+/* Input        :JPNHG3_PYMT_REV_UPD_REQ_T structure		             */   
+/* Return Values:SUCCESS, SELECT_ERROR or UPDATE_ERROR       	         */
+/*************************************************************************/
+int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_RESP_T *resp, void * ctx)
+{
+	struct sqlca sqlca = {0}; // added on 13/03/06
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	varchar applid[APP_ID_SIZE] = {0};
+	varchar oldapplid[APP_ID_SIZE] = {0};
+	varchar oapplid[APP_ID_SIZE] = {0};
+	varchar kptno[KPT_SIZE] = {0};
+	varchar txncode[3+1] = {0};
+	float   origamt=0;
+	float   paidamt=0;
+	varchar legtxncode[4+1] = {0};
+	char    txnserno = {0};
+	char    otxnserno = {0};
+	//varchar arcode[AG_REV_CODE_SIZE] = {0};
+	int     arcode = 0;
+	varchar supvuid[8+1] = {0};
+	varchar supvremarks[150+1] = {0};
+	varchar problreasoncode[5+1] = {0};
+	varchar ccenter[BRANCH_CODE_SIZE] = {0};
+	varchar sbcode[BRANCH_CODE_SIZE] = {0};
+	varchar fname[60+1] = {0};
+	varchar name[90+1] = {0};
+	varchar userid[8+1] = {0};
+	varchar wsid[15+1] = {0};
+	varchar timestamp[17+1] = {0};
+	varchar address1[ADDRESS1_SIZE] = {0};
+	varchar address2[ADDRESS1_SIZE] = {0};
+	varchar address3[ADDRESS1_SIZE] = {0};
+	varchar postcode[POSTCODE_SIZE] = {0};
+	varchar statecode[STATECODE_SIZE] = {0};
+	int  citycode;	
+	char    sflag = {0};
+	char    etype = {0};
+		
+	int   ret_code=0;
+	int   pcount = 0;
+	int   acount = 0;
+	float   oorigamt=0;
+	//varchar oarcode[AG_REV_CODE_SIZE] = {0};
+	int   oarcode = 0;
+	char  astat = '\0';
+	varchar happlid[APP_ID_SIZE] = {0}; // header applid
+
+	//samsuri todo: add data for new table USK_COMPOUND_FEE 20 sept 2022 - start
+	varchar uskApplid[APP_ID_SIZE] = {0}; 
+	varchar uskidType[ID_TYPE_SIZE] = {0};  //3
+	varchar uskidNo[ID_NUMBER2_SIZE] = {0};  //13
+	varchar uskgmpcName [101] = {0}; 
+	varchar uskfeeType[FEE_TYPE_SIZE] = {0};  //4
+	varchar usklostReasonCode[3] = {0}; 
+	int uskcardLostCount=0;
+	float uskOrigAmt=0;
+	float uskReduction=0;
+	float uskPayAmt=0;
+	int uskagencyRevCode=0;
+	varchar uskRemark[501] = {0}; 
+	varchar uskUserID[USER_ID_SIZE] = {0};  //9
+	varchar uskWsId[4] = {0}; 
+	varchar uskDateTime[DATE_TIME_SIZE + 4] = {0}; 
+	float uskpanelReduction=0;
+	float uskpanelPayment=0;
+	varchar uskpanelRemark[501] = {0}; 
+	varchar uskpanelUserId[USER_ID_SIZE] = {0}; 
+	varchar uskpanelWsId[4] = {0}; 
+	varchar uskpanelDateTime[DATE_TIME_SIZE + 4] = {0}; 
+	varchar uskpaymReceipt[RECEIPT_SIZE] = {0}; 
+	varchar uskcollBranch[7] = {0}; 
+	varchar uskpaymDateTime[DATE_TIME_SIZE + 4] = {0}; 
+	//samsuri todo: add data for new table USK_COMPOUND_FEE 20 sept 2022 - finish
+
+	//samsuri added outstand_txn_fee
+	int hvOutStandTxnSerNo;
+	varchar hvOutStandFeeType[FEE_TYPE_SIZE] = {0}; 
+	float hvOutStandFeeAmt;
+	int hvOutStandAgencyRevnCode;
+	varchar hvOutStandSendGSC[2] = {0}; 
+
+	sql_context pcCtx; 
+	EXEC SQL END DECLARE SECTION;
+
+	pcCtx = ctx; 
+	EXEC SQL CONTEXT USE :pcCtx;
+
+	// copy the values from req buffer to local variable here
+	strcpy((char*)applid.arr,req->applid);
+	setlen(applid);
+	strcpy((char*)oldapplid.arr,req->oldapplid);
+	setlen(oldapplid);
+	strcpy((char*)kptno.arr,req->kptno);
+	setlen(kptno);
+	strcpy((char*)txncode.arr,req->txncode);
+	setlen(txncode);
+	origamt = req->origamt;
+	paidamt = req->paidamt;
+	strcpy((char*)legtxncode.arr,req->legtxncode);
+	setlen(legtxncode);
+	txnserno = req->txnserno;
+	//strcpy((char*)arcode.arr,req->agencyrevncode);
+	//setlen(arcode);
+	arcode = req->agencyrevncode;
+	strcpy((char*)supvuid.arr,req->supvuid);
+	setlen(supvuid);
+	strcpy((char*)supvremarks.arr,req->supvremarks);
+	setlen(supvremarks);
+	strcpy((char*)problreasoncode.arr,req->problreasoncode);
+	setlen(problreasoncode);
+	strcpy((char*)fname.arr,req->formname);
+	setlen(fname);
+	strcpy((char*)userid.arr,req->userid);
+	setlen(userid);
+	strcpy((char*)wsid.arr,req->wsid);
+	setlen(wsid);
+	strcpy((char*)timestamp.arr,req->timestamp);
+	setlen(timestamp);	
+	
+	//added by samsuri on 20 sept 2022 - start
+	//========================================
+	strcpy((char*)uskApplid.arr,req->uskApplid);
+	setlen(uskApplid);
+	strcpy((char*)uskidType.arr,req->idType);
+	setlen(uskidType);
+	strcpy((char*)uskidNo.arr,req->idNo);
+	setlen(uskidNo);
+	strcpy((char*)uskgmpcName.arr,req->gmpcName);
+	setlen(uskgmpcName);
+	strcpy((char*)uskfeeType.arr,req->feeType);
+	setlen(uskfeeType);
+	strcpy((char*)usklostReasonCode.arr,req->lostReasonCode);
+	setlen(usklostReasonCode);
+
+	uskcardLostCount = req->cardLostCount;
+	uskOrigAmt = req->uskOrigAmt;
+	uskReduction = req->uskReduction;
+	uskPayAmt = req->uskPayAmt;
+	uskagencyRevCode = req->uskagencyRevCode;
+
+	strcpy((char*)uskRemark.arr,req->uskRemark);
+	setlen(uskRemark);
+	strcpy((char*)uskUserID.arr,req->uskUserID);
+	setlen(uskUserID);
+	strcpy((char*)uskWsId.arr,req->uskWsId);
+	setlen(uskWsId);
+	strcpy((char*)uskDateTime.arr,req->uskDateTime);
+	setlen(uskDateTime);
+
+	if(req->panelReduction > -1)
+		uskpanelReduction = req->panelReduction;
+	if(req->panelPayment > -1)	
+		uskpanelPayment = req->panelPayment;
+
+	strcpy((char*)uskpanelRemark.arr,req->panelRemark);
+	setlen(uskpanelRemark);
+	strcpy((char*)uskpanelUserId.arr,req->panelUserId);
+	setlen(uskpanelUserId);
+	strcpy((char*)uskpanelWsId.arr,req->panelWsId);
+	setlen(uskpanelWsId);
+	strcpy((char*)uskpanelDateTime.arr,req->panelDateTime);
+	setlen(uskpanelDateTime);
+	strcpy((char*)uskpaymReceipt.arr,req->paymReceipt);
+	setlen(uskpaymReceipt);
+	strcpy((char*)uskcollBranch.arr,req->collBranch);
+	setlen(uskcollBranch);
+	strcpy((char*)uskpaymDateTime.arr,req->paymDateTime);
+	setlen(uskpaymDateTime);
+
+	hvOutStandTxnSerNo = req->OutStandTxnSerNo;
+	strcpy((char*)hvOutStandFeeType.arr,req->OutStandFeeType);
+	setlen(hvOutStandFeeType);
+	hvOutStandFeeAmt = req->OutStandFeeAmt;
+	hvOutStandAgencyRevnCode = req->OutStandAgencyRevnCode;
+	strcpy((char*)hvOutStandSendGSC.arr,req->OutStandSendGSC);
+	setlen(hvOutStandSendGSC);
+
+	EXEC SQL DELETE FROM OUTSTAND_TXN_FEE
+		WHERE APPLID = :uskApplid;
+
+	if(SQLCODE != 0)
+	{
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) :No record for Deletion on OUTSTAND_TXN_FEE : %s", SQLMSG);
+	}
+
+	EXEC SQL INSERT INTO OUTSTAND_TXN_FEE(
+		APPLID, TXNSERNO, FEETYPE, FEEAMT, AGENCYREVNCODE, SEND_GSC)
+		VALUES( 
+		:uskApplid, :hvOutStandTxnSerNo, :hvOutStandFeeType, :hvOutStandFeeAmt, :hvOutStandAgencyRevnCode, :hvOutStandSendGSC);
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+		#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", sqlmsg);
+		#endif
+				strcpy(prog_log.remarks,"transaction_processing() Insert into OUTSTAND_TXN_FEE failed ");
+				sprintf(excep_log.error_msg, "transaction_processing() Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+				excep_log.termination_flag = YES;
+				excep_log.severity = FATAL;
+
+				log_error(ctx);
+						
+				return INSERT_ERROR;
+		}
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
+		#endif
+
+	
+	//delete first
+	EXEC SQL DELETE FROM USK_COMPOUND_FEE
+		WHERE APPLID = :uskApplid;
+
+	if(SQLCODE != 0)
+	{
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) :No record for Deletion on USK_COMPOUND_FEE : %s", SQLMSG);
+	}
+	//userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record deleted from USK_COMPOUND_FEE - %d", SQLCODE);
+
+	//insert new
+	EXEC SQL INSERT INTO USK_COMPOUND_FEE(
+		APPLID, IDTYPE, IDNO, GMPCNAME, FEETYPE, LOSTRSNCODE, CARDLOSTCNT, ORIAMT,USKREDUCTION,USKPAYAMT,AGENCYREVNCODE,
+		USKREMARK, USKUSERID, USKWSID, USKDATETIME, PANELREDUCTION, PANELPAYAMT, PANELREMARK, PANELUSERID, PANELWSID,
+		PANELDATETIME, PAYMRECEIPT,COLLBRANCH,PAYMDATETIME)
+		VALUES( 
+		:uskApplid, :uskidType, :uskidNo, :uskgmpcName, :uskfeeType, :usklostReasonCode, :uskcardLostCount, :uskOrigAmt,
+		:uskReduction, :uskPayAmt, :uskagencyRevCode, :uskRemark, :uskUserID, :uskWsId, TO_DATE(:uskDateTime,'DDMMYYYY HH24MISS'),
+		:uskpanelReduction, :uskpanelPayment, :uskpanelRemark, :uskpanelUserId, :uskpanelWsId, 
+		TO_DATE(:uskpanelDateTime,'DDMMYYYY HH24MISS'), :uskpaymReceipt, :uskcollBranch, TO_DATE(:uskpaymDateTime,'DDMMYYYY HH24MISS'));
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+		#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into USK_COMPOUND_FEE failed : %s", sqlmsg);
+		#endif
+				strcpy(prog_log.remarks,"transaction_processing() Insert into USK_COMPOUND_FEE failed ");
+				sprintf(excep_log.error_msg, "transaction_processing() Insert into USK_COMPOUND_FEE failed : %s", SQLMSG);
+				excep_log.termination_flag = YES;
+				excep_log.severity = FATAL;
+
+				log_error(ctx);
+						
+				return INSERT_ERROR;
+		}
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into USK_COMPOUND_FEE");
+		#endif
+
+		if(uskpanelPayment < 1)
+		{
+			EXEC SQL UPDATE PROBL_RECORD SET GENKPT = 'P'
+				WHERE APPLID = :oldapplid AND PROBLREASONCODE = 'E0001'; 
+
+			if (SQLCODE != 0 && SQLCODE != 1403)
+			{
+			
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+			
+					// strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed ");
+					// sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+					// excep_log.termination_flag = YES;
+					// excep_log.severity = FATAL;
+
+					// log_error(ctx);
+							
+					// return UPDATE_ERROR;
+			}
+			else
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
+
+			EXEC SQL UPDATE OUTSTAND_TXN_FEE SET FEEAMT=0
+				WHERE APPLID = :oldapplid
+				AND FEETYPE = 'CF';
+
+			if(SQLCODE != 0 && SQLCODE != 1403)
+			{
+
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : UPDATE on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+
+					// strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on OUTSTAND_TXN_FEE failed ");
+					// sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+					// excep_log.termination_flag = YES;
+					// excep_log.severity = FATAL;
+
+					// log_error(ctx);
+							
+					// return UPDATE_ERROR;
+			}
+			else
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record UPDATED from OUTSTAND_TXN_FEE - %d", SQLCODE);
+
+		}
+
+
+	//added by samsuri on 20 sept 2022 - finish
+
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->applid: %s",req->applid);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : applid: %s",applid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->oldapplid: %s",req->oldapplid);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : oldapplid: %s",oldapplid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->kptno: %s",req->kptno);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : kptno: %s",kptno.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->txncode: %s",req->txncode);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : txncode: %s",txncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : origamt: %.2f",origamt);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : paidamt: %.2f",paidamt);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : legtxncode: %s",legtxncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : txnserno: %c",txnserno);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : agencyrevncode: %d",arcode);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : supvuid: %s",supvuid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : supvremarks: %s",supvremarks.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : problreasoncode: %s",problreasoncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : formname: %s",fname.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : userid: %s",userid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : wsid: %s",wsid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : timestamp: %s",timestamp.arr);
+	#endif
+
+	if(strncmp(txncode.arr,"919",3) == 0)  // This is payment update
+	{
+		pcount= 0;
+		EXEC SQL SELECT COUNT(*) INTO :pcount 
+			FROM APPNT_HG3_FEE_INFO
+				WHERE APPLID = :applid;
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select count from APPNT_HG3_FEE_INFO");
+			#endif
+			strcpy(prog_log.remarks,"transaction_processing() failed while select count from APPNT_HG3_FEE_INFO");
+			sprintf(excep_log.error_msg,"transaction_processing() failed while select count from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error(ctx);
+
+			return SELECT_ERROR;
+		}
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO, pcount : %d",pcount);
+		#endif
+
+
+		if(pcount == 0)
+		{
+
+			EXEC SQL SELECT GMPCSHORTNAME1||' '||GMPCSHORTNAME2||' '||GMPCSHORTNAME3,
+				ADDRESS1, ADDRESS2, ADDRESS3, POSTCODE, STATECODE, CITYCODE
+				INTO :name,:address1, :address2, :address3,:postcode, :statecode, :citycode
+					FROM APPNT_JPN_INFO
+						WHERE APPLID = :oldapplid;
+
+		
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : After SELECT FROM APPNT_JPN_INFO, sqlca.sqlcode : %d",sqlca.sqlcode);
+				#endif
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD  : transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO");
+					#endif
+					strcpy(prog_log.remarks,"transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO");
+					sprintf(excep_log.error_msg,"transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+				name.arr[name.len] = '\0'; address1.arr[address1.len] = '\0';
+				address2.arr[address2.len] = '\0'; address3.arr[address3.len] = '\0';
+				postcode.arr[postcode.len] = '\0'; statecode.arr[statecode.len] = '\0';
+				wsid.arr[wsid.len] = '\0'; userid.arr[userid.len] = '\0';
+				timestamp.arr[timestamp.len] = '\0';
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, name :%s:",name.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address1 :%s:",address1.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address2 :%s:",address2.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address3 :%s:",address3.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, postcode :%s:",postcode.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, statecode :%s:",statecode.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, citycode :%d:",citycode);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, userid :%s:",userid.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, wsid :%s:",wsid.arr);
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, timestamp :%s:",timestamp.arr);
+				#endif
+
+			EXEC SQL INSERT INTO APPNT_HG3_FEE_INFO(
+				APPLID, OLDAPPLID, KPTNO, ORIGAMT, PAIDAMT, AGENCYREVNCODE, NAME, 
+				ADDRESS1, ADDRESS2, ADDRESS3, POSTCODE, STATECODE, CITYCODE, USERID,
+				WSID, TIMESTAMP)
+				VALUES( 
+				:applid, :oldapplid, :kptno, :origamt, :paidamt, :arcode,
+				:name, :address1, :address2, :address3, :postcode, :statecode,
+				:citycode, :userid, :wsid, TO_DATE(:timestamp,'DDMMYYYY HH24MISS'));
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_HG3_FEE_INFO failed : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_HG3_FEE_INFO failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_HG3_FEE_INFO failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_HG3_FEE_INFO");
+				#endif
+
+
+			EXEC SQL INSERT INTO APPL_TXN(
+				APPLID, TXNSERNO, TXNCODE, TXNDATE, LEGTXNCODE) 
+					VALUES (
+						:applid, :txnserno, :txncode, SYSDATE, :legtxncode);
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN");
+				#endif
+
+
+			EXEC SQL INSERT INTO APPL_TXN_FEE(
+				APPLID, TXNSERNO, FEETYPE, FEEAMT, AGENCYREVNCODE) 
+					VALUES (
+						:applid, :txnserno, 'CF', :paidamt, :arcode);
+
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN_FEE failed : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN_FEE failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN_FEE failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN_FEE");
+				#endif
+
+
+
+			if(paidamt == 0) // this is for fee waiver
+			{
+				EXEC SQL INSERT INTO APPL_FEE_REDUCTION(
+					APPLID, TXNSERNO, FEETYPE, ORIGFEEAMT, FEEAMT, AGENCYREVNCODE, 
+					REDUCTIONTYPE)
+					VALUES(
+					:applid, :txnserno, 'CF', :origamt, :paidamt, :arcode, 'W');
+
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(W) : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_FEE_REDUCTION failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_FEE_REDUCTION failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(W)");
+				#endif
+
+			}
+			else if(paidamt != origamt)  // this is for fee reduction
+			{
+				EXEC SQL INSERT INTO APPL_FEE_REDUCTION(
+					APPLID, TXNSERNO, FEETYPE, ORIGFEEAMT, FEEAMT, AGENCYREVNCODE, 
+					REDUCTIONTYPE)
+					VALUES(
+					:applid, :txnserno, 'CF', :origamt, :paidamt, :arcode, 'R');
+
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(R) : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_FEE_REDUCTION failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_FEE_REDUCTION failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(R)");
+				#endif
+			}
+
+
+			// insert record in SUPERVISOR_REMARKS
+			if(problreasoncode.arr[0] != '\0')  // problreasoncode for supervisor approval
+			{
+				EXEC SQL INSERT INTO SUPERVISOR_REMARKS(
+					APPLID, PROBLSERNO, PROBLREASONCODE, FORMNAME, REMARKS,
+					USERID, WSID, TIMESTAMP)
+					VALUES(
+					:applid, 1, :problreasoncode, :fname, :supvremarks, :userid, :wsid, TO_DATE(:timestamp,'DDMMYYYY HH24MISS'));
+
+				if(sqlca.sqlcode != 0)
+				{
+				#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+				#endif
+						strcpy(prog_log.remarks,"transaction_processing() Insert into SUPERVISOR_REMARKS failed ");
+						sprintf(excep_log.error_msg, "transaction_processing() Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+						excep_log.termination_flag = YES;
+						excep_log.severity = FATAL;
+
+						log_error(ctx);
+								
+						return INSERT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
+				#endif
+
+			}
+
+			// to update payment indicator as 'paid'
+			EXEC SQL UPDATE PROBL_RECORD SET GENKPT = 'P'
+				//WHERE APPLID = :oldapplid AND PROBLREASONCODE = 'Q0001'; //samsuri remark this
+				WHERE APPLID = :oldapplid AND PROBLREASONCODE = 'E0001'; //samsuri added this
+
+			if (SQLCODE != 0 && SQLCODE != 1403)
+			{
+			#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+			#endif
+					strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed ");
+					sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+					excep_log.termination_flag = YES;
+					excep_log.severity = FATAL;
+
+					log_error(ctx);
+							
+					return DELETE_ERROR;
+			}
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
+			#endif
+
+
+			// to remove any outstanding fee
+			EXEC SQL DELETE FROM OUTSTAND_TXN_FEE
+				WHERE APPLID = :oldapplid
+				AND FEETYPE = 'CF'
+				AND TXNSERNO = (
+				SELECT TXNSERNO FROM APPL_TXN WHERE APPLID = :oldapplid AND TXNCODE = '403'
+				);
+
+			if(SQLCODE != 0)
+			{
+			#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+			#endif
+					strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed ");
+					sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+					excep_log.termination_flag = YES;
+					excep_log.severity = FATAL;
+
+					log_error(ctx);
+							
+					return DELETE_ERROR;
+			}
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
+			#endif
+
+
+			// to send payment 'paid' indicator to GQD server
+				EXEC SQL SELECT APPLSTAT,SSCBRANCHCODE INTO :astat,:sbcode FROM APPLICATION 
+				WHERE APPLID = :oldapplid;
+
+				sbcode.arr[sbcode.len] = '\0';
+
+			sqlmsg[0] = '\0';
+			strcpy(sqlmsg, SQLMSG);
+			if(sqlca.sqlcode != 0)
+			{
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select sscbranchcode from APPLICATION :%s", sqlmsg);
+				#endif
+				strcpy(prog_log.remarks,"transaction_processing() failed while select sscbranchcode from APPLICATION");
+				sprintf(excep_log.error_msg,"transaction_processing() failed while select sscbranchcode from APPLICATION:%s ",sqlmsg);
+				excep_log.termination_flag = 'Y';
+				excep_log.severity = FATAL;
+				log_error(ctx);
+
+				return SELECT_ERROR;
+			}
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION");
+			#endif
+
+
+
+			if(astat == 'Q')
+			{
+				sflag = '\0';
+				EXEC SQL SELECT SENDFLAG INTO :sflag 
+					FROM APPNT_PROBL_DATA
+					WHERE APPLID = :oldapplid;
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select SENDFLAG from APPNT_PROBL_DATA :%s", sqlmsg);
+					#endif
+					strcpy(prog_log.remarks,"transaction_processing() failed while select SENDFLAG from APPNT_PROBL_DATA");
+					sprintf(excep_log.error_msg,"transaction_processing() failed while select SENDFLAG from APPNT_PROBL_DATA:%s ",sqlmsg);
+					//excep_log.termination_flag = 'Y';
+					//excep_log.severity = FATAL;
+					//log_error(ctx);
+
+					//return SELECT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_PROBL_DATA");
+				#endif
+
+
+
+				if(sflag == '\0')  // no record in appnt_probl_data, no other GQD problem
+				{
+					EXEC SQL INSERT INTO APPNT_PROBL_DATA(
+						APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
+						VALUES(
+						:oldapplid, :sbcode, 'N', SYSDATE, 'P');
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_PROBL_DATA failed(if) : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+					#endif
+
+				}
+				else if(sflag == 'Y')    // RECORD EXISTS IN APPNT_PROBL_DATA
+				{
+					if(sflag == 'Y')
+					{
+						EXEC SQL DELETE FROM APPNT_PROBL_DATA 
+							WHERE APPLID = :oldapplid;
+
+						if(SQLCODE != 0)
+						{
+						#ifdef DEBUG
+								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+						#endif
+								strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed ");
+								sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+								excep_log.termination_flag = YES;
+								excep_log.severity = FATAL;
+
+								log_error(ctx);
+										
+								return DELETE_ERROR;
+						}
+						#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
+						#endif
+
+
+						EXEC SQL INSERT INTO APPNT_PROBL_DATA(
+						APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
+						VALUES(
+						:oldapplid, :sbcode, 'N', SYSDATE, 'P');
+
+						if(sqlca.sqlcode != 0)
+						{
+						#ifdef DEBUG
+								userlog("JPNHG3_PYMT_REV_UPD  : transaction_processing() Insert into APPNT_PROBL_DATA failed(else) : %s", SQLMSG);
+						#endif
+								strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
+								sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
+								excep_log.termination_flag = YES;
+								excep_log.severity = FATAL;
+
+								log_error(ctx);
+										
+								return INSERT_ERROR;
+						}
+						#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+						#endif
+
+					}
+
+				}
+
+			}  // end of if for sbcode
+
+			ret_code = 0;  
+			return ret_code;   // success
+
+		}  // end of pcount if loop
+
+		ret_code = 0;  
+		return ret_code;   // success
+
+	} 
+	else if(strncmp(txncode.arr,"920",3) == 0) // This is Payment Reversal
+	{
+		strcpy((char*)happlid.arr,req->header.application_id);		
+		setlen(happlid);
+			#ifdef DEBUG		
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : happlid: %s",happlid.arr);
+			#endif
+
+		oapplid.arr[0] = '\0';
+		EXEC SQL SELECT OLDAPPLID INTO :oapplid
+			FROM APPNT_HG3_FEE_INFO
+			WHERE APPLID = :happlid;
+	
+		oapplid.arr[oapplid.len] = '\0';
+		
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select OLDAPPLID from APPNT_HG3_FEE_INFO :%s", sqlmsg);
+			#endif
+			strcpy(prog_log.remarks,"transaction_processing() failed while select SENDFLAG from APPNT_HG3_FEE_INFO");
+			sprintf(excep_log.error_msg,"transaction_processing() failed while select SENDFLAG from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error(ctx);
+
+			return SELECT_ERROR;
+		}
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
+		#endif
+
+
+		if(oapplid.arr[0] == '\0')
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : No record found for HG3 payment");
+			#endif
+			ret_code = 70002; 
+			return ret_code;  // no record found for HG3 payment
+
+		}
+		else
+		{
+			EXEC SQL SELECT COUNT(*) INTO :acount
+				FROM APPLICATION 
+					WHERE APPLID = :oapplid
+					AND APPLSTAT IN ('X','Q');
+
+			sqlmsg[0] = '\0';
+			strcpy(sqlmsg, SQLMSG);
+			if(sqlca.sqlcode != 0)
+			{
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select count from APPLICATION :%s", sqlmsg);
+				#endif
+				strcpy(prog_log.remarks,"transaction_processing() failed while select count from APPLICATION");
+				sprintf(excep_log.error_msg,"transaction_processing() failed while select count from APPLICATION:%s ",sqlmsg);
+				excep_log.termination_flag = 'Y';
+				excep_log.severity = FATAL;
+				log_error(ctx);
+
+				return SELECT_ERROR;
+			}
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION count: %d",acount);
+			#endif
+
+
+			if(acount == 0)
+			{
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Application already approved");
+				#endif
+				ret_code = 70003; 
+				return ret_code;  // application already approved
+			}
+			else
+			{
+				EXEC SQL SELECT TXNSERNO INTO :otxnserno FROM APPL_TXN
+					WHERE APPLID = :oapplid 
+						AND TXNCODE = '403';
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select TXNSERNO from APPL_TXN :%s", sqlmsg);
+					#endif
+					strcpy(prog_log.remarks,"transaction_processing() failed while select TXNSERNO from APPL_TXN");
+					sprintf(excep_log.error_msg,"transaction_processing() failed while select TXNSERNO from APPL_TXN:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPL_TXN");
+				#endif
+
+				EXEC SQL SELECT ORIGAMT,AGENCYREVNCODE INTO :oorigamt,:oarcode
+					FROM APPNT_HG3_FEE_INFO
+						WHERE APPLID = :happlid;				
+
+				//oarcode.arr[oarcode.len] = '\0';
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select from APPNT_HG3_FEE_INFO :%s", sqlmsg);
+					#endif
+					strcpy(prog_log.remarks,"transaction_processing() failed while select from APPNT_HG3_FEE_INFO");
+					sprintf(excep_log.error_msg,"transaction_processing() failed while select from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
+				#endif
+
+
+				// insert record into outstand_txn_fee
+				EXEC SQL INSERT INTO OUTSTAND_TXN_FEE(
+					APPLID, TXNSERNO, FEETYPE, FEEAMT, AGENCYREVNCODE)
+					VALUES(:oapplid, :otxnserno, 'CF', :oorigamt, :oarcode);
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() Insert into OUTSTAND_TXN_FEE failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
+					#endif
+
+
+				// insert record into appl_txn
+				EXEC SQL INSERT INTO APPL_TXN(
+					APPLID, TXNSERNO, TXNCODE, TXNDATE, LEGTXNCODE)
+					VALUES(
+					:happlid,:txnserno, :txncode, SYSDATE, :legtxncode);
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN");
+					#endif
+
+
+				// update payment_info table as reverse
+				EXEC SQL UPDATE PAYMENT_INFO 
+					SET RVRSFLAG = 'R',
+					RVRSDATETIME = TO_DATE(:timestamp,'DDMMYYYY HH24MISS'),
+					AUTHBYUSERID = :supvuid
+					WHERE APPLID = :happlid;
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update PAYMENT_INFO failed : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() update PAYMENT_INFO failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() update PAYMENT_INFO failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into PAYMENT_INFO");
+					#endif
+
+
+				// update supervisor_remarks table for reversal supervisor override
+				EXEC SQL INSERT INTO SUPERVISOR_REMARKS(
+					APPLID, PROBLSERNO, PROBLREASONCODE, FORMNAME, REMARKS, 
+					USERID, WSID, TIMESTAMP)
+					VALUES(
+					:happlid, 1, :problreasoncode, :fname, :supvremarks, :userid,
+					:wsid, TO_DATE(:timestamp,'DDMMYYYY HH24MISS'));
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() Insert into SUPERVISOR_REMARKS failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
+					#endif
+
+
+				// update payment indicator back to unpaid
+				EXEC SQL UPDATE PROBL_RECORD SET
+					GENKPT = 'U'
+					WHERE APPLID = :oapplid
+					AND PROBLREASONCODE = 'E0001'; //samsuri change from Q0001 to E0001
+
+					if(sqlca.sqlcode != 0)
+					{
+					#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update PROBL_RECORD failed : %s", SQLMSG);
+					#endif
+							strcpy(prog_log.remarks,"transaction_processing() update PROBL_RECORD failed ");
+							sprintf(excep_log.error_msg, "transaction_processing() update PROBL_RECORD failed : %s", SQLMSG);
+							excep_log.termination_flag = YES;
+							excep_log.severity = FATAL;
+
+							log_error(ctx);
+									
+							return INSERT_ERROR;
+					}
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into PROBL_RECORD");
+					#endif
+
+
+				// send payment unpaid indicator to GQD server
+				sbcode.arr[0] = '\0';astat = '\0';
+				EXEC SQL SELECT APPLSTAT, SSCBRANCHCODE INTO :astat,:sbcode
+					FROM APPLICATION 
+					WHERE APPLID = :oapplid;
+
+				sbcode.arr[sbcode.len] = '\0';
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select from APPLICATION :%s", sqlmsg);
+					#endif
+					strcpy(prog_log.remarks,"transaction_processing() failed while select from APPLICATION");
+					sprintf(excep_log.error_msg,"transaction_processing() failed while select from APPLICATION:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION");
+				#endif
+
+
+				if(astat == 'Q')
+				{
+					sflag = '\0';etype = '\0';
+					EXEC SQL SELECT SENDFLAG, ENQTYPE INTO :sflag, :etype
+						FROM APPNT_PROBL_DATA
+						WHERE APPLID = :oapplid;
+
+						if(sqlca.sqlcode != 0)
+						{
+						#ifdef DEBUG
+								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed : %s", SQLMSG);
+						#endif
+								strcpy(prog_log.remarks,"transaction_processing() select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed ");
+								sprintf(excep_log.error_msg, "transaction_processing() select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed : %s", SQLMSG);
+								excep_log.termination_flag = YES;
+								excep_log.severity = FATAL;
+
+								log_error(ctx);
+										
+								return INSERT_ERROR;
+						}
+						#ifdef DEBUG
+							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_PROBL_DATA");
+						#endif
+
+					if((sflag == '\0') && (etype == '\0'))  // no record found
+					{
+						EXEC SQL INSERT INTO APPNT_PROBL_DATA(
+							APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
+							VALUES(
+							:oapplid, :sbcode, 'N', SYSDATE, 'P');
+
+							if(sqlca.sqlcode != 0)
+							{
+							#ifdef DEBUG
+									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_PROBL_DATA failed(R) : %s", SQLMSG);
+							#endif
+									strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
+									sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
+									excep_log.termination_flag = YES;
+									excep_log.severity = FATAL;
+
+									log_error(ctx);
+											
+									return INSERT_ERROR;
+							}
+							#ifdef DEBUG
+								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+							#endif
+					}
+					else
+					{
+						// record exists in appnt_probl_data
+						// payment update to GQD  not success yet so no need to 
+						// to send the reversal flag to GQD
+
+						if(((sflag == 'N') || (sflag == 'F')) && (etype == 'P'))
+						{
+							EXEC SQL UPDATE APPNT_PROBL_DATA SET
+								SENDFLAG = 'Y'
+								WHERE APPLID = :oapplid
+								AND ENQTYPE = 'P';
+
+								if(sqlca.sqlcode != 0)
+								{
+								#ifdef DEBUG
+										userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
+								#endif
+										strcpy(prog_log.remarks,"transaction_processing() update APPNT_PROBL_DATA failed ");
+										sprintf(excep_log.error_msg, "transaction_processing() update APPNT_PROBL_DATA failed : %s", SQLMSG);
+										excep_log.termination_flag = YES;
+										excep_log.severity = FATAL;
+
+										log_error(ctx);
+												
+										return INSERT_ERROR;
+								}
+								#ifdef DEBUG
+									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into APPNT_PROBL_DATA(Y)");
+								#endif
+
+						}
+
+						if(sflag == 'Y')
+						{					
+							
+							EXEC SQL UPDATE APPNT_PROBL_DATA SET
+								SENDFLAG = 'N'
+								WHERE APPLID = :oapplid
+								AND ENQTYPE = 'P';
+
+								if(sqlca.sqlcode != 0)
+								{
+								#ifdef DEBUG
+										userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
+								#endif
+										strcpy(prog_log.remarks,"transaction_processing() update APPNT_PROBL_DATA failed ");
+										sprintf(excep_log.error_msg, "transaction_processing() update APPNT_PROBL_DATA failed : %s", SQLMSG);
+										excep_log.termination_flag = YES;
+										excep_log.severity = FATAL;
+
+										log_error(ctx);
+												
+										return INSERT_ERROR;
+								}
+								#ifdef DEBUG
+									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into APPNT_PROBL_DATA(N)");
+								#endif							
+							
+						}
+					}
+				}
+			}
+
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Reversal successful");
+			#endif
+		ret_code = 0;
+		return ret_code;  // reversal success
+		}
+
+	} // end of txncode loop	
+	
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : max applid after select: %s",applid.arr);		
+	#endif
+
+
+	return SUCCESS;
+}
+

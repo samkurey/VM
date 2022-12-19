@@ -1,0 +1,27 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: li_jpn_update - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP9C26.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "DEBUG" /D "_LIB" /FR"Debug/" /Fp"Debug/li_jpn_update.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\GMPCServices\jpn_interface\li_jpn_update\li_jpn_update.c"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP9C26.tmp" 
+Creating command line "link.exe -lib /nologo /out:"D:\GMPCServices\jpn_interface\ijpn_lib\li_jpn_update.lib"  .\Debug\KPPutil.obj .\Debug\li_call_dll.obj .\Debug\li_jpn_update.obj "
+<h3>Output Window</h3>
+Compiling...
+li_jpn_update.c
+Creating library...
+
+
+
+<h3>Results</h3>
+li_jpn_update.lib - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

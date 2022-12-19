@@ -1,0 +1,9 @@
+; GetProbRec_L2.def : Declares the module parameters.
+
+LIBRARY      "GetProbRec_L2.DLL"
+
+EXPORTS
+	DllCanUnloadNow     @1 PRIVATE
+	DllGetClassObject   @2 PRIVATE
+	DllRegisterServer   @3 PRIVATE
+	DllUnregisterServer	@4 PRIVATE

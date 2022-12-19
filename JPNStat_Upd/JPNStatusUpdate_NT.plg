@@ -1,0 +1,31 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: JPNStatusUpdate_NT - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP82B4.bat" with contents
+[
+@echo off
+proc .\GSCBDB unsafe_null=yes dbms=v8 sqlcheck=full parse=partial code=CPP userid=gscb/gscb@gscbbcm include="D:\MTSComponents_context\COMMON_FILES" sys_include="D:\Program Files\Microsoft Visual Studio\VC98\Include" sys_include="D:\Oracle\product\10.2.0\db_1\precomp\public" sys_include="D:\Oracle\product\10.2.0\db_1\oci\include"
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\RSP82B4.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\GSCBDB.pc
+
+Pro*C/C++: Release 10.2.0.5.0 - Production on Mon Aug 1 15:35:36 2022
+
+Copyright (c) 1982, 2007, Oracle.  All rights reserved.
+
+System default option values taken from: D:\oracle\product\10.2.0\db_1\precomp\admin\pcscfg.cfg
+
+
+
+
+<h3>Results</h3>
+GSCBDB.cpp - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

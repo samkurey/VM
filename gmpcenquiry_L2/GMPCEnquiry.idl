@@ -1,0 +1,46 @@
+// GMPCEnquiry.idl : IDL source for GMPCEnquiry.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (GMPCEnquiry.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+//20895085-6956-4AF3-9831-B6CAAD0E532C - new
+//3531224D-D40D-4D2E-B5B6-9A23CD1F1CCE - old
+
+		object,
+		uuid(20895085-6956-4AF3-9831-B6CAAD0E532C),
+		dual,
+		helpstring("IGMPCEnquiryService Interface"),
+		pointer_default(unique)
+	]
+	interface IGMPCEnquiryService : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+//F374B0C9-444F-4A27-8D6C-DFC69B241C60 - new
+//23FF4DB8-C7C0-459D-9092-44859D0EE9DA - old
+[
+	uuid(F374B0C9-444F-4A27-8D6C-DFC69B241C60),
+	version(1.0),
+	helpstring("GMPCEnquiry 1.0 Type Library")
+]
+library GMPCENQUIRYLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+//5EC3DED9-9A69-456E-8BE6-7036DF56499C - new
+//60F13D6E-2D02-44A6-A900-04F36159C6BB - old
+	[
+		uuid(5EC3DED9-9A69-456E-8BE6-7036DF56499C),
+		helpstring("GMPCEnquiryService_L2 Class")
+	]
+	coclass GMPCEnquiryService_L2
+	{
+		[default] interface IGMPCEnquiryService;
+	};
+};

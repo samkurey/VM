@@ -1,0 +1,26 @@
+HKCR
+{
+	GetProbRec_L1.GetProbRecService_L1.1 = s 'GetProbRecService_L1 Class'
+	{
+		CLSID = s '{DFCFEFBC-6B7B-4EDD-80DF-46ADE7E6DBF2}'
+	}
+	GetProbRec_L1.GetProbRecService_L1 = s 'GetProbRecService_L1 Class'
+	{
+		CLSID = s '{DFCFEFBC-6B7B-4EDD-80DF-46ADE7E6DBF2}'
+		CurVer = s 'GetProbRec_L1.GetProbRecService_L1.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {DFCFEFBC-6B7B-4EDD-80DF-46ADE7E6DBF2} = s 'GetProbRecService_L1 Class'
+		{
+			ProgID = s 'GetProbRec_L1.GetProbRecService_L1.1'
+			VersionIndependentProgID = s 'GetProbRec_L1.GetProbRecService_L1'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{3B44B414-90E0-4792-AF93-61C2BDEE8B0E}'
+		}
+	}
+}

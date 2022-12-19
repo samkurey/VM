@@ -1,0 +1,26 @@
+HKCR
+{
+	SetApplStatL3.SetApplStatL3Service.1 = s 'SetApplStatL3Service Class'
+	{
+		CLSID = s '{5731B854-6B09-4585-B9F7-B5AD20B28833}'
+	}
+	SetApplStatL3.SetApplStatL3Service = s 'SetApplStatL3Service Class'
+	{
+		CLSID = s '{5731B854-6B09-4585-B9F7-B5AD20B28833}'
+		CurVer = s 'SetApplStatL3.SetApplStatL3Service.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {5731B854-6B09-4585-B9F7-B5AD20B28833} = s 'SetApplStatL3Service Class'
+		{
+			ProgID = s 'SetApplStatL3.SetApplStatL3Service.1'
+			VersionIndependentProgID = s 'SetApplStatL3.SetApplStatL3Service'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{67C932A0-3398-469f-95B3-4BBC80B81740}'
+		}
+	}
+}

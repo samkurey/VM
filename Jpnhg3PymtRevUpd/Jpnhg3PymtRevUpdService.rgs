@@ -1,0 +1,26 @@
+HKCR
+{
+	Jpnhg3PymtRevUpd.Jpnhg3PymtRevUpdService.1 = s 'Jpnhg3PymtRevUpdService Class'
+	{
+		CLSID = s '{5F777A0A-F539-468F-8654-2173EEDCEFC7}'
+	}
+	Jpnhg3PymtRevUpd.Jpnhg3PymtRevUpdService = s 'Jpnhg3PymtRevUpdService Class'
+	{
+		CLSID = s '{5F777A0A-F539-468F-8654-2173EEDCEFC7}'
+		CurVer = s 'Jpnhg3PymtRevUpd.Jpnhg3PymtRevUpdService.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {5F777A0A-F539-468F-8654-2173EEDCEFC7} = s 'Jpnhg3PymtRevUpdService Class'
+		{
+			ProgID = s 'Jpnhg3PymtRevUpd.Jpnhg3PymtRevUpdService.1'
+			VersionIndependentProgID = s 'Jpnhg3PymtRevUpd.Jpnhg3PymtRevUpdService'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{6A545162-D86C-445D-9416-DFB910C44B71}'
+		}
+	}
+}

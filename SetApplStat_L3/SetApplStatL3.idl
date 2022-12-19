@@ -1,0 +1,39 @@
+// SetApplStatL3.idl : IDL source for SetApplStatL3.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (SetApplStatL3.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(BFDCE839-36EB-4cdf-A67C-ADE7E77B457D),
+		dual,
+		helpstring("ISetApplStatL3Service Interface"),
+		pointer_default(unique)
+	]
+	interface ISetApplStatL3Service : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	uuid(67C932A0-3398-469f-95B3-4BBC80B81740),
+	version(1.0),
+	helpstring("SetApplStatL3 1.0 Type Library")
+]
+library SETAPPLSTATL3Lib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(5731B854-6B09-4585-B9F7-B5AD20B28833),
+		helpstring("SetApplStatL3Service Class")
+	]
+	coclass SetApplStatL3Service
+	{
+		[default] interface ISetApplStatL3Service;
+	};
+};

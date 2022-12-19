@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (85554e55).
+//
+// AfisUpdate.tlh
+//
+// C++ source equivalent of Win32 type library AfisUpdate.tlb
+// compiler-generated file created 10/29/18 at 11:36:10 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ AfisUpdateService;
+struct __declspec(uuid("07210890-d333-4639-a7db-1653e30b33b2"))
+/* dual interface */ IAfisUpdateService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IAfisUpdateService, __uuidof(IAfisUpdateService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("fee4aad2-73b4-46b8-868b-e34d4027efc1"))
+AfisUpdateService;
+    // [ default ] interface IAfisUpdateService
+
+struct __declspec(uuid("07210890-d333-4639-a7db-1653e30b33b2"))
+IAfisUpdateService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "AfisUpdate.tli"
+
+#pragma pack(pop)

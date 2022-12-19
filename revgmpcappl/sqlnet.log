@@ -1,0 +1,57 @@
+
+
+***********************************************************************
+Fatal NI connect error 12545, connecting to:
+ (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=DEVGSCBSVR001)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=GSCB)(CID=(PROGRAM=D:\Oracle\product\10.1.0\Client_1\bin\proc.exe)(HOST=IJPNBACKEND)(USER=Administrator))))
+
+  VERSION INFORMATION:
+	TNS for 32-bit Windows: Version 10.1.0.2.0 - Production
+	Windows NT TCP/IP NT Protocol Adapter for 32-bit Windows: Version 10.1.0.2.0 - Production
+  Time: 20-MAY-2005 10:09:30
+  Tracing not turned on.
+  Tns error struct:
+    ns main err code: 12545
+    TNS-12545: Connect failed because target host or object does not exist
+    ns secondary err code: 12560
+    nt main err code: 515
+    TNS-00515: Connect failed because target host or object does not exist
+    nt secondary err code: 1004
+    nt OS err code: 0
+
+
+***********************************************************************
+Fatal NI connect error 12545, connecting to:
+ (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=DEVGSCBSVR001)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=GSCB)(CID=(PROGRAM=D:\Oracle\product\10.1.0\Client_1\bin\proc.exe)(HOST=IJPNBACKEND)(USER=Administrator))))
+
+  VERSION INFORMATION:
+	TNS for 32-bit Windows: Version 10.1.0.2.0 - Production
+	Windows NT TCP/IP NT Protocol Adapter for 32-bit Windows: Version 10.1.0.2.0 - Production
+  Time: 20-MAY-2005 10:11:16
+  Tracing not turned on.
+  Tns error struct:
+    ns main err code: 12545
+    TNS-12545: Connect failed because target host or object does not exist
+    ns secondary err code: 12560
+    nt main err code: 515
+    TNS-00515: Connect failed because target host or object does not exist
+    nt secondary err code: 1004
+    nt OS err code: 0
+
+
+***********************************************************************
+Fatal NI connect error 12543, connecting to:
+ (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=10.23.191.50)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=GSCB)(CID=(PROGRAM=D:\oracle\product\10.2.0\db_1\bin\proc.exe)(HOST=OPTIMABCM)(USER=Administrator))))
+
+  VERSION INFORMATION:
+	TNS for 32-bit Windows: Version 10.2.0.5.0 - Production
+	Windows NT TCP/IP NT Protocol Adapter for 32-bit Windows: Version 10.2.0.5.0 - Production
+  Time: 23-AUG-2022 18:07:02
+  Tracing not turned on.
+  Tns error struct:
+    ns main err code: 12543
+    TNS-12543: TNS:destination host unreachable
+    ns secondary err code: 12560
+    nt main err code: 513
+    TNS-00513: Destination host unreachable
+    nt secondary err code: 51
+    nt OS err code: 0

@@ -1,0 +1,23 @@
+HKCR
+{
+	CreateAppnt1.CreateAppnt1Service.1 = s 'CreateAppnt1Service Class'
+	{
+		CLSID = s '{687662D8-5C0C-413D-8D1C-2BB526109FB1}'
+	}
+	CreateAppnt1.CreateAppnt1Service = s 'CreateAppnt1Service Class'
+	{
+		CLSID = s '{687662D8-5C0C-413D-8D1C-2BB526109FB1}'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {687662D8-5C0C-413D-8D1C-2BB526109FB1} = s 'CreateAppnt1Service Class'
+		{
+			ProgID = s 'CreateAppnt1.CreateAppnt1Service.1'
+			VersionIndependentProgID = s 'CreateAppnt1.CreateAppnt1Service'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'both'
+			}
+		}
+	}
+}

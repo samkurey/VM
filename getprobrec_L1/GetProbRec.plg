@@ -1,0 +1,46 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: GetProbRec - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Debug/GetProbRec.res" /d "_DEBUG" "D:\MTSComponents_context\getprobrec\GetProbRec.rc"" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP758E.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mtx.lib mtxguid.lib delayimp.lib oraSQL10.LIB /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/GetProbRec.pdb" /debug /machine:I386 /def:".\GetProbRec.def" /out:"D:/IJPN/BIN/GetProbRec.dll" /implib:"C:/IJPN/BIN/GetProbRec.lib" /pdbtype:sept /delayload:mtxex.dll 
+.\Debug\GetProbRec.obj
+.\Debug\GetProbRec_DB.obj
+.\Debug\GetProbRecService.obj
+.\Debug\gscbcommon.obj
+.\Debug\GSCBDB.obj
+.\Debug\gscblog.obj
+.\Debug\gscbutil.obj
+.\Debug\StdAfx.obj
+.\Debug\userlog.obj
+.\Debug\userlog_r.obj
+.\Debug\GetProbRec.res
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP758E.tmp"
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP758F.bat" with contents
+[
+@echo off
+regsvr32 /s /c "\IJPN\BIN\GetProbRec.dll"
+echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
+echo Execute mtxrereg.exe before using MTS components in MTS
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\RSP758F.bat"
+Compiling resources...
+Linking...
+<h3>Output Window</h3>
+Performing registration
+Execute mtxrereg.exe before using MTS components in MTS
+
+
+
+<h3>Results</h3>
+GetProbRec.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

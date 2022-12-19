@@ -1,0 +1,653 @@
+/* $Header$ */
+/***************************************************************/
+/* Filename		:jpnhg3PymtEnq_DB.pc		                   */
+/* Author		:Srinivasa Reddy   					           */
+/* Description	:This file has all database functions          */
+/*				 required for the service JPNHG3_PYMT_ENQ      */
+/***************************************************************/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sqlca.h>
+
+#define LOG_DEFINED
+//#include "field_id.h"
+#include "gscbdef.h"
+#include "gscbio.h"
+#include "gscblog.h"
+#include "gscblookupdef.h"
+
+#include "kPPdef.h"
+#include "KPPStruct.h"
+#include "kPPproto.h"
+#include "userlog.h"
+
+#include "jpnhg3_pymt_enq_io.h"
+#include "jpnhg3_pymt_enq.h"
+
+
+APPL_EXCEP_LOG_T excep_log = { {""},{""},{""},{""},{""},{""}, 0,{""}} ;
+PROG_ACCESS_LOG_T prog_log = { {""},{""},{""},{""},{""},{""},{""},{""} };
+TXN_LOG_T tran_log;
+READ_REG_GENERIC_T gen_reg;
+
+//extern userlog(const char *, ...);
+
+
+char sqlmsg[SQL_MSG_SIZE] = {"\0"};
+
+
+
+int Jpnhg3_Pymt_Enq(JPNHG3_PYMT_ENQ_REQ_T *pReq, 
+					JPNHG3_PYMT_ENQ_RESP_T **pResp, long *pRespSize,void * ctx)
+{
+	
+	JPNHG3_PYMT_ENQ_REQ_T *req;
+	JPNHG3_PYMT_ENQ_RESP_T *resp;//,*new_resp,*orig_resp;
+		
+	char curr_date_time[DATE_TIME_SIZE];
+	int ret_val = 0;
+	char program_id[PROG_ID_SIZE];
+	long resp_len = 0;
+	
+	memset(&prog_log, 0, PROG_LOG_SIZE);
+	memset(&excep_log, 0, APPL_EXCEP_LOG_SIZE);
+		
+	/* Initialize the variables used for logging	*/
+	/* Get current date-time for logging			*/
+	strcpy(curr_date_time, get_date_time());
+
+	/* Assign request buffer	*/
+	req = (JPNHG3_PYMT_ENQ_REQ_T *) pReq;
+
+
+	/* Program access log variable */
+	itoa(JPNHG3_PYMT_ENQ_ID, program_id, 10);
+	strcpy(prog_log.program_id, program_id);
+	strcpy(prog_log.user_id, req->header.user_id);
+	strcpy(prog_log.workstation_id, req->header.workstation_id);
+	strcpy(prog_log.branch_code, req->header.branch_code);
+	strcpy(prog_log.access_start_time, curr_date_time);
+	strcpy(prog_log.remarks, "");
+	strcpy(prog_log.application_id, req->header.application_id);
+	
+	/* Application exception log variable */
+	strcpy(excep_log.program_id, program_id);
+	strcpy(excep_log.user_id, req->header.user_id); 	
+	strcpy(excep_log.workstation_id, req->header.workstation_id);
+	strcpy(excep_log.branch_code, req->header.branch_code);
+	strcpy(excep_log.error_date, curr_date_time);
+	strcpy(excep_log.error_msg, "");
+	strcpy(excep_log.application_id, req->header.application_id); 	
+	excep_log.severity = '\0';	
+	excep_log.termination_flag = 'Y';	
+
+	strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ: Initiated");
+	
+	resp_len = sizeof(JPNHG3_PYMT_ENQ_RESP_T);
+
+	/* Allocate response buffer	*/
+	if(NULL == (resp = (JPNHG3_PYMT_ENQ_RESP_T *) malloc(resp_len)))
+	{
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ_RESP : Memory allocation for response buffer failed");
+		sprintf(excep_log.error_msg,"JPNHG3_PYMT_ENQ_RESP : ");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		//tpreturn(TPFAIL, RESP_BUF_ERR, (char *) NULL, 0, 0);
+		return RESP_BUF_ERR;
+	}
+
+	memset(resp, '\0', resp_len);
+
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ : req->header.application_id:%s:",req->header.application_id);
+			userlog("JPNHG3_PYMT_ENQ : req->header.branch_code:%s:", req->header.branch_code);
+			userlog("JPNHG3_PYMT_ENQ : req->header.service_id:%d:", req->header.service_id);
+			userlog("JPNHG3_PYMT_ENQ : req->header.user_id:%s:", req->header.user_id);
+			userlog("JPNHG3_PYMT_ENQ : req->header.workstation_id:%s:", req->header.workstation_id);
+			//userlog("JPNHG3_PYMT_ENQ : req->kptno_req_cnt:%d:",req->kptno_req_cnt);			
+	#endif
+
+	resp->header = req->header;
+			
+	if((ret_val = check_header(req->header,ctx)) != SUCCESS)
+	{
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ : check header failed");
+	#endif
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ : check header failed");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_len, 0);
+			*pRespSize = resp_len;
+				//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+				return ret_val;
+	}
+	#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ :check header Successful");
+	#endif
+
+	
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_ENQ :");		
+	#endif
+	
+	
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_ENQ :Before the enq_processing function");
+	#endif
+		
+		/* enquiry processing function */		
+		ret_val = enq_processing(req,resp,ctx);
+		if(ret_val != SUCCESS)
+		{
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ :enq_processing function failed");
+		#endif
+		strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ : enq_processing function failed");
+		strcpy(excep_log.error_msg,"JPNHG3_PYMT_ENQ : enq_processing function failed");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_len, 0);
+		*pRespSize = resp_len;
+		//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+		return ret_val;
+		}
+			
+	#ifdef DEBUG
+		userlog(" ");
+		userlog("Response buffer values ");
+		userlog("JPNHG3_PYMT_ENQ :  resp->applid : %s",resp->applid);
+		userlog("JPNHG3_PYMT_ENQ :  resp->oldapplid : %s",resp->oldapplid);
+		userlog("JPNHG3_PYMT_ENQ :  resp->collcenter : %s",resp->collcenter);
+		userlog("JPNHG3_PYMT_ENQ :  resp->origamt : %.2f",resp->origamt);
+		userlog("JPNHG3_PYMT_ENQ :  resp->agencyrevncode : %d",resp->agencyrevncode);
+		userlog("JPNHG3_PYMT_ENQ :  resp->name : %s",resp->name);
+		userlog("JPNHG3_PYMT_ENQ :  resp->address1 : %s",resp->address1);
+		userlog("JPNHG3_PYMT_ENQ :  resp->address2 : %s",resp->address2);
+		userlog("JPNHG3_PYMT_ENQ :  resp->address3 : %s",resp->address3);
+		userlog("JPNHG3_PYMT_ENQ :  resp->postcode : %s",resp->postcode);
+		userlog("JPNHG3_PYMT_ENQ :  resp->statecode : %s",resp->statecode);
+		userlog("JPNHG3_PYMT_ENQ :  resp->citycode : %d",resp->citycode);
+	#endif
+
+	#ifdef DEBUG
+		userlog(" ");
+		userlog("JPNHG3_PYMT_ENQ :Service Completed");
+		userlog(" ");
+	#endif
+	
+		*pRespSize = resp_len;	
+		*pResp = resp;
+		 return GMPC_GOOD;
+}
+
+
+/*************************************************************************/
+/* Function Name:enq_processing								             */
+/* Description  :Updates the address info to the tables based on applid  */	
+/* Input        :ADDRESS_INFO_T structure					             */   
+/* Return Values:SUCCESS, SELECT_ERROR or UPDATE_ERROR       	         */
+/*************************************************************************/
+int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *req, JPNHG3_PYMT_ENQ_RESP_T *resp, void * ctx)
+{
+	struct sqlca sqlca = {0}; // added on 13/03/06
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	varchar applid[APP_ID_SIZE] = {0};
+	varchar kptno[KPT_SIZE] = {0};
+	float   feeamt=0;
+	//varchar arcode[AG_REV_CODE_SIZE] = {0};
+	int     arcode=0;
+	varchar ccenter[BRANCH_CODE_SIZE] = {0};
+	varchar name[80+1] = {0};
+	varchar address1[ADDRESS1_SIZE] = {0};
+	varchar address2[ADDRESS1_SIZE] = {0};
+	varchar address3[ADDRESS1_SIZE] = {0};
+	varchar postcode[POSTCODE_SIZE] = {0};
+	varchar statecode[STATECODE_SIZE] = {0};
+	int  citycode;	
+	char genkpt = 0;
+	
+	//samsuri todo: add data for new table USK_COMPOUND_FEE 20 sept 2022 - start
+	varchar uskApplid[APP_ID_SIZE] = {0}; 
+	varchar uskidType[ID_TYPE_SIZE] = {0};  //3
+	varchar uskidNo[ID_NUMBER2_SIZE] = {0};  //13
+	varchar uskgmpcName [101] = {0}; 
+	varchar uskfeeType[FEE_TYPE_SIZE] = {0};  //4
+	varchar usklostReasonCode[3] = {0}; 
+	int uskcardLostCount=0;
+	float uskOrigAmt=0;
+	float uskReduction=0;
+	float uskPayAmt=0;
+	int uskagencyRevCode=0;
+	varchar uskRemark[501] = {0}; 
+	varchar uskUserID[USER_ID_SIZE] = {0};  //9
+	varchar uskWsId[4] = {0}; 
+	varchar uskDateTime[DATE_TIME_SIZE + 4] = {0}; 
+	float uskpanelReduction=0;
+	float uskpanelPayment=0;
+	varchar uskpanelRemark[501] = {0}; 
+	varchar uskpanelUserId[USER_ID_SIZE] = {0}; 
+	varchar uskpanelWsId[4] = {0}; 
+	varchar uskpanelDateTime[DATE_TIME_SIZE + 4] = {0}; 
+	varchar uskpaymReceipt[RECEIPT_SIZE] = {0}; 
+	varchar uskcollBranch[7] = {0}; 
+	varchar uskpaymDateTime[DATE_TIME_SIZE + 4] = {0}; 
+
+	int  prob_no= 0;
+	varchar id_type[ID_TYPE_SIZE] = {0}; 
+	varchar id_no[ID_SIZE] = {0}; 
+	varchar prob_date[DATE_TIME_SIZE + 4] = {0}; 
+	varchar reason_code[REASON_CODE_SIZE] = {0}; 
+	int  reason_srno = 0;
+	char prob_stat = 0;
+	varchar prob_remarks[PROB_REMARK_SIZE] = {0}; 
+	varchar prob_solve_date[DATE_TIME_SIZE + 4] = {0}; 
+	varchar user_id[USER_ID_SIZE] = {0}; 
+	varchar workstation_id[WS_ID_SIZE] = {0}; 
+	varchar action_date[DATE_TIME_SIZE + 4] = {0}; 
+	varchar action_remarks[PROB_REMARK_SIZE] = {0}; 
+	varchar action_user_id[USER_ID_SIZE] = {0}; 
+	varchar branch_code[BRANCH_CODE_SIZE] = {0}; 
+	varchar txn_code[TRANSACTION_CODE_SIZE] = {0}; 
+	varchar legacy_type[4] = {0}; 	
+	char gscbupdflag = 0;	
+	char enqFlag = 0;
+	//char genkpt;
+	char bskrecd = 0;	
+	varchar gUser1[9] = {0}; 
+	varchar gUser1TimeStamp[DATE_TIME_SIZE + 4] = {0}; 
+	varchar gUser2[9] = {0}; 	
+	varchar gUser2TimeStamp[DATE_TIME_SIZE + 4] = {0}; 
+
+	//samsuri todo: add data for new table USK_COMPOUND_FEE 20 sept 2022 - finish
+
+	int   ret_code=0;
+
+	sql_context pcCtx; 
+	EXEC SQL END DECLARE SECTION;
+
+
+	pcCtx = ctx; 
+	EXEC SQL CONTEXT USE :pcCtx;
+
+
+	// copy the kptno from req buffer to local variable here
+	strcpy((char*)kptno.arr,req->kptno);
+	setlen(kptno);
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : req->kptno: %s",req->kptno);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : kptno: %s",kptno.arr);
+	#endif
+
+
+	applid.arr[0] = '\0';
+	EXEC SQL SELECT MAX(APPLID) INTO :applid FROM APPLICATION 
+		WHERE KPTNO = :kptno 
+			AND APPLSTAT IN ('X','Q');
+
+	applid.arr[applid.len] = '\0';	
+
+	sqlmsg[0] = '\0';
+	strcpy(sqlmsg, SQLMSG);
+	if(sqlca.sqlcode != 0)
+	{
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select max(applid) from APPLICATION");
+		#endif
+		strcpy(prog_log.remarks,"enq_processing() failed while select max(applid) from APPLICATION");
+		sprintf(excep_log.error_msg,"enq_processing() failed while select max(applid) from APPLICATION:%s ",sqlmsg);
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+
+		return SELECT_ERROR;
+	}
+
+	#ifdef DEBUG
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : max applid after select: %s",applid.arr);		
+	#endif
+
+
+	if(applid.arr[0] == '\0')
+	{
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ (enq_processing) : No record found for HG3 payment");		
+		#endif
+
+		ret_code = 70001;
+		return ret_code;  // no record found for HG3 payment	
+
+	}
+	else
+	{
+		// EXEC SQL SELECT GENKPT INTO :genkpt FROM PROBL_RECORD
+		// 	WHERE APPLID = :applid
+		// 		//AND PROBLREASONCODE = 'Q0001'; //samsuri remark this
+		// 		AND PROBLREASONCODE = 'E0001'; //samsuri todo: change to E0001
+
+		EXEC SQL SELECT PROBLNO,IDTYPE,IDNO,TO_CHAR(PROBLDATE,'DDMMYYYY HH24MISS'),PROBLREASONCODE,PROBLSERNO,
+		PROBLSTAT,PROBLREMARKS,
+		TO_CHAR(PROBLSOLVEDATE,'DDMMYYYY HH24MISS'),USERID,WSID,TO_CHAR(ACTDATETIME,'DDMMYYYY HH24MISS'),ACTREMARKS,
+		ACTUSERID,BRANCHCODE,TXNCODE,LEGACYTYPE,
+		GSCBUPDFLAG,ENQFLAG,GENKPT,BSKRECD,GUSER1,TO_CHAR(GUSER1TIMESTAMP,'DDMMYYYY HH24MISS'),GUSER2,
+		TO_CHAR(GUSER2TIMESTAMP,'DDMMYYYY HH24MISS') 
+		INTO :prob_no,:id_type,:id_no,:prob_date,:reason_code,:reason_srno,:prob_stat,
+		:prob_remarks,:prob_solve_date,:user_id,:workstation_id,:action_date,
+		:action_remarks,:action_user_id,:branch_code,:txn_code,:legacy_type,
+		:gscbupdflag,:enqFlag,:genkpt,:bskrecd,:gUser1,:gUser1TimeStamp,:gUser2,:gUser2TimeStamp
+		FROM PROBL_RECORD
+			WHERE APPLID = :applid
+				AND PROBLREASONCODE = 'E0001';
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select genkpt from PROBL_RECORD");
+			#endif
+			strcpy(prog_log.remarks,"enq_processing() failed while select genkpt from PROBL_RECORD");
+			sprintf(excep_log.error_msg,"enq_processing() failed while select genkpt from PROBL_RECORD:%s ",sqlmsg);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error(ctx);
+
+			return SELECT_ERROR;
+		}
+
+		#ifdef DEBUG
+			userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from PROBL_RECORD genkpt: %c",genkpt);
+		#endif
+
+		//ADDED by samsuri on 27 oct 2022		
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : prob_remarks: %s",prob_remarks.arr);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : user_id: %s",user_id.arr);
+
+		resp->prob_no = prob_no;
+		strcpy(resp->id_type,(char*)id_type.arr);
+		strcpy(resp->id_no,(char*)id_no.arr);
+		strcpy(resp->prob_date,(char*)prob_date.arr);
+		strcpy(resp->reason_code,(char*)reason_code.arr);
+		resp->reason_srno = reason_srno;
+		resp->prob_stat =prob_stat;
+		strcpy(resp->prob_remarks,(char*)prob_remarks.arr);
+		strcpy(resp->prob_solve_date,(char*)prob_solve_date.arr);
+		strcpy(resp->user_id,(char*)user_id.arr);
+		strcpy(resp->workstation_id,(char*)workstation_id.arr);
+		strcpy(resp->action_date,(char*)action_date.arr);
+		strcpy(resp->action_remarks,(char*)action_remarks.arr);
+		strcpy(resp->action_user_id,(char*)action_user_id.arr);
+		strcpy(resp->branch_code,(char*)branch_code.arr);
+		strcpy(resp->txn_code,(char*)txn_code.arr);
+		strcpy(resp->legacy_type,(char*)legacy_type.arr);
+		resp->gscbupdflag = gscbupdflag;
+		resp->enqFlag = enqFlag;
+		resp->genkpt = genkpt;
+		resp->bskrecd = bskrecd;
+		strcpy(resp->gUser1,(char*)gUser1.arr);
+		strcpy(resp->gUser1TimeStamp,(char*)gUser1TimeStamp.arr);
+		strcpy(resp->gUser2,(char*)gUser2.arr);
+		strcpy(resp->gUser2TimeStamp,(char*)gUser2TimeStamp.arr);
+
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->id_type: %s",resp->id_type);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->enqFlag: %c",resp->enqFlag);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->genkpt: %c",resp->genkpt);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->gscbupdflag: %c",resp->gscbupdflag);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->bskrecd: %c",resp->bskrecd);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->gUser1: %s",resp->gUser1);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->gUser1TimeStamp: %s",resp->gUser1TimeStamp);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->gUser2: %s",resp->gUser2);
+		userlog("JPNHG3_PYMT_ENQ (enq_processing) : resp->gUser2TimeStamp: %s",resp->gUser2TimeStamp);
+		
+
+		if(genkpt == '0')
+		{
+			// no record found
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : No record found for genkpt == 0 condition");		
+			#endif
+
+			ret_code = 70001;
+			return ret_code;  
+
+		}
+		else if(genkpt == 'P')
+		{ 
+			// applicant has paid already
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : applicant has paid already for genkpt == P condition");		
+			#endif
+			ret_code = 70001;
+			return ret_code;
+
+		}
+		else if(genkpt == 'U')
+		{
+			// unpaid applicant
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : unpaid applicant for genkpt == U condition");		
+			#endif
+			arcode = 0; feeamt = 0;
+			EXEC SQL SELECT FEEAMT,AGENCYREVNCODE INTO :feeamt,:arcode
+				FROM OUTSTAND_TXN_FEE
+					WHERE APPLID = :applid
+					AND FEETYPE = 'CF'
+					AND TXNSERNO = (
+						SELECT TXNSERNO FROM APPL_TXN 
+						WHERE APPLID = :applid
+						AND TXNCODE = '403');
+
+			//arcode.arr[arcode.len] = '\0';
+
+			sqlmsg[0] = '\0';
+			strcpy(sqlmsg, SQLMSG);
+			if(sqlca.sqlcode != 0)
+			{
+				#ifdef DEBUG
+					userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select feeamt from OUTSTAND_TXN_FEE");
+				#endif
+				strcpy(prog_log.remarks,"enq_processing() failed while select feeamt from OUTSTAND_TXN_FEE");
+				sprintf(excep_log.error_msg,"enq_processing() failed while select feeamt from OUTSTAND_TXN_FEE:%s ",sqlmsg);
+				excep_log.termination_flag = 'Y';
+				excep_log.severity = FATAL;
+				log_error(ctx);
+
+				return SELECT_ERROR;
+			}
+
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from OUTSTAND_TXN_FEE feeamt: %.2f",feeamt);		
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from OUTSTAND_TXN_FEE agencyrevncode: %d",arcode);		
+			#endif
+
+			if(arcode > 0)
+			{
+
+				// copy these values into response buffer
+				strcpy(resp->applid,req->applid);
+				strcpy(resp->oldapplid,(char*)applid.arr);
+				resp->origamt = feeamt;
+				//strcpy(resp->agencyrevncode,(char*)arcode.arr);
+				resp->agencyrevncode = arcode;
+
+				ccenter.arr[0] = '\0';
+				EXEC SQL SELECT COLLCENTER INTO :ccenter FROM APPLICATION
+					WHERE APPLID = :applid;
+
+				ccenter.arr[ccenter.len] = '\0';
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select ccenter from APPLICATION");
+					#endif
+					strcpy(prog_log.remarks,"enq_processing() failed while select ccenter from APPLICATION");
+					sprintf(excep_log.error_msg,"enq_processing() failed while select ccenter from APPLICATION:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+
+				#ifdef DEBUG				
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPLICATION collcenter: %s",ccenter.arr);		
+				#endif
+
+				strcpy(resp->collcenter,(char*)ccenter.arr);
+
+				citycode = 0; name.arr[0] = '\0'; address1.arr[0] = '\0';
+				EXEC SQL SELECT GMPCSHORTNAME1||' '||GMPCSHORTNAME2||' '||GMPCSHORTNAME3,
+					ADDRESS1, ADDRESS2, ADDRESS3,POSTCODE,STATECODE,CITYCODE INTO
+					:name, :address1, :address2, :address3, :postcode, :statecode, :citycode
+						FROM APPNT_JPN_INFO
+						WHERE APPLID = :applid;
+
+				name.arr[name.len] = '\0';
+				address1.arr[address1.len] = '\0';
+				address2.arr[address2.len] = '\0';
+				address3.arr[address3.len] = '\0';
+				postcode.arr[postcode.len] = '\0';
+				statecode.arr[statecode.len] = '\0';
+
+				sqlmsg[0] = '\0';
+				strcpy(sqlmsg, SQLMSG);
+				if(sqlca.sqlcode != 0)
+				{
+					#ifdef DEBUG
+						userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select name from APPNT_JPN_INFO");
+					#endif
+					strcpy(prog_log.remarks,"enq_processing() failed while select name from APPNT_JPN_INFO");
+					sprintf(excep_log.error_msg,"enq_processing() failed while select name from APPNT_JPN_INFO:%s ",sqlmsg);
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+					log_error(ctx);
+
+					return SELECT_ERROR;
+				}
+				
+				#ifdef DEBUG				
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO name: %s",name.arr);
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO address1: %s",address1.arr);	
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO address2: %s",address2.arr);
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO address3: %s",address3.arr);
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO postcode: %s",postcode.arr);
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO statecode: %s",statecode.arr);
+					userlog("JPNHG3_PYMT_ENQ (enq_processing) : after select from APPNT_JPN_INFO citycode: %d",citycode);
+				#endif
+
+				if(name.arr[0] != '\0')
+				{
+
+					// copy these values into response buffer
+					strcpy(resp->name,(char*)name.arr);
+					strcpy(resp->address1,(char*)address1.arr);
+					strcpy(resp->address2,(char*)address2.arr);
+					strcpy(resp->address3,(char*)address3.arr);
+					strcpy(resp->postcode,(char*)postcode.arr);
+					strcpy(resp->statecode,(char*)statecode.arr);
+					resp->citycode = citycode;
+
+
+					//samsuri todo: add sql query foe table USK. and then copy to resp->					
+					EXEC SQL SELECT APPLID, IDTYPE, IDNO, GMPCNAME, FEETYPE, LOSTRSNCODE, CARDLOSTCNT, ORIAMT,USKREDUCTION,USKPAYAMT,AGENCYREVNCODE,
+					USKREMARK, USKUSERID, USKWSID, TO_CHAR(USKDATETIME,'DDMMYYYY HH24MISS'), PANELREDUCTION, PANELPAYAMT, PANELREMARK, PANELUSERID, PANELWSID,
+					TO_CHAR(PANELDATETIME,'DDMMYYYY HH24MISS'), PAYMRECEIPT,COLLBRANCH,TO_CHAR(PAYMDATETIME,'DDMMYYYY HH24MISS') INTO
+					:uskApplid, :uskidType, :uskidNo, :uskgmpcName, :uskfeeType, :usklostReasonCode, :uskcardLostCount, :uskOrigAmt,
+					:uskReduction, :uskPayAmt, :uskagencyRevCode, :uskRemark, :uskUserID, :uskWsId, :uskDateTime,
+					:uskpanelReduction, :uskpanelPayment, :uskpanelRemark, :uskpanelUserId, :uskpanelWsId, 
+					:uskpanelDateTime, :uskpaymReceipt, :uskcollBranch, :uskpaymDateTime
+					FROM USK_COMPOUND_FEE
+					WHERE APPLID = :applid;
+
+					sqlmsg[0] = '\0';
+					strcpy(sqlmsg, SQLMSG);
+					if(sqlca.sqlcode != 0)
+					{
+						userlog("JPNHG3_PYMT_ENQ  : enq_processing() failed while select from USK_COMPOUND_FEE");
+					}
+					else
+					{
+						userlog("JPNHG3_PYMT_ENQ (enq_processing) : uskApplid: %s",uskApplid.arr);
+						userlog("JPNHG3_PYMT_ENQ (enq_processing) : uskgmpcName: %s",uskgmpcName.arr);
+						userlog("JPNHG3_PYMT_ENQ (enq_processing) : uskPayAmt: %f",uskPayAmt);
+						userlog("JPNHG3_PYMT_ENQ (enq_processing) : uskpaymDateTime: %s",uskpaymDateTime.arr);
+
+						if(uskApplid.arr[0] != '\0')
+						{
+							strcpy(resp->uskApplid,(char*)uskApplid.arr);
+							strcpy(resp->idType,(char*)uskidType.arr);
+							strcpy(resp->idNo,(char*)uskidNo.arr);
+							strcpy(resp->gmpcName,(char*)uskgmpcName.arr);
+							strcpy(resp->feeType,(char*)uskfeeType.arr);
+							strcpy(resp->lostReasonCode,(char*)usklostReasonCode.arr);
+							resp->cardLostCount = uskcardLostCount;
+							resp->uskOrigAmt = uskOrigAmt;
+							resp->uskReduction = uskReduction;
+							resp->uskPayAmt = uskPayAmt;
+							resp->uskagencyRevCode = uskagencyRevCode;
+							strcpy(resp->uskRemark,(char*)uskRemark.arr);
+							strcpy(resp->uskUserID,(char*)uskUserID.arr);
+							strcpy(resp->uskWsId,(char*)uskWsId.arr);
+							strcpy(resp->uskDateTime,(char*)uskDateTime.arr);
+							resp->panelReduction = uskpanelReduction;
+							resp->panelPayment = uskpanelPayment;
+							strcpy(resp->panelRemark,(char*)uskpanelRemark.arr);
+							strcpy(resp->panelUserId,(char*)uskpanelUserId.arr);
+							strcpy(resp->panelWsId,(char*)uskpanelWsId.arr);
+							strcpy(resp->panelDateTime,(char*)uskpanelDateTime.arr);
+							strcpy(resp->paymReceipt,(char*)uskpaymReceipt.arr);
+							strcpy(resp->collBranch,(char*)uskcollBranch.arr);
+							strcpy(resp->paymDateTime,(char*)uskpaymDateTime.arr);
+						}
+						
+					}
+					
+
+					ret_code = 0;
+					return ret_code;
+				}
+				else
+				{
+					ret_code = 70001;
+					return ret_code;
+				}
+			}
+			else
+			{
+				ret_code = 70001;
+				return ret_code;
+			}
+
+			ret_code = 0;
+			return ret_code;
+		}
+		else
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ (enq_processing) : In the else part for genkpt not P, not U  condition : %c",genkpt);		
+			#endif
+			ret_code = 70001;
+			return ret_code;
+		}
+
+	}
+	
+
+	return SUCCESS;
+}

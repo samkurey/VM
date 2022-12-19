@@ -1,0 +1,45 @@
+// CreateAppnt1.idl : IDL source for CreateAppnt1.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (CreateAppnt1.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";	
+	[
+	//D17CDF01-01AD-42C7-B09A-1EB763A6D93F	
+	//EE512ECE-CFC7-4897-8E5A-97A08373F144	
+		object,
+		uuid(EE512ECE-CFC7-4897-8E5A-97A08373F144),
+		dual,
+		helpstring("ICreateAppntService_L2 Interface"),
+		pointer_default(unique)
+	]
+	interface ICreateAppntService_L2 : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	//BB34EFD9-D6B1-45C5-B0ED-43F35E18E7C2
+	//8EEF6B6D-D04D-42BA-AA68-FDCEAF2AE651
+	uuid(8EEF6B6D-D04D-42BA-AA68-FDCEAF2AE651),
+	version(1.0),
+	helpstring("CreateAppnt1 1.0 Type Library")
+]
+library CREATEAPPNT1Lib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	//687662D8-5C0C-413D-8D1C-2BB526109FB1
+	//E1FEDA5A-5CF2-4E6D-9783-AA5DCD721D31	
+	[
+		uuid(E1FEDA5A-5CF2-4E6D-9783-AA5DCD721D31),
+		helpstring("CreateAppntService_L2 Class")
+	]
+	coclass CreateAppntService_L2
+	{
+		[default] interface ICreateAppntService_L2;
+	};
+};

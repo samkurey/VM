@@ -1,0 +1,26 @@
+HKCR
+{
+	GMPCEnquiry.GMPCEnquiryService_L2.1 = s 'GMPCEnquiryService_L2 Class'
+	{
+		CLSID = s '{5EC3DED9-9A69-456E-8BE6-7036DF56499C}'
+	}
+	GMPCEnquiry.GMPCEnquiryService_L2 = s 'GMPCEnquiryService_L2 Class'
+	{
+		CLSID = s '{5EC3DED9-9A69-456E-8BE6-7036DF56499C}'
+		CurVer = s 'GMPCEnquiry.GMPCEnquiryService_L2.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {5EC3DED9-9A69-456E-8BE6-7036DF56499C} = s 'GMPCEnquiryService_L2 Class'
+		{
+			ProgID = s 'GMPCEnquiry.GMPCEnquiryService_L2.1'
+			VersionIndependentProgID = s 'GMPCEnquiry.GMPCEnquiryService_L2'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{F374B0C9-444F-4A27-8D6C-DFC69B241C60}'
+		}
+	}
+}

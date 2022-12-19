@@ -1,0 +1,26 @@
+HKCR
+{
+	JpnUpdate.JpnUpdateService.1 = s 'JpnUpdateService Class'
+	{
+		CLSID = s '{4E9737B6-3AED-42A2-86CC-C81DC76318F2}'
+	}
+	JpnUpdate.JpnUpdateService = s 'JpnUpdateService Class'
+	{
+		CLSID = s '{4E9737B6-3AED-42A2-86CC-C81DC76318F2}'
+		CurVer = s 'JpnUpdate.JpnUpdateService.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {4E9737B6-3AED-42A2-86CC-C81DC76318F2} = s 'JpnUpdateService Class'
+		{
+			ProgID = s 'JpnUpdate.JpnUpdateService.1'
+			VersionIndependentProgID = s 'JpnUpdate.JpnUpdateService'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{793F603A-4D3C-49F8-91B2-E3A5C4F4DE03}'
+		}
+	}
+}

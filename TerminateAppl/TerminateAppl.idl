@@ -1,0 +1,39 @@
+// TerminateAppl.idl : IDL source for TerminateAppl.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (TerminateAppl.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(8B80608A-F7C7-4684-90F3-B704A99F4CF1),
+		dual,
+		helpstring("ITerminateApplService Interface"),
+		pointer_default(unique)
+	]
+	interface ITerminateApplService : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	uuid(DA20547B-EE95-443B-9966-FF316BD122B3),
+	version(1.0),
+	helpstring("TerminateAppl 1.0 Type Library")
+]
+library TERMINATEAPPLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(EDF3FB53-7E49-4405-8F2B-F14BB1738DB8),
+		helpstring("TerminateApplService Class")
+	]
+	coclass TerminateApplService
+	{
+		[default] interface ITerminateApplService;
+	};
+};

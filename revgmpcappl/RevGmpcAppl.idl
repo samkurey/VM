@@ -1,0 +1,39 @@
+// RevGmpcAppl.idl : IDL source for RevGmpcAppl.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (RevGmpcAppl.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(500F2B9D-0B9D-4BFF-A5A6-9757C6F9B948),
+		dual,
+		helpstring("IRevGmpcApplService Interface"),
+		pointer_default(unique)
+	]
+	interface IRevGmpcApplService : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	uuid(0AF1532A-F8B9-4144-9128-3217147BEBF2),
+	version(1.0),
+	helpstring("RevGmpcAppl 1.0 Type Library")
+]
+library REVGMPCAPPLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(50E16411-6BA0-4052-95F2-5A2C400FAB4D),
+		helpstring("RevGmpcApplService Class")
+	]
+	coclass RevGmpcApplService
+	{
+		[default] interface IRevGmpcApplService;
+	};
+};

@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (a7466f7a).
+//
+// JpnStatusUpd.tlh
+//
+// C++ source equivalent of Win32 type library JpnStatusUpd.tlb
+// compiler-generated file created 02/21/08 at 14:19:58 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ JpnStatusUpdService;
+struct __declspec(uuid("d808410f-96dd-46e4-bd90-9005b9d676f1"))
+/* dual interface */ IJpnStatusUpdService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IJpnStatusUpdService, __uuidof(IJpnStatusUpdService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("8c7ff60a-addb-4c2f-ab3c-40a5879aaa95"))
+JpnStatusUpdService;
+    // [ default ] interface IJpnStatusUpdService
+
+struct __declspec(uuid("d808410f-96dd-46e4-bd90-9005b9d676f1"))
+IJpnStatusUpdService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "JpnStatusUpd.tli"
+
+#pragma pack(pop)

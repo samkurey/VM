@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: li_nrs_update - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP4D69.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "DEBUG" /D "_LIB" /Fp"Debug/li_nrs_update.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\GMPCServices\COMMON_FILES\gscbcommon.c"
+"D:\GMPCServices\COMMON_FILES\gscblog.c"
+"D:\GMPCServices\COMMON_FILES\gscbutil.c"
+"D:\GMPCServices\COMMON_FILES\KPPutil.c"
+"D:\GMPCServices\jpn_interface\li_nrs_update\li_call_dll.c"
+"D:\GMPCServices\jpn_interface\li_nrs_update\li_nrs_update.c"
+"D:\GMPCServices\jpn_interface\li_nrs_update\userlog.c"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP4D69.tmp" 
+Creating command line "link.exe -lib /nologo /out:"D:\GMPCServices\jpn_interface\ijpn_lib\li_nrs_update.lib"  .\Debug\gscbcommon.obj .\Debug\gscblog.obj .\Debug\gscbutil.obj .\Debug\KPPutil.obj .\Debug\li_call_dll.obj .\Debug\li_nrs_update.obj .\Debug\userlog.obj "
+<h3>Output Window</h3>
+Compiling...
+gscbcommon.c
+gscblog.c
+gscbutil.c
+KPPutil.c
+li_call_dll.c
+li_nrs_update.c
+userlog.c
+Creating library...
+
+
+
+<h3>Results</h3>
+li_nrs_update.lib - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

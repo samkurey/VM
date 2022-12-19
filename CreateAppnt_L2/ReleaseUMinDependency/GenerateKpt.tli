@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (50f910a1).
+//
+// d:\mtscomponents_context\createappnt1\releaseumindependency\GenerateKpt.tli
+//
+// Wrapper implementations for Win32 type library GenerateKpt.tlb
+// compiler-generated file created 02/26/14 at 15:37:49 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IGenerateKptService wrapper method implementations
+//
+
+inline HRESULT IGenerateKptService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

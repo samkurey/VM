@@ -1,0 +1,39 @@
+// Jpnhg3PymtRevUpd.idl : IDL source for Jpnhg3PymtRevUpd.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (Jpnhg3PymtRevUpd.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(BE3A4848-46C5-4C60-89D5-59B5BC04D58B),
+		dual,
+		helpstring("IJpnhg3PymtRevUpdService Interface"),
+		pointer_default(unique)
+	]
+	interface IJpnhg3PymtRevUpdService : IDispatch
+	{
+		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
+	};
+
+[
+	uuid(6A545162-D86C-445D-9416-DFB910C44B71),
+	version(1.0),
+	helpstring("Jpnhg3PymtRevUpd 1.0 Type Library")
+]
+library JPNHG3PYMTREVUPDLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(5F777A0A-F539-468F-8654-2173EEDCEFC7),
+		helpstring("Jpnhg3PymtRevUpdService Class")
+	]
+	coclass Jpnhg3PymtRevUpdService
+	{
+		[default] interface IJpnhg3PymtRevUpdService;
+	};
+};

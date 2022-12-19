@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (3b983e52).
+//
+// d:\mtscomponents_context\createappnt1\debug\PdrmUpdate.tlh
+//
+// C++ source equivalent of Win32 type library PdrmUpdate.tlb
+// compiler-generated file created 02/26/14 at 17:24:55 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ PDRMUpdateService;
+struct __declspec(uuid("06d68af8-348e-4649-a16b-3462cb028961"))
+/* dual interface */ IPDRMUpdateService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IPDRMUpdateService, __uuidof(IPDRMUpdateService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("0cb46259-f49c-4ed9-ab0e-24a09ef30a73"))
+PDRMUpdateService;
+    // [ default ] interface IPDRMUpdateService
+
+struct __declspec(uuid("06d68af8-348e-4649-a16b-3462cb028961"))
+IPDRMUpdateService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "d:\mtscomponents_context\createappnt1\debug\PdrmUpdate.tli"
+
+#pragma pack(pop)

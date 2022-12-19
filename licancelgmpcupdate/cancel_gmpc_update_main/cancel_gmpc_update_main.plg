@@ -1,0 +1,35 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: cancel_gmpc_update_main - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSP98D4.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"Debug/" /Fp"Debug/cancel_gmpc_update_main.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\GMPCServices\jpn_interface\licancelgmpcupdate\cancel_gmpc_update_main.c"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\2\RSP98D4.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSP98D5.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib li_cancel_gmpc_update.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/cancel_gmpc_update_main.pdb" /debug /machine:I386 /out:"Debug/cancel_gmpc_update_main.exe" /pdbtype:sept 
+.\Debug\cancel_gmpc_update_main.obj
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\2\RSP98D5.tmp"
+<h3>Output Window</h3>
+Compiling...
+cancel_gmpc_update_main.c
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/cancel_gmpc_update_main.bsc"  .\Debug\cancel_gmpc_update_main.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+cancel_gmpc_update_main.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

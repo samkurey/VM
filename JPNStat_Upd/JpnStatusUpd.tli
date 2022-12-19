@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (a7466f7a).
+//
+// JpnStatusUpd.tli
+//
+// Wrapper implementations for Win32 type library JpnStatusUpd.tlb
+// compiler-generated file created 02/21/08 at 14:19:58 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IJpnStatusUpdService wrapper method implementations
+//
+
+inline HRESULT IJpnStatusUpdService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

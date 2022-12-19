@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (b0e7a4c5).
+//
+// GetProbRec.tli
+//
+// Wrapper implementations for Win32 type library GetProbRec.tlb
+// compiler-generated file created 12/03/10 at 11:53:46 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IGetProbRecService wrapper method implementations
+//
+
+inline HRESULT IGetProbRecService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

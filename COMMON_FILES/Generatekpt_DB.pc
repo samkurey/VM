@@ -1,0 +1,1955 @@
+/* $Header$ */
+
+/*******************************************************/
+/* Filename		:generate_kpt.pc					   */
+/* Author		:Brijesh B Patil   					   */
+/* Description	:This file has all database functions  */
+/*				 required for the service GENERATE_KPT */
+/*******************************************************/
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define LOG_DEFINED
+
+#include "gscbdef.h"
+#include "gscbio.h"
+#include "gscblog.h"
+#include "gscblookupdef.h"
+#include "KPPdef.h"
+#include "KPPstruct.h"
+#include "KPPproto.h"
+#include "li_generate_kpt.h"
+#include "li_jpn_missed_opex_upd.h"
+#include "generate_kpt_io.h"
+#include "generate_kpt.h"
+#include "userlog.h"
+
+//extern userlog(const char *, ...);
+
+EXEC SQL INCLUDE SQLCA;
+char sqlmsg[SQL_MSG_SIZE] = {"\0"};
+
+PROG_ACCESS_LOG_T prog_log;
+APPL_EXCEP_LOG_T excep_log;
+TXN_LOG_T tran_log;
+
+
+READ_REG_T reg;	
+READ_REG_GENERIC_T gen_reg;
+READ_REG_GENERIC_T timeout;
+long litimeout;
+
+int Generate_Kpt(GENERATE_KPT_REQ_T *pReq, 
+			 GENERATE_KPT_RESP_T **pResp, long *pRespSize)
+
+{
+
+	GENERATE_KPT_REQ_T *req, *temp;
+
+	GENERATE_KPT_RESP_T *resp ;
+	LI_GENERATE_KPT_REQ_T send_data = {""};
+	LI_GENERATE_KPT_RESP_T recv_data = {""};
+	
+	LI_JPN_MISSED_OPEX_UPD_REQ_T send_upd_data = {0};
+	LI_UPD_CHANGE_KPTNO_REQ_T	send_kptchg_data = {0};
+	JPN_MISSED_OPEX_UPD_REQ_T *upd_data;
+
+	LI_P_HEADER_T li_pheader = {0};
+	LI_G_HEADER_T li_gheader = {0};
+	LI_PUT_FIN_DATA_T put_fin_data = {0};
+	unsigned char *image_data;
+	int ret_code = 0;
+	int legacy_ret_code = 0;
+	long resp_len = 0;
+	int mesg_id = 0;
+	char curr_date_time[DATE_TIME_SIZE];
+	char program_id[PROG_ID_SIZE];
+	char jpn_code[LEGACY_BRANCH_CODE_SIZE];
+	int lierrno = 0;
+	unsigned char msgid[MSG_ID_SIZE] = "";
+	char err_msg[RESPONSE_MESSAGE_SIZE] = "";
+	int ret = 0;
+	long mem_size = 0;
+	int txn_type = 0;
+	int num = 0;
+
+	#ifdef DEBUG
+			/* print input data to be used for debugging */
+			FILE *logfile;
+			char szFileName[50];
+	#endif
+
+	req = (GENERATE_KPT_REQ_T *)pReq;
+	temp = req;
+
+	/* Print input data for debug */
+
+	#ifdef DEBUG
+		userlog("GENERATE_KPT : REQUEST BUFFER\n");
+		userlog("GENERATE_KPT : req->header.application_id:%s:",req->header.application_id);
+		userlog("GENERATE_KPT : req->header.branch_code:%s:", req->header.branch_code);
+		userlog("GENERATE_KPT : req->header.service_id:%d:", req->header.service_id);
+		userlog("GENERATE_KPT : req->header.user_id:%s:", req->header.user_id);
+		userlog("GENERATE_KPT : req->header.workstation_id:%s:", req->header.workstation_id);
+		userlog("GENERATE_KPT : req->date_of_birth:%s:", req->date_of_birth);
+		userlog("GENERATE_KPT : req->state_of_birth:%s:", req->state_of_birth);
+		userlog("GENERATE_KPT : req->gender:%c:", req->gender);
+		userlog("GENERATE_KPT : req->new_kptno:%s:", req->new_kptno);
+		userlog("GENERATE_KPT : req->upd_flag:%c:", req->upd_flag);
+	#endif
+
+	/* Get current date-time for logging */
+
+	strcpy(curr_date_time, get_date_time());
+
+	#ifdef DEBUG
+		userlog( "GENERATE_KPT : curr_date_time = %s\n", curr_date_time);	 
+	#endif
+
+	/* Program access log variable */
+	itoa(GENERATE_KPT_ID, program_id, 10);
+	strcpy(prog_log.program_id, program_id);
+	strcpy(prog_log.user_id, req->header.user_id);
+	strcpy(prog_log.workstation_id, req->header.workstation_id);
+	strcpy(prog_log.branch_code, req->header.branch_code);
+	strcpy(prog_log.access_start_time, curr_date_time);
+	strcpy(prog_log.remarks, "");
+	strcpy(prog_log.application_id, req->header.application_id);
+	
+	/* Application exception log variable */
+	strcpy(excep_log.program_id, program_id);
+	strcpy(excep_log.user_id, req->header.user_id); 	
+	strcpy(excep_log.workstation_id, req->header.workstation_id);
+	strcpy(excep_log.branch_code, req->header.branch_code);
+	strcpy(excep_log.error_date, curr_date_time);
+	strcpy(excep_log.error_msg, "");
+	strcpy(excep_log.application_id, req->header.application_id); 	
+	excep_log.severity = '\0';	
+	excep_log.termination_flag = 'Y';	
+
+	resp_len = sizeof(GENERATE_KPT_RESP_T);
+
+/* Allocate the response and check for it */
+	resp = (GENERATE_KPT_RESP_T *)malloc(resp_len);
+	
+	if (resp == NULL)
+	{
+		
+		strcpy(prog_log.remarks,"GENERATE_KPT : Service failed due to RESP_BUF_ERR");
+		sprintf(excep_log.error_msg,"GENERATE_KPT :  Service failed due to RESP_BUF_ERR ");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error();
+
+		//tpreturn(TPFAIL, RESP_BUF_ERR, (char *) NULL, 0, 0);
+		return RESP_BUF_ERR;
+	}
+	
+	#ifdef DEBUG
+		userlog("GENERATE_KPT : Response allocated\n");		
+	#endif
+
+	memset(resp, '\0', resp_len);
+
+/* Copy header info into response */
+	
+	resp->header = req->header;
+
+/* Check for header */
+
+	ret_code = check_header(req->header);
+
+	if (ret_code == FAILURE)
+	{
+		#ifdef DEBUG
+			userlog("GENERATE_KPT :check_header failed\n");		
+		#endif
+	
+		strcpy(prog_log.remarks,"GENERATE_KPT : check header failed");
+		sprintf(excep_log.error_msg,"GENERATE_KPT : check header failed");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error();
+		//tpreturn(TPSUCCESS, ret_code, (char *)resp, resp_len, 0);
+			*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+			return ret_code;
+	}
+
+	/* Get the JPN branch code */
+	if (SUCCESS != (ret = get_legacy_branchcode(req->header.branch_code, JPN_ID, jpn_code)))
+	{
+
+		strcpy(prog_log.remarks,"GENERATE_KPT : Failed to retrieve legacy branch code");
+		sprintf(excep_log.error_msg,"GENERATE_KPT : Failed to retrieve legacy branch code");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+
+		log_error();
+
+		//tpreturn(TPSUCCESS, ret, (char *)resp, resp_len, 0);
+			*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+			return ret;
+	}
+
+	/* Populate the header to be sent to legacy		*/
+	strcpy(li_pheader.gsc_no, jpn_code);
+	strcpy(li_pheader.user_id, req->header.user_id);
+	strcpy(li_pheader.workstation_id, req->header.workstation_id);
+//	strcpy(li_pheader.trans_date, req->txn_date);
+//	strcpy(li_pheader.trans_time, req->txn_time);
+
+		#ifdef DEBUG
+				userlog("GENERATE_KPT:calling get_txn_date_time()");
+		#endif
+
+		if(GMPC_GOOD != (ret = get_txn_date_time(resp, &li_pheader, &txn_type)))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:get_txn_date_time failed %d",ret);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : get_txn_date_time failed ");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : get_txn_date_time failed ");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+
+			//tpreturn(TPSUCCESS, ret, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return ret;
+		}
+
+	li_pheader.trans_date[0] = '\0';
+	li_pheader.trans_time[0] = '\0';
+	/* Populate the legacy request buffer */
+
+	if(toupper(req->upd_flag == 'N'))
+	{
+		strcpy(send_data.date_of_birth, req->date_of_birth);
+		strcpy(send_data.state_of_birth, req->state_of_birth);
+		send_data.gender = req->gender;
+		strcpy(send_data.application_id, req->header.application_id);
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:doing li init");
+		#endif
+
+	/*	if(GMPC_GOOD != (ret = li_init(LI_GENERATE_KPT)))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:li_init failed with ret = %d", ret);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : li_init failed");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : li_init failed with ret = %d", ret);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return ret;
+		}*/
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:li init o.k.");   
+		#endif
+
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:sending req to mq");
+		#endif
+
+		/* Request matches from JPN Legacy System */
+		if (GMPC_BAD == li_generate_kpt_p( li_pheader, send_data, msgid, &lierrno))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:Request to legacy failed with errorcode %d",lierrno);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : Legacy Put Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : Legacy Put Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//li_end();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+			*pRespSize = resp_len;
+		//	memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+			return ret;
+		}
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:mq send o.k.");
+		#endif
+
+
+		/* Populate the header to be sent to legacy		*/
+		li_gheader.wait_time = litimeout;	/* Timeout	*/
+											
+
+		strcpy(li_gheader.msg_id, msgid);
+
+		li_gheader.reply_buffer_size = 0;
+
+		#ifdef DEBUG
+			userlog("getting from mq");
+		#endif   
+
+
+		if(GMPC_BAD == (ret = li_generate_kpt_g(&li_gheader, &recv_data, &lierrno, err_msg)))
+		{
+			#ifdef DEBUG
+					userlog("\nReply from legacy failed with errorcode %d",lierrno);
+					userlog("\nReply from legacy is %d",ret);
+					userlog("\nRetry count is %d",num);
+					userlog("\nMax Retry count is %d",reg.retry_count);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : Legacy Get Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : Legacy Get Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+
+			//li_end();
+			strcpy(err_msg, resp->leg_err_msg);
+
+			ret = get_return_code(lierrno, GENERATE_KPT_ID);
+			//tpreturn(TPSUCCESS, ret, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return ret;
+
+		}
+		else if(GMPC_WARN == ret)
+		{
+
+			num = 0;
+			while((GMPC_WARN == ret) && (reg.retry_count > num))
+			{
+				if(GMPC_BAD == (ret = li_generate_kpt_g(&li_gheader, &recv_data, &lierrno, err_msg)))
+				{
+					#ifdef DEBUG
+							userlog("\nReply from legacy failed with errorcode %d",lierrno);
+							userlog("\nReply from legacy is %d",ret);
+							userlog("\nRetry count is %d",num);
+							userlog("\nMax Retry count is %d",reg.retry_count);
+					#endif
+					strcpy(prog_log.remarks,"GENERATE_KPT : Legacy Get Failure");
+					sprintf(excep_log.error_msg,"GENERATE_KPT : Legacy Get Failure");
+					excep_log.termination_flag = 'Y';
+					excep_log.severity = FATAL;
+
+					log_error();
+
+					//li_end();
+					strcpy(err_msg, resp->leg_err_msg);
+
+					ret = get_return_code(lierrno, GENERATE_KPT_ID);
+					//tpreturn(TPSUCCESS, ret, (char *)resp, resp_len, 0);
+						*pRespSize = resp_len;
+					//memcpy(*pResp, resp, resp_len);
+						*pResp = resp;
+					return ret;
+				}
+				else
+				{
+					if(GMPC_WARN == ret)
+					{
+						/* Retry failed, increment the count and try again	*/
+					#ifdef DEBUG
+						userlog(" li_get_jpn_data_g : Retry Count:%d",num);
+					#endif
+						num++;
+						continue;
+					}
+			
+				}
+
+			/* We got the response so prepare to return GMPC_GOOD	*/
+			}
+		}
+
+		/*fill the service resp buffer*/
+
+			strcpy(resp->kptno, recv_data.kptno);
+	}
+	else if(toupper(req->upd_flag) == 'Y')
+	{
+		req++;
+		upd_data = (JPN_MISSED_OPEX_UPD_REQ_T *)req;
+		req--;
+
+		if(upd_data->misc.kpt_no[0] == '\0')
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT: Kpt number is NULL");
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : Kpt number is NULL");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : Kpt number is NULL");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error();
+			//tpreturn(TPSUCCESS, KPT_NO_NULL, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return KPT_NO_NULL;
+		}
+
+		image_data = (unsigned char *)(upd_data + 1);
+
+		mem_size = sizeof(int);
+		mem_size = mem_size + sizeof(NAME_T);
+		mem_size = mem_size + sizeof(ADDRESS_T);
+		mem_size = mem_size + sizeof(LI_MISSED_OPEX_MISC_T);
+		mem_size = mem_size + sizeof(LI_AFIS_MISC_T);
+		mem_size = mem_size + sizeof(LI_PASSPORT_INFO_T);
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT : finger_pattern - %c", upd_data->lf_finger_pattern);
+			userlog("GENERATE_KPT : thumb_status - %c", upd_data->lf_thumb_status);
+			userlog("GENERATE_KPT : fp_img_size - %ld", upd_data->lf_fp_img_size);
+			userlog("GENERATE_KPT : orginal_minutiae_size - %ld", upd_data->lf_orginal_minutiae_size);
+			userlog("GENERATE_KPT : normalized_minutiae_size - %ld", upd_data->lf_normalized_minutiae_size);
+			userlog("GENERATE_KPT : matrix_buffer_size - %ld", upd_data->lf_matrix_buffer_size);
+			userlog("GENERATE_KPT : finger_ind - %s", upd_data->lf_finger_ind);
+			userlog("GENERATE_KPT : quality_score - %ld", upd_data->lf_quality_score);
+
+			userlog("GENERATE_KPT : finger_pattern - %c", upd_data->rf_finger_pattern);
+			userlog("GENERATE_KPT : thumb_status - %c", upd_data->rf_thumb_status);
+			userlog("GENERATE_KPT : fp_img_size - %ld", upd_data->rf_fp_img_size);
+			userlog("GENERATE_KPT : orginal_minutiae_size - %ld", upd_data->rf_orginal_minutiae_size);
+			userlog("GENERATE_KPT : normalized_minutiae_size - %ld", upd_data->rf_normalized_minutiae_size);
+			userlog("GENERATE_KPT : matrix_buffer_size - %ld", upd_data->rf_matrix_buffer_size);
+			userlog("GENERATE_KPT : finger_ind - %s", upd_data->rf_finger_ind);
+			userlog("GENERATE_KPT : quality_score - %ld", upd_data->rf_quality_score);
+
+			userlog("GENERATE_KPT : portrait_size - %ld", upd_data->lowres_portrait_size);
+			userlog("GENERATE_KPT : portrait_size - %ld", upd_data->highres_portrait_size);	
+		#endif
+
+		memset(&send_upd_data,'\0',sizeof(LI_JPN_MISSED_OPEX_UPD_REQ_T));
+
+//		send_upd_data.txn_type = upd_data->txn_type;
+		send_upd_data.txn_type = txn_type;
+		send_upd_data.appnt_name = upd_data->appnt_name;
+		send_upd_data.new_address = upd_data->new_address;
+		send_upd_data.misc = upd_data->misc;
+//		send_upd_data.afis_misc = upd_data->afis_misc;
+		send_upd_data.pp_info = upd_data->pp_info;
+
+	if (SUCCESS != (ret = upd_appnt_img_info(req, &send_upd_data)))
+	{
+
+		strcpy(prog_log.remarks,"GENERATE_KPT : Failed to retrieve images");
+		sprintf(excep_log.error_msg,"GENERATE_KPT : Failed to retrieve images");
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+
+		log_error();
+
+		//tpreturn(TPSUCCESS, ret, (char *)resp, resp_len, 0);
+			*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+			*pResp = resp;
+			return ret;
+	}
+
+		send_upd_data.txn_type = txn_type;
+		send_upd_data.appnt_name = upd_data->appnt_name;
+		send_upd_data.new_address = upd_data->new_address;
+		send_upd_data.misc = upd_data->misc;
+		send_upd_data.afis_misc = upd_data->afis_misc;
+		send_upd_data.pp_info = upd_data->pp_info;
+
+	#ifdef DEBUG
+	   /* Open for write */
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_lfimg");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.left_finger_prints.fp_img_buff, 1, send_upd_data.left_finger_prints.fp_img_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_lfomin");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.left_finger_prints.org_minutiae_buff, 1, send_upd_data.left_finger_prints.orginal_minutiae_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_lfnmin");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.left_finger_prints.norm_minutiae_buff, 1, send_upd_data.left_finger_prints.normalized_minutiae_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_lfmatbuf");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.left_finger_prints.matrix_buffer, 1, send_upd_data.left_finger_prints.matrix_buffer_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_rfimg");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.right_finger_prints.fp_img_buff, 1, send_upd_data.right_finger_prints.fp_img_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_rfomin");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.right_finger_prints.org_minutiae_buff, 1, send_upd_data.right_finger_prints.orginal_minutiae_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_rfnmin");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.right_finger_prints.norm_minutiae_buff, 1, send_upd_data.right_finger_prints.normalized_minutiae_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_rfmatbuf");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.right_finger_prints.matrix_buffer, 1, send_upd_data.right_finger_prints.matrix_buffer_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_lowres");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.low_res_portrait.portrait_buff, 1, send_upd_data.low_res_portrait.portrait_size, logfile);
+
+		strcpy(szFileName, "d:\\gmpc\\log\\mo_");
+		strcat(szFileName, "_highres");
+
+		logfile = fopen(szFileName, "wb");
+
+		fwrite(send_upd_data.hi_res_portrait.portrait_buff, 1, send_upd_data.hi_res_portrait.portrait_size, logfile);
+		
+	   /* Close stream */
+	   fclose(logfile);
+	#endif
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:doing li init");
+		#endif
+
+	/*	if(GMPC_GOOD != (ret = li_init(LI_JPN_MISSED_OPEX_UPD)))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:li_init failed with ret = %d", ret);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : li_init failed");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : li_init failed with ret = %d", ret);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return lierrno;
+		}*/
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:li init o.k.");   
+		#endif
+
+
+	#ifdef DEBUG
+	userlog("GENERATE_KPT : txn_type - %d", send_upd_data.txn_type);
+	userlog("GENERATE_KPT : siren_short_name1 - %s", send_upd_data.appnt_name.siren_short_name1);
+	userlog("GENERATE_KPT : siren_short_name2 - %s", send_upd_data.appnt_name.siren_short_name2);
+	userlog("GENERATE_KPT : gmpc_short_name1 - %s", send_upd_data.appnt_name.gmpc_short_name1);
+	userlog("GENERATE_KPT : gmpc_short_name2 - %s", send_upd_data.appnt_name.gmpc_short_name2);
+	userlog("GENERATE_KPT : gmpc_short_name3 - %s", send_upd_data.appnt_name.gmpc_short_name3);
+	userlog("GENERATE_KPT : current_long_name - %s", send_upd_data.appnt_name.current_long_name);
+	userlog("GENERATE_KPT : original_name - %s", send_upd_data.appnt_name.original_name);
+	userlog("GENERATE_KPT : address1 - %s", send_upd_data.new_address.address1);
+	userlog("GENERATE_KPT : address2 - %s", send_upd_data.new_address.address2);
+	userlog("GENERATE_KPT : address3 - %s", send_upd_data.new_address.address3);
+	userlog("GENERATE_KPT : post_code - %s", send_upd_data.new_address.post_code);
+	userlog("GENERATE_KPT : city_code - %d", send_upd_data.new_address.city_code);
+	userlog("GENERATE_KPT : state_code - %s", send_upd_data.new_address.state_code);
+	
+	userlog("GENERATE_KPT : kpt_no - %s", send_upd_data.misc.kpt_no);
+	userlog("GENERATE_KPT : kpp_no - %s", send_upd_data.misc.kpp_no);
+	userlog("GENERATE_KPT : police_no - %s", send_upd_data.misc.police_no);
+	userlog("GENERATE_KPT : army_no - %s", send_upd_data.misc.army_no);
+	userlog("GENERATE_KPT : dob - %s", send_upd_data.misc.dob);
+	userlog("GENERATE_KPT : unknown_birth_ind - %c", send_upd_data.misc.unknown_birth_ind);
+	userlog("GENERATE_KPT : birth_place_code - %s", send_upd_data.misc.birth_place_code);
+	userlog("GENERATE_KPT : gender - %c", send_upd_data.misc.gender);
+	userlog("GENERATE_KPT : religion - %c", send_upd_data.misc.religion);
+	userlog("GENERATE_KPT : race - %s", send_upd_data.misc.race);
+	userlog("GENERATE_KPT : hk_ind - %c", send_upd_data.misc.hk_ind);
+	userlog("GENERATE_KPT : kt_ind - %s", send_upd_data.misc.kt_ind);
+	userlog("GENERATE_KPT : resi_status - %c", send_upd_data.misc.resi_status);
+	userlog("GENERATE_KPT : art_color_code - %s", send_upd_data.misc.art_color_code);
+	userlog("GENERATE_KPT : gmpc_version - %d", send_upd_data.misc.gmpc_version);
+	userlog("GENERATE_KPT : original_name_ind - %c", send_upd_data.misc.original_name_ind);
+	userlog("GENERATE_KPT : gmpc_remarks1 - %s", send_upd_data.misc.gmpc_remarks1);
+	userlog("GENERATE_KPT : gmpc_remarks2 - %s", send_upd_data.misc.gmpc_remarks2);
+	userlog("GENERATE_KPT : retire_date - %s", send_upd_data.misc.retire_date);
+	userlog("GENERATE_KPT : pol_army_join_date - %s", send_upd_data.misc.pol_army_join_date);
+	userlog("GENERATE_KPT : ic_color_code - %c", send_upd_data.misc.ic_color_code);
+	userlog("GENERATE_KPT : pol_army_code - %c", send_upd_data.misc.pol_army_code);
+	userlog("GENERATE_KPT : appl_approval_date - %s", send_upd_data.misc.appl_approval_date);
+	userlog("GENERATE_KPT : green_card_exp_date - %s", send_upd_data.misc.green_card_exp_date);
+	userlog("GENERATE_KPT : citizen_nation_code - %s", send_upd_data.misc.citizen_nation_code);
+	userlog("GENERATE_KPT : birth_state_code - %s", send_upd_data.misc.birth_state_code);
+	userlog("GENERATE_KPT : birth_country_code - %s", send_upd_data.misc.birth_country_code);
+
+	userlog("GENERATE_KPT : first_time_ind - %c", send_upd_data.afis_misc.first_time_ind);
+	userlog("GENERATE_KPT : update_prints_ind - %c", send_upd_data.afis_misc.update_prints_ind);
+	userlog("GENERATE_KPT : juvenile_flag - %c", send_upd_data.afis_misc.juvenile_flag);
+	userlog("GENERATE_KPT : quality_status - %c", send_upd_data.afis_misc.quality_status);
+	userlog("GENERATE_KPT : finger_acquision_source - %c", send_upd_data.afis_misc.finger_acquision_source);
+	
+	userlog("GENERATE_KPT : imm_refer_date - %s", send_upd_data.pp_info.imm_refer_date);
+	userlog("GENERATE_KPT : passport_no - %s", send_upd_data.pp_info.passport_no);
+	userlog("GENERATE_KPT : passort_expiry_date - %s", send_upd_data.pp_info.passort_expiry_date);
+	userlog("GENERATE_KPT : passort_issue_date - %s", send_upd_data.pp_info.passort_issue_date);
+	userlog("GENERATE_KPT : malaysia_arrival_date - %s", send_upd_data.pp_info.malaysia_arrival_date);
+	userlog("GENERATE_KPT : permit_issue_date - %s", send_upd_data.pp_info.permit_issue_date);
+	userlog("GENERATE_KPT : imm_refer_no - %s", send_upd_data.pp_info.imm_refer_no);
+	userlog("GENERATE_KPT : passort_issue_country - %s", send_upd_data.pp_info.passort_issue_country);
+	userlog("GENERATE_KPT : entry_permit_no - %s", send_upd_data.pp_info.entry_permit_no);
+
+	userlog("GENERATE_KPT : finger_pattern - %c", send_upd_data.left_finger_prints.finger_pattern);
+	userlog("GENERATE_KPT : thumb_status - %c", send_upd_data.left_finger_prints.thumb_status);
+	userlog("GENERATE_KPT : fp_img_size - %ld", send_upd_data.left_finger_prints.fp_img_size);
+	userlog("GENERATE_KPT : orginal_minutiae_size - %ld", send_upd_data.left_finger_prints.orginal_minutiae_size);
+	userlog("GENERATE_KPT : normalized_minutiae_size - %ld", send_upd_data.left_finger_prints.normalized_minutiae_size);
+	userlog("GENERATE_KPT : matrix_buffer_size - %ld", send_upd_data.left_finger_prints.matrix_buffer_size);
+	userlog("GENERATE_KPT : finger_ind - %s", send_upd_data.left_finger_prints.finger_ind);
+	userlog("GENERATE_KPT : quality_score - %ld", send_upd_data.left_finger_prints.quality_score);
+
+	userlog("GENERATE_KPT : finger_pattern - %c", send_upd_data.right_finger_prints.finger_pattern);
+	userlog("GENERATE_KPT : thumb_status - %c", send_upd_data.right_finger_prints.thumb_status);
+	userlog("GENERATE_KPT : fp_img_size - %ld", send_upd_data.right_finger_prints.fp_img_size);
+	userlog("GENERATE_KPT : orginal_minutiae_size - %ld", send_upd_data.right_finger_prints.orginal_minutiae_size);
+	userlog("GENERATE_KPT : normalized_minutiae_size - %ld", send_upd_data.right_finger_prints.normalized_minutiae_size);
+	userlog("GENERATE_KPT : matrix_buffer_size - %ld", send_upd_data.right_finger_prints.matrix_buffer_size);
+	userlog("GENERATE_KPT : finger_ind - %s", send_upd_data.right_finger_prints.finger_ind);
+	userlog("GENERATE_KPT : quality_score - %ld", send_upd_data.right_finger_prints.quality_score);
+
+	userlog("GENERATE_KPT : portrait_size - %ld", send_upd_data.low_res_portrait.portrait_size);
+	userlog("GENERATE_KPT : portrait_size - %ld", send_upd_data.hi_res_portrait.portrait_size);	
+
+	//userlog("GENERATE_KPT : EntryPermitType - %d", send_upd_data.pp_info.nEntryPermitType);
+	//userlog("GENERATE_KPT : DocTypeCode - %d", send_upd_data.pp_info.nDocTypeCode);	
+	//userlog("GENERATE_KPT : OriginCountryCode - %s", send_upd_data.pp_info.szOriginCountryCode);	
+
+	userlog("GENERATE_KPT:sending req to mq");
+	#endif
+
+		/* Request matches from JPN Legacy System */
+		if (GMPC_BAD == li_jpn_missed_opex_upd_p( li_pheader, put_fin_data, send_upd_data, msgid, &lierrno))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:Request to legacy while update failed with errorcode %d",lierrno);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : Legacy Put Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : Legacy Put Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//li_end();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return lierrno;
+		}
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:mq send o.k.");
+		#endif
+
+		ret_code = 0;
+		if((ret_code = insert_into_legacy_request('O', &(req->header), '1', 1, msgid)) != GMPC_GOOD)
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT: insert_into_legacy_request() failed");
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : insert_into_legacy_request Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : insert_into_legacy_request Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//li_end();
+			//tpreturn(TPSUCCESS, ret_code, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return ret_code;
+		}
+
+	}
+	else if(toupper(req->upd_flag) == 'C')
+	{
+		if(req->new_kptno[0] == '\0')
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT: New Kpt number is NULL");
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : New Kpt number is NULL");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : New Kpt number is NULL");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error();
+			//tpreturn(TPSUCCESS, KPT_NO_NULL, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+		//	memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return KPT_NO_NULL;
+		}
+
+		strcpy(send_kptchg_data.kptno, req->new_kptno);
+
+		if(GMPC_GOOD != (ret = get_kptchg_data(req->header, &send_kptchg_data)))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:li_init failed with ret = %d", ret);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : li_init failed");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : li_init failed with ret = %d", ret);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return lierrno;
+		}
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:doing li init");
+		#endif
+
+		/*if(GMPC_GOOD != (ret = li_init(LI_UPD_CHANGE_KPTNO)))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:li_init failed with ret = %d", ret);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : li_init failed");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : li_init failed with ret = %d", ret);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return lierrno;
+		}*/
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:li init o.k.");   
+		#endif
+
+		/* Request matches from JPN Legacy System */
+		if (GMPC_BAD == li_upd_change_kptno_p(li_pheader, send_kptchg_data, msgid, &lierrno))
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT:Request to legacy while update li_upd_change_kptno_p failed with errorcode %d",lierrno);
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : Legacy Put li_upd_change_kptno_p Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : Legacy Put li_upd_change_kptno_p Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//li_end();
+			//tpreturn(TPSUCCESS, lierrno, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+			//memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return lierrno;
+		}
+
+		#ifdef DEBUG
+			userlog("GENERATE_KPT:mq send o.k.");
+		#endif
+
+		ret_code = 0;
+		if((ret_code = insert_into_legacy_request('B', &(req->header), '1', 1, msgid)) != GMPC_GOOD)
+		{
+			#ifdef DEBUG
+					userlog("GENERATE_KPT: insert_into_legacy_request() failed");
+			#endif
+			strcpy(prog_log.remarks,"GENERATE_KPT : insert_into_legacy_request Failure");
+			sprintf(excep_log.error_msg,"GENERATE_KPT : insert_into_legacy_request Failure");
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+
+			log_error();
+			//li_end();
+			//tpreturn(TPSUCCESS, ret_code, (char *)resp, resp_len, 0);
+				*pRespSize = resp_len;
+		//	memcpy(*pResp, resp, resp_len);
+				*pResp = resp;
+			return ret_code;
+		}
+	}
+
+	strcpy(prog_log.remarks,"GENERATE_KPT: Completed Successfully");
+	log_exit();
+
+	#ifdef DEBUG
+		userlog("GENERATE_KPT : resp->header.application_id:%s:",resp->header.application_id);
+		userlog("GENERATE_KPT : resp->header.branch_code:%s:", resp->header.branch_code);
+		userlog("GENERATE_KPT : resp->header.service_id:%d:", resp->header.service_id);
+		userlog("GENERATE_KPT : resp->header.user_id:%s:", resp->header.user_id);
+		userlog("GENERATE_KPT : resp->header.workstation_id:%s:", resp->header.workstation_id);
+		userlog("GENERATE_KPT : resp->kptno:%s:", resp->kptno);
+		userlog("GENERATE_KPT : resp->leg_err_msg:%s:", resp->leg_err_msg);
+		userlog("GENERATE_KPT :Service Completed");
+	#endif
+
+	//li_end();
+	//tpreturn(TPSUCCESS, GMPC_GOOD, (char *) resp, resp_len, 0);
+		*pRespSize = resp_len;
+		//memcpy(*pResp, resp, resp_len);
+		*pResp = resp;
+		return GMPC_GOOD;
+}
+
+
+/***********************************************************/
+/* Function Name:get_txn_date_time						   */
+/* Description  :Gets txn date and time					   */
+/* Input        :GENERATE_KPT_RESP_T *resp				   */   
+/* Return Values:GMPC_GOOD or SELECT_ERROR				   */
+/***********************************************************/
+int get_txn_date_time(GENERATE_KPT_RESP_T *resp, LI_P_HEADER_T *li_pheader, int *txn_type)
+{
+	EXEC SQL BEGIN DECLARE SECTION;
+		char txn_date[DATE_SIZE];
+		char txn_time[TIME_SIZE];
+		char appl_id[APP_ID_SIZE];
+		int txntype = 0;
+		short int txntype_ind = 0;
+	EXEC SQL END DECLARE SECTION;
+
+	strcpy(appl_id, resp->header.application_id);
+
+	EXEC SQL
+		SELECT TO_CHAR(TXNDATE,'DDMMYYYY') INTO :txn_date
+		FROM APPL_TXN
+		WHERE APPLID = :appl_id AND TXNSERNO = 1;
+
+
+	sqlmsg[0] = '\0';
+	strcpy(sqlmsg, SQLMSG);
+
+	if(SQLCODE != 0)
+	{
+#ifdef DEBUG
+		userlog("get_txn_date_time: Select TXNDATE failed ");
+#endif
+		strcpy(prog_log.remarks,"get_txn_date_time : Select TXNDATE failed");
+		sprintf(excep_log.error_msg,"get_txn_date_time : Select TXNDATE failed: %s",SQLMSG);
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error();
+	
+		return SELECT_ERROR;
+	}
+
+	EXEC SQL
+		SELECT TO_CHAR(TXNDATE,'HH24MISS') INTO :txn_time
+		FROM APPL_TXN
+		WHERE APPLID = :appl_id AND TXNSERNO = 1;
+
+
+	sqlmsg[0] = '\0';
+	strcpy(sqlmsg, SQLMSG);
+
+	if(SQLCODE != 0)
+	{
+#ifdef DEBUG
+		userlog("get_txn_date_time: Select TXNDATE failed ");
+#endif
+		strcpy(prog_log.remarks,"get_txn_date_time : Select TXNDATE failed");
+		sprintf(excep_log.error_msg,"get_txn_date_time : Select TXNDATE failed: %s",SQLMSG);
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error();
+	
+		return SELECT_ERROR;
+	}
+
+	/* Transaction type is 1 if Update message is to be sent to DB2 only		*/
+	/* Else for Update to AFIS, it is 2. For Missed opex update, the message	*/
+	/* should not be updated to AFIS. It is later updated to AFIS by 201050 	*/
+	/* when GQD approves the case												*/
+
+	*txn_type = 1;
+	
+	strcpy(li_pheader->trans_date, txn_date);
+	strcpy(li_pheader->trans_time, txn_time);
+
+	return GMPC_GOOD;
+}
+
+/*****************************************************************************************/
+/* Function Name	: upd_appnt_img_info												 */
+/* Description		: This function updates the JPN legacy system with data of the		 */
+/*				      applicant's demographics 											 */
+/* Input			: Request buffer of the service, Oracle message id, Txn ser no		 */
+/* Return values    : SUCCESS / Error code												 */
+/* Limitations		: None															     */
+/*****************************************************************************************/
+int upd_appnt_img_info(GENERATE_KPT_REQ_T *req, LI_JPN_MISSED_OPEX_UPD_REQ_T *jpn_upd)
+{
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[LOW_RES_PHOTO_SIZE];
+	} lowres;
+
+	EXEC SQL TYPE lowres IS LONG varraw(LOW_RES_PHOTO_SIZE);
+	
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[HIGH_RES_PHOTO_SIZE];
+	} highres;
+
+	EXEC SQL TYPE highres IS LONG varraw(HIGH_RES_PHOTO_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[MINUTIAE_SIZE];
+	} lforg;
+
+	EXEC SQL TYPE lforg IS LONG varraw(MINUTIAE_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[MINUTIAE_SIZE];
+	} lfnorm;
+
+	EXEC SQL TYPE lfnorm IS LONG varraw(MINUTIAE_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[FINGERPRINT_SIZE];
+	} lfimg;
+
+	EXEC SQL TYPE lfimg IS LONG varraw(FINGERPRINT_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[FINGERPRINT_SIZE];
+	} lfmatrix;
+
+	EXEC SQL TYPE lfmatrix IS LONG varraw(FINGERPRINT_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[MINUTIAE_SIZE];
+	} rforg;
+
+	EXEC SQL TYPE rforg IS LONG varraw(MINUTIAE_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[MINUTIAE_SIZE];
+	} rfnorm;
+
+	EXEC SQL TYPE rfnorm IS LONG varraw(MINUTIAE_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[FINGERPRINT_SIZE];
+	} rfimg;
+
+	EXEC SQL TYPE rfimg IS LONG varraw(FINGERPRINT_SIZE);
+
+	typedef struct
+	{
+	 int len;
+	 unsigned char arr[FINGERPRINT_SIZE];
+	} rfmatrix;
+
+	EXEC SQL TYPE rfmatrix IS LONG varraw(FINGERPRINT_SIZE);
+
+
+EXEC SQL BEGIN DECLARE SECTION;
+	char appl_id[APP_ID_SIZE];
+	char read_ind = '\0';
+	char kptno[KPT_SIZE] = {0};
+	short kptno_ind = -1;
+	char kppno[KPP_SIZE] = {0};
+	short kppno_ind = -1;
+	char identitytype[ID_TYPE_SIZE] = {0};
+	short identitytype_ind = -1;
+	varchar identityno[ID_SIZE] = {0};
+	short identityno_ind = -1;
+
+	
+	char finger_acq_src = 0;
+	short finger_acq_src_ind = -1;
+	int quality_stat = 0;
+	short quality_stat_ind = -1;
+	varchar lf_ind[FINGER_IND_SIZE]= {0};
+	short lf_ind_ind = -1;
+	int lfquality = 0;
+	short lfquality_ind = -1;
+	varchar rf_ind[FINGER_IND_SIZE]= {0};
+	short rf_ind_ind = -1;
+	int rfquality = 0;
+	short rfquality_ind = -1;
+	char lf_thstat = 0;
+	short lf_thstat_ind;
+	int lf_pattern = 0;
+	short lf_pattern_ind = -1;
+	char rf_thstat = 0;
+	short rf_thstat_ind = -1;
+	int rf_pattern = 0;
+	short rf_pattern_ind = -1;
+	char sysdate[DATE_SIZE]= {0};
+
+	lowres lowres_buf;
+	short lowres_buf_ind = -1;
+	highres highres_buf;
+	short highres_buf_ind= -1;
+	lforg lforg_buf;
+	short lforg_buf_ind= -1;
+	lfnorm lfnorm_buf;
+	short lfnorm_buf_ind= -1;
+	lfimg lfimg_buf;
+	short lfimg_buf_ind= -1;
+	lfmatrix lfmatrix_buf;
+	short lfmatrix_buf_ind= -1;
+	rforg rforg_buf;
+	short rforg_buf_ind= -1;
+	rfnorm rfnorm_buf;
+	short rfnorm_buf_ind= -1;
+	rfimg rfimg_buf;
+	short rfimg_buf_ind= -1;
+	rfmatrix rfmatrix_buf;
+	short rfmatrix_buf_ind= -1;
+
+	char updateprintsind;
+	short updateprintsind_ind= -1;
+
+EXEC SQL END DECLARE SECTION;
+
+//	LI_JPN_MISSED_OPEX_UPD_REQ_T jpn_upd ;	
+
+	int i = 0;
+	char imageremark[PROB_REMARK_SIZE];
+	int error_code = 0;
+	int count = 0;
+	
+//	memset(jpn_upd,'\0',sizeof(LI_JPN_MISSED_OPEX_UPD_REQ_T));
+
+	/* Initialise all the raw buufers types to null and set there lengths to 0 */
+	memset(lowres_buf.arr, '\0', LOW_RES_PHOTO_SIZE);
+	lowres_buf.len = 0;
+	memset(highres_buf.arr, '\0', HIGH_RES_PHOTO_SIZE);
+	highres_buf.len = 0;
+
+	memset(lforg_buf.arr, '\0', MINUTIAE_SIZE);
+	lforg_buf.len = 0;
+	memset(lfnorm_buf.arr, '\0', MINUTIAE_SIZE);
+	lfnorm_buf.len = 0;
+	memset(lfimg_buf.arr, '\0', FINGERPRINT_SIZE);
+	lfimg_buf.len = 0;
+	memset(lfmatrix_buf.arr, '\0', FINGERPRINT_SIZE);
+	lfmatrix_buf.len = 0;
+
+	memset(rforg_buf.arr, '\0', MINUTIAE_SIZE);
+	rforg_buf.len = 0;
+	memset(rfnorm_buf.arr, '\0', MINUTIAE_SIZE);
+	rfnorm_buf.len = 0;
+	memset(rfimg_buf.arr, '\0', FINGERPRINT_SIZE);
+	rfimg_buf.len = 0;
+	memset(rfmatrix_buf.arr, '\0', FINGERPRINT_SIZE);
+	rfmatrix_buf.len = 0;
+
+	/* Populate the host variables */
+
+	strcpy(appl_id, req->header.application_id);
+	
+#ifdef DEBUG
+	userlog("upd_appnt_img_info : Appl id - %s", appl_id);
+#endif
+	
+	/* Get the applicant images */
+
+	EXEC SQL EXECUTE
+		BEGIN
+		GET_APPNT_IMAGES(:appl_id, :finger_acq_src:finger_acq_src_ind,
+		:quality_stat:quality_stat_ind, :updateprintsind:updateprintsind_ind, 
+		:lowres_buf:lowres_buf_ind, :highres_buf:highres_buf_ind, 
+		:lforg_buf:lforg_buf_ind, :lfnorm_buf:lfnorm_buf_ind,
+		:lfimg_buf:lfimg_buf_ind, :lfmatrix_buf:lfmatrix_buf_ind, 
+		:rforg_buf:rforg_buf_ind, :rfnorm_buf:rfnorm_buf_ind,
+		:rfimg_buf:rfimg_buf_ind, :rfmatrix_buf:rfmatrix_buf_ind, 
+		:read_ind);
+		END;
+	END-EXEC;
+
+		if(SQLCODE != 0)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Failed to call stored procedure GET_APPNT_IMAGES : %s", SQLMSG);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info: Failed to call stored procedure GET_APPNT_IMAGES ");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info: Failed to call stored procedure GET_APPNT_IMAGES : %s", SQLMSG);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+			
+			return STORED_PROC_ERROR;
+		}
+
+#ifdef DEBUG
+		userlog("upd_appnt_img_info : Call to stored procedure GET_APPNT_IMAGES succesfull");
+		userlog("upd_appnt_img_info : Read indicator - %c",read_ind);
+#endif
+
+		EXEC SQL SELECT LFIND, LFMINUTIAEQUAL, RFIND, RFMINUTIAEQUAL, 
+					LTHSTAT, LFPATTERN, RTHSTAT, RFPATTERN
+		INTO  :lf_ind:lf_ind_ind, :lfquality:lfquality_ind,
+			  :rf_ind:rf_ind_ind, :rfquality:rfquality_ind,
+			  :lf_thstat:lf_thstat_ind, :lf_pattern:lf_pattern_ind,
+			  :rf_thstat:rf_thstat_ind, :rf_pattern:rf_pattern_ind
+		FROM APPNT_JPN_IMG
+		WHERE APPLID = :appl_id;
+
+		if(SQLCODE != 0)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Failed to select from APPNT_JPN_IMG : %s", SQLMSG);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info: Failed to select from APPNT_JPN_IMG");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info: Failed to select from APPNT_JPN_IMG : %s", SQLMSG);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+			
+			return SELECT_ERROR;
+		}
+
+#ifdef DEBUG
+		userlog("upd_appnt_img_info : Select from APPNT_JPN_IMG successfull");
+#endif
+
+	if(lf_ind_ind == -1)
+	{
+		strcpy(lf_ind.arr, "\0");
+	}
+	else
+	{
+		setnull(lf_ind);
+	}
+
+	if(rf_ind_ind == -1)
+	{
+		strcpy(rf_ind.arr, "\0");
+	}
+	else
+	{
+		setnull(rf_ind);
+	}
+
+	if(lfquality_ind == -1)
+	{
+		lfquality = '\0';
+	}
+
+	if(rfquality_ind == -1)
+	{
+		rfquality = '\0';
+	}
+
+	if(quality_stat_ind == -1)
+	{
+		jpn_upd->afis_misc.quality_status = quality_stat = '\0';
+	}
+	else
+	{
+		jpn_upd->afis_misc.quality_status = quality_stat + '0';
+	}
+
+	if(finger_acq_src_ind == -1)
+	{
+		jpn_upd->afis_misc.finger_acquision_source = finger_acq_src = '\0';
+	}
+	else
+	{
+		jpn_upd->afis_misc.finger_acquision_source = finger_acq_src;
+	}
+
+	if(updateprintsind_ind == -1)
+	{
+		jpn_upd->afis_misc.update_prints_ind = '\0';
+	}
+	else
+	{
+		jpn_upd->afis_misc.update_prints_ind = updateprintsind ;
+	}
+
+	if(lf_thstat_ind == -1)
+	{
+		lf_thstat = '\0';
+	}
+
+	if(rf_thstat_ind == -1)
+	{
+		rf_thstat = '\0';
+	}
+
+	if(lf_pattern_ind == -1)
+	{
+		lf_pattern = 0;
+	}
+	
+	if(rf_pattern_ind == -1)
+	{
+		rf_pattern = 0;
+	}
+		
+	strcpy(jpn_upd->left_finger_prints.finger_ind, lf_ind.arr);
+	jpn_upd->left_finger_prints.quality_score = lfquality;
+
+	if(lf_pattern_ind != -1)
+	{
+		jpn_upd->left_finger_prints.finger_pattern = (unsigned char)lf_pattern;
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.finger_pattern = 0;
+	}
+
+	if(lf_thstat_ind != -1)
+	{
+		jpn_upd->left_finger_prints.thumb_status = lf_thstat - '0';
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.thumb_status = '\0';
+	}
+	
+	if(lfimg_buf_ind != -1)
+	{
+		jpn_upd->left_finger_prints.fp_img_size = lfimg_buf.len;
+	}
+	else
+	{
+		lfimg_buf.len = 0;
+		jpn_upd->left_finger_prints.fp_img_size = 0;
+	}
+
+	if(lforg_buf_ind != -1)
+	{
+		/* Check for the exact minutia length */
+
+		if (lforg_buf.len != 0 && lforg_buf.len != EXACT_MINUTIAE_SIZE)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Wrong Left finger original minutia size - %d", lforg_buf.len);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info : Left finger original minutia size is wrong");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info : Left finger original minutia size is wrong - %d", lforg_buf.len);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+		}
+
+		jpn_upd->left_finger_prints.orginal_minutiae_size = lforg_buf.len;
+	}
+	else
+	{
+		lforg_buf.len = 0;
+		jpn_upd->left_finger_prints.orginal_minutiae_size = EXACT_MINUTIAE_SIZE;
+	}
+
+	if(lfnorm_buf_ind != -1)
+	{
+		/* Check for the exact minutia length */
+
+		if (lfnorm_buf.len != 0 && lfnorm_buf.len != EXACT_MINUTIAE_SIZE)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Wrong Left finger normalised minutia size - %d", lfnorm_buf.len);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info : Left finger normalised minutia size is wrong");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info : Left finger normalised minutia size is wrong - %d", lfnorm_buf.len);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+							
+			return WRONG_MINUT_SIZE;
+		}
+
+		jpn_upd->left_finger_prints.normalized_minutiae_size = lfnorm_buf.len;
+	}
+	else
+	{
+		lfnorm_buf.len = 0;
+		jpn_upd->left_finger_prints.normalized_minutiae_size = EXACT_MINUTIAE_SIZE;
+	}
+
+	if(lfmatrix_buf_ind != -1)
+	{
+		jpn_upd->left_finger_prints.matrix_buffer_size = lfmatrix_buf.len;
+	}
+	else
+	{
+		lfmatrix_buf.len = 0;
+		jpn_upd->left_finger_prints.matrix_buffer_size = 0;
+	}
+	
+	strcpy(jpn_upd->right_finger_prints.finger_ind, rf_ind.arr);
+	jpn_upd->right_finger_prints.quality_score = rfquality;
+
+	if(rf_pattern_ind != -1)
+	{
+		jpn_upd->right_finger_prints.finger_pattern = (unsigned char)rf_pattern;
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.finger_pattern = 0;
+	}
+
+	if(rf_thstat_ind != -1)
+	{
+		jpn_upd->right_finger_prints.thumb_status = rf_thstat - '0';
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.thumb_status = '\0';
+	}
+
+
+	if(rfimg_buf_ind != -1)
+	{
+		jpn_upd->right_finger_prints.fp_img_size = rfimg_buf.len;
+	}
+	else
+	{
+		rfimg_buf.len = 0;
+		jpn_upd->right_finger_prints.fp_img_size = 0;
+	}
+
+	if(rforg_buf_ind != -1)
+	{
+		/* Check for the exact minutia length */
+
+		if (rforg_buf.len != 0 && rforg_buf.len != EXACT_MINUTIAE_SIZE)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Wrong Right finger original minutia size - %d", rforg_buf.len);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info : Right finger original minutia size is wrong");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info : Right finger original minutia size is wrong - %d", rforg_buf.len);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+							
+			return WRONG_MINUT_SIZE;
+		}
+
+		jpn_upd->right_finger_prints.orginal_minutiae_size = rforg_buf.len;
+	}
+	else
+	{
+		rforg_buf.len = 0;
+		jpn_upd->right_finger_prints.orginal_minutiae_size = EXACT_MINUTIAE_SIZE;
+	}
+
+	if(rfnorm_buf_ind != -1)
+	{
+		/* Check for the exact minutia length */
+
+		if (rfnorm_buf.len != 0 && rfnorm_buf.len != EXACT_MINUTIAE_SIZE)
+		{
+#ifdef DEBUG
+			userlog("upd_appnt_img_info : Wrong Right finger normalised minutia size - %d", rfnorm_buf.len);
+#endif
+			strcpy(prog_log.remarks,"upd_appnt_img_info : Right finger normalised minutia size is wrong");
+			sprintf(excep_log.error_msg, "upd_appnt_img_info : Right finger normalised minutia size is wrong - %d", rfnorm_buf.len);
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
+
+			log_error();
+							
+			return WRONG_MINUT_SIZE;
+		}
+
+		jpn_upd->right_finger_prints.normalized_minutiae_size = rfnorm_buf.len;
+	}
+	else
+	{
+		rfnorm_buf.len = 0;
+		jpn_upd->right_finger_prints.normalized_minutiae_size = EXACT_MINUTIAE_SIZE;
+	}
+
+	if(rfmatrix_buf_ind != -1)
+	{
+		jpn_upd->right_finger_prints.matrix_buffer_size = rfmatrix_buf.len;
+	}
+	else
+	{
+		rfmatrix_buf.len = 0;
+		jpn_upd->right_finger_prints.matrix_buffer_size = 0;
+	}
+
+	if(highres_buf_ind != -1)
+	{
+		jpn_upd->hi_res_portrait.portrait_size = highres_buf.len;
+	}
+	else
+	{
+		jpn_upd->hi_res_portrait.portrait_size = highres_buf.len = 0;
+	}
+
+	if(lowres_buf_ind != -1)
+	{
+		jpn_upd->low_res_portrait.portrait_size = lowres_buf.len;
+	}
+	else
+	{
+		jpn_upd->low_res_portrait.portrait_size = lowres_buf.len = 0;
+	}
+
+#ifdef DEBUG
+		userlog("Before malloc ");
+#endif
+	/*Left Finger Image*/
+	if(lfimg_buf.len != 0)
+	{
+		jpn_upd->left_finger_prints.fp_img_buff = (unsigned char *)malloc(lfimg_buf.len);
+
+		if(jpn_upd->left_finger_prints.fp_img_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for left finger image");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+#ifdef DEBUG
+		userlog("Before memcpy ");
+#endif
+		memcpy(jpn_upd->left_finger_prints.fp_img_buff, lfimg_buf.arr, lfimg_buf.len);
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.fp_img_buff = NULL;
+	}
+
+	/*Left Finger Original Minutiae*/
+	if(lforg_buf.len != 0)
+	{
+		jpn_upd->left_finger_prints.org_minutiae_buff = (unsigned char *)malloc(lforg_buf.len);
+
+		if(jpn_upd->left_finger_prints.org_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for original minu buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->left_finger_prints.org_minutiae_buff, lforg_buf.arr, lforg_buf.len);
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.org_minutiae_buff = (unsigned char *)malloc(EXACT_MINUTIAE_SIZE);
+
+		if(jpn_upd->left_finger_prints.org_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for original minu buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memset(jpn_upd->left_finger_prints.org_minutiae_buff, ' ', EXACT_MINUTIAE_SIZE);
+	}
+
+
+	/*Left Finger Normalised Minutiae*/
+	if(lfnorm_buf.len != 0)
+	{
+		jpn_upd->left_finger_prints.norm_minutiae_buff = (unsigned char *)malloc(lfnorm_buf.len);
+
+		if(jpn_upd->left_finger_prints.norm_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for normal minu buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+		memcpy(jpn_upd->left_finger_prints.norm_minutiae_buff, lfnorm_buf.arr, lfnorm_buf.len);
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.norm_minutiae_buff = (unsigned char *)malloc(EXACT_MINUTIAE_SIZE);
+
+		if(jpn_upd->left_finger_prints.norm_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for normal minu buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+		memset(jpn_upd->left_finger_prints.norm_minutiae_buff, ' ', EXACT_MINUTIAE_SIZE);
+	}
+
+
+	/*Left Finger Matrix Buffer*/
+	if(lfmatrix_buf.len != 0)
+	{
+		jpn_upd->left_finger_prints.matrix_buffer = (unsigned char *)malloc(lfmatrix_buf.len);
+
+		if(jpn_upd->left_finger_prints.matrix_buffer == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for left matrix buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->left_finger_prints.matrix_buffer, lfmatrix_buf.arr, lfmatrix_buf.len);
+	}
+	else
+	{
+		jpn_upd->left_finger_prints.matrix_buffer = NULL;
+	}
+
+
+	/*Right Finger Image*/
+	if(rfimg_buf.len != 0)
+	{
+		jpn_upd->right_finger_prints.fp_img_buff = (unsigned char *)malloc(rfimg_buf.len);
+
+		if(jpn_upd->right_finger_prints.fp_img_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right finger image");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->right_finger_prints.fp_img_buff, rfimg_buf.arr, rfimg_buf.len);
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.fp_img_buff = NULL;
+	}
+
+	/*Right Finger Original Minutiae*/
+	if(rforg_buf.len != 0)
+	{
+		jpn_upd->right_finger_prints.org_minutiae_buff = (char *)malloc(rforg_buf.len);
+
+		if(jpn_upd->right_finger_prints.org_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right original minutiae");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->right_finger_prints.org_minutiae_buff, rforg_buf.arr, rforg_buf.len);
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.org_minutiae_buff = (char *)malloc(EXACT_MINUTIAE_SIZE);
+
+		if(jpn_upd->right_finger_prints.org_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right original minutiae");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+		memset(jpn_upd->right_finger_prints.org_minutiae_buff, ' ', EXACT_MINUTIAE_SIZE);
+	}
+
+	/*Right Finger Normalised Minutiae*/
+	if(rfnorm_buf.len != 0)
+	{
+		jpn_upd->right_finger_prints.norm_minutiae_buff = (unsigned char *)malloc(rfnorm_buf.len);
+
+		if(jpn_upd->right_finger_prints.norm_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right finger normalised image");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->right_finger_prints.norm_minutiae_buff, rfnorm_buf.arr, rfnorm_buf.len);
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.norm_minutiae_buff = (unsigned char *)malloc(EXACT_MINUTIAE_SIZE);
+		if(jpn_upd->right_finger_prints.norm_minutiae_buff == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right finger normalised image");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memset(jpn_upd->right_finger_prints.norm_minutiae_buff, ' ', EXACT_MINUTIAE_SIZE);
+	}
+
+	/*Right Finger Matrix Buffer*/
+	if(rfmatrix_buf.len != 0)
+	{
+		jpn_upd->right_finger_prints.matrix_buffer = (unsigned char *)malloc(rfmatrix_buf.len);
+
+		if(jpn_upd->right_finger_prints.matrix_buffer == NULL)
+		{
+			strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for right finger matrix buffer");
+			error_log_for_malloc(imageremark);
+			return MALLOC_ERROR;
+		}
+
+		memcpy(jpn_upd->right_finger_prints.matrix_buffer, rfmatrix_buf.arr, rfmatrix_buf.len);
+	}
+	else
+	{
+		jpn_upd->right_finger_prints.matrix_buffer = NULL;
+	}
+	
+	/* High Res Photo */
+	jpn_upd->hi_res_portrait.portrait_buff = (unsigned char *)malloc(highres_buf.len);
+
+	if(jpn_upd->hi_res_portrait.portrait_buff == NULL)
+	{
+		strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for high resolution potraint");
+		error_log_for_malloc(imageremark);
+		return MALLOC_ERROR;
+	}
+
+	memcpy(jpn_upd->hi_res_portrait.portrait_buff, highres_buf.arr, highres_buf.len);
+
+	/* Low Res Photo */
+	jpn_upd->low_res_portrait.portrait_buff = (char *)malloc(lowres_buf.len);
+
+	if(jpn_upd->low_res_portrait.portrait_buff == NULL)
+	{
+		strcpy(imageremark,"upd_appnt_img_info : Error in allocating memory for low resolution potraint");
+		error_log_for_malloc(imageremark);
+		return MALLOC_ERROR;
+	}
+
+	memcpy(jpn_upd->low_res_portrait.portrait_buff, lowres_buf.arr, lowres_buf.len);
+
+#ifdef DEBUG
+	userlog("upd_appnt_img_info : HR photo size - %ld", jpn_upd->hi_res_portrait.portrait_size);
+	userlog("upd_appnt_img_info : LR photo size - %ld", jpn_upd->low_res_portrait.portrait_size);
+	userlog("upd_appnt_img_info : LF ind - %s", jpn_upd->left_finger_prints.finger_ind);
+	userlog("upd_appnt_img_info : LF quality score - %ld", jpn_upd->left_finger_prints.quality_score);
+	userlog("upd_appnt_img_info : LF pattern - %c", jpn_upd->left_finger_prints.finger_pattern);
+	userlog("upd_appnt_img_info : LF thumb stat - %c", jpn_upd->left_finger_prints.thumb_status);
+	userlog("upd_appnt_img_info : LF image size - %ld", jpn_upd->left_finger_prints.fp_img_size);
+	userlog("upd_appnt_img_info : LF orig min size - %ld", jpn_upd->left_finger_prints.orginal_minutiae_size);
+	userlog("upd_appnt_img_info : LF norm min size - %ld", jpn_upd->left_finger_prints.normalized_minutiae_size);
+	userlog("upd_appnt_img_info : LF matrix size - %ld", jpn_upd->left_finger_prints.matrix_buffer_size);
+	userlog("upd_appnt_img_info : RF ind - %s", jpn_upd->right_finger_prints.finger_ind);
+	userlog("upd_appnt_img_info : RF quality score - %ld", jpn_upd->right_finger_prints.quality_score);
+	userlog("upd_appnt_img_info : RF pattern - %c", jpn_upd->right_finger_prints.finger_pattern);
+	userlog("upd_appnt_img_info : RF thumb stat - %c", jpn_upd->right_finger_prints.thumb_status);
+	userlog("upd_appnt_img_info : RF image size - %ld", jpn_upd->right_finger_prints.fp_img_size);
+	userlog("upd_appnt_img_info : RF orig min size - %ld", jpn_upd->right_finger_prints.orginal_minutiae_size);
+	userlog("upd_appnt_img_info : RF norm min size - %ld", jpn_upd->right_finger_prints.normalized_minutiae_size);
+	userlog("upd_appnt_img_info : RF matrix size - %ld", jpn_upd->right_finger_prints.matrix_buffer_size);
+#endif
+
+
+	return SUCCESS;
+}
+
+/**********************************************************************/
+/* Function :     error_log_for_malloc								  */
+/* Description :  Updates the JPN/JPJ legacy system with the changed  */
+/*				  address of the applicant 							  */
+/**********************************************************************/
+
+void error_log_for_malloc(char *image_remark)
+{
+	
+#ifdef DEBUG
+	userlog(image_remark);
+#endif
+		
+	strcpy(prog_log.remarks,image_remark);
+	strcpy(excep_log.error_msg, image_remark);
+	excep_log.termination_flag = YES;
+	excep_log.severity = FATAL;
+
+	log_error();
+	
+}
+
+
+
+/************************************************************************/
+/* Function Name:insert_into_legacy_request		 						*/
+/* Description	:inserts into legacy_request on jpn_update tpacall fails*/
+/* Input		:Flag, Header, Check Agency, Request status				*/   
+/* Return Values:SUCCESS OR FAILURE										*/
+/************************************************************************/
+int insert_into_legacy_request(char flag, HEADER_T *header, char agency, int reqstat, unsigned char *msgid)
+{
+	
+	EXEC SQL BEGIN DECLARE SECTION;
+		int legreqstat;                 
+//		char legreqdatetime[DATE_TIME_SIZE];
+		char legreqflag;                    
+		char checkagency;                   
+		char serviceid[SERVICE_ID_SIZE];     
+		char applid[APP_ID_SIZE];           
+		varchar userid[USER_ID_SIZE];
+		char branchcode[BRANCH_CODE_SIZE];
+		varchar messageid[MSG_ID_SIZE] = {0};
+	EXEC SQL END DECLARE SECTION;
+
+	if(reqstat != 0)
+	{
+		legreqstat = reqstat;
+	}
+	else
+	{
+		legreqstat = REQ_NOT_SENT;
+	}
+
+	strcpy(messageid.arr, msgid);
+	setlen(messageid);
+//	strcpy(legreqdatetime,get_date_time());
+	legreqflag = flag;
+	checkagency = agency;
+
+	if (agency == JPN_ID)
+		_itoa(JPN_UPDATE_ID, serviceid, 10);
+	else if (agency == JPJ_ID)
+		_itoa(JPJ_UPDATE_ID, serviceid, 10);
+	else if (agency == JIM_ID)
+		_itoa(IMM_UPDATE_ID, serviceid, 10);
+	else if (agency == PDRM_ID)
+		_itoa(PDRM_UPDATE_ID, serviceid, 10);
+
+	strcpy(applid, header->application_id);
+
+	strcpy(userid.arr, header->user_id);
+	setlen(userid);
+	strcpy(branchcode, header->branch_code);
+	
+
+#ifdef DEBUG
+		userlog("insert_into_legacy_request:applid :%s", applid);
+		userlog("insert_into_legacy_request:gscno :%s", branchcode);
+		userlog("insert_into_legacy_request:userid :%s", userid.arr);
+		userlog("insert_into_legacy_request:requeststat :%d", legreqstat);
+//		userlog("insert_into_legacy_request:requestdate :%s", legreqdatetime);
+		userlog("insert_into_legacy_request:checkagency :%c", checkagency);
+		userlog("insert_into_legacy_request:requestflag :%c", legreqflag);
+		userlog("insert_into_legacy_request:serviceid :%s", serviceid);
+		userlog("insert_into_legacy_request:messageid :%s", messageid.arr);
+#endif
+
+
+	
+	SQLCODE = 0; /* resetting any previous error code */
+	EXEC SQL 
+		INSERT INTO LEGACY_REQUEST(LEGREQMSGID, LEGMSGID, LEGREQSTAT,
+		LEGREQDATETIME, LEGREQFLAG,CHECKAGENCY, SERVICEID, APPLID,
+		USERID, BRANCHCODE)
+		VALUES(MESSAGEID.NEXTVAL, :messageid, :legreqstat,
+		SYSDATE, :legreqflag, :checkagency, :serviceid, :applid,
+		:userid, :branchcode);
+
+	sqlmsg[0] = '\0';
+	strcpy(sqlmsg, SQLMSG);
+	if(SQLCODE)
+	{
+
+		strcpy(prog_log.remarks,"insert_into_legacy_request : insert_into_legacy_request failed");
+		sprintf(excep_log.error_msg,"insert_into_legacy_request : insert_into_legacy_request failed : %s", SQLMSG);
+		excep_log.termination_flag = YES;
+		excep_log.severity = FATAL;
+		log_error();
+
+   	    return INSERT_ERROR;
+	}
+	else
+	{
+		return GMPC_GOOD;
+	}
+
+}
+
+/************************************************************************/
+/* Function Name:get_kptchg_data		 						*/
+/* Description	:gets data to send update*/
+/* Input		:Header, LI_UPD_CHANGE_KPTNO_REQ_T struct				*/   
+/* Return Values:SUCCESS OR FAILURE										*/
+/************************************************************************/
+int get_kptchg_data(HEADER_T header, LI_UPD_CHANGE_KPTNO_REQ_T *upd_data)
+{
+	
+	EXEC SQL BEGIN DECLARE SECTION;
+	char applid[APP_ID_SIZE] = {0};           
+		
+		varchar oldkptno[ID_SIZE] = {0};//Idno application
+		char dob[DATE_SIZE] = {0};//appl_missed opex
+		char gender = '\0';////appl_missed opex
+		char birth_state_code[STATE_CODE_SIZE] = {0};//appl_missed opex - BIRTHSTATECODE
+		char birth_country_code[COUNTRY_CODE_SIZE] = {0}; //appl_missed_opex
+	/*CITIZENNATIONCODE <> 3000 then countrycode = birthdistcode else countrycode = CITIZENNATIONCODE*/
+		int birthdistrictcode = 0;
+		char kpt_cancel_date[DATE_SIZE] = {0};//Sysdate
+		char kpt_cancel_reason_code[CANCEL_CODE_SIZE] = {0}; // Application namechgcode
+		varchar kpt_cancel_remarks1[KPT_CANCEL_REMARKS_SIZE] = {0};//application - applremarks  1-60
+		varchar kpt_cancel_remarks2[KPT_CANCEL_REMARKS_SIZE] = {0};//application - applremarks  61-120
+
+		short int oldkptno_ind = -1;
+		short int dob_ind = -1;
+		short int gender_ind = -1;
+		short int birth_state_code_ind = -1;
+		short int birth_country_code_ind = -1;
+		short int birthdistrictcode_ind = -1;
+		short int kpt_cancel_date_ind = -1;
+		short int kpt_cancel_reason_code_ind = -1;
+		short int kpt_cancel_remarks1_ind = -1;
+		short int kpt_cancel_remarks2_ind = -1;
+
+	EXEC SQL END DECLARE SECTION;
+
+	strcpy(applid, header.application_id);
+
+	EXEC SQL
+		SELECT TO_CHAR(A.BIRTHDATE, 'DDMMYYYY'), A.GENDER, A.BIRTHSTATECODE, A.CITIZENNATIONCODE, 
+		A.BIRTHDISTRICTCODE, B.KPTNO, TO_CHAR(SYSDATE, 'DDMMYYYY'), B.NAMECHGCODE,
+		RTRIM(SUBSTR(B.APPLREMARKS, 1, 40)), RTRIM(SUBSTR(B.APPLREMARKS, 41, 40)) 
+		INTO :dob:dob_ind, :gender:gender_ind, :birth_state_code:birth_state_code_ind, 
+			 :birth_country_code:birth_country_code_ind, 
+			 :birthdistrictcode:birthdistrictcode_ind, 
+			 :oldkptno:oldkptno_ind, :kpt_cancel_date:kpt_cancel_date_ind, 
+			 :kpt_cancel_reason_code:kpt_cancel_reason_code_ind, 
+			 :kpt_cancel_remarks1:kpt_cancel_remarks1_ind, 
+			 :kpt_cancel_remarks2:kpt_cancel_remarks2_ind
+		FROM APPL_MISSED_OPEX A, APPLICATION B
+		WHERE A.APPLID = :applid AND A.APPLID = B.APPLID;
+
+	sqlmsg[0] = '\0';
+	strcpy(sqlmsg, SQLMSG);
+	if(SQLCODE)
+	{
+
+		strcpy(prog_log.remarks,"get_kptchg_data : SELECT failed");
+		sprintf(excep_log.error_msg,"get_kptchg_data : SELECT failed : %s", SQLMSG);
+		excep_log.termination_flag = YES;
+		excep_log.severity = FATAL;
+		log_error();
+
+   	    return SELECT_ERROR;
+	}
+
+	setnull(kpt_cancel_remarks1);
+	setnull(kpt_cancel_remarks2);
+	setnull(oldkptno);
+
+	if(dob_ind != -1)
+	{
+		strcpy(upd_data->dob, dob);
+	}
+
+	if(gender_ind != -1)
+	{
+		upd_data->gender = gender;
+	}
+
+	if(birth_state_code_ind != -1)
+	{
+		strcpy(upd_data->birth_state_code, birth_state_code);
+	}
+
+	if(birth_country_code_ind != -1)
+	{
+		if(!(strcmp(birth_country_code, "3000")))
+		{
+			strcpy(upd_data->birth_country_code, birth_country_code);
+		}
+		else	if(birthdistrictcode_ind != -1)
+		{
+			itoa(birthdistrictcode, upd_data->birth_country_code, 10);
+		}
+	}
+
+
+	if(oldkptno_ind != -1)
+	{
+		strcpy(upd_data->oldkptno, oldkptno.arr);
+	}
+
+	if(kpt_cancel_date_ind != -1)
+	{
+		strcpy(upd_data->kpt_cancel_date, kpt_cancel_date);
+	}
+
+	if(kpt_cancel_reason_code_ind != -1)
+	{
+		strcpy(upd_data->kpt_cancel_reason_code, kpt_cancel_reason_code);
+	}
+
+	if(kpt_cancel_remarks1_ind != -1)
+	{
+		strcpy(upd_data->kpt_cancel_remarks1, kpt_cancel_remarks1.arr);
+	}
+
+	if(kpt_cancel_remarks2_ind != -1)
+	{
+		strcpy(upd_data->kpt_cancel_remarks2, kpt_cancel_remarks2.arr);
+	}
+
+	#ifdef DEBUG
+		userlog("get_kptchg_data:kpt_cancel_remarks1:%s:", kpt_cancel_remarks1.arr);
+		userlog("get_kptchg_data:kpt_cancel_remarks2:%s:", kpt_cancel_remarks2.arr);
+	#endif
+
+	return GMPC_GOOD;
+
+}
+

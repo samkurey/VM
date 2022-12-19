@@ -1,0 +1,98 @@
+D:\Program Files\Microsoft Visual Studio\Common\Tools
+//New CUID Generated for SetApplStat_L3
+
+
+//Registry format
+{BFDCE839-36EB-4cdf-A67C-ADE7E77B457D}
+
+
+
+//implement ole create
+// {BFDCE839-36EB-4cdf-A67C-ADE7E77B457D}
+IMPLEMENT_OLECREATE(<<class>>, <<external_name>>, 
+0xbfdce839, 0x36eb, 0x4cdf, 0xa6, 0x7c, 0xad, 0xe7, 0xe7, 0x7b, 0x45, 0x7d);
+
+
+
+
+//define GUID
+// {BFDCE839-36EB-4cdf-A67C-ADE7E77B457D}
+DEFINE_GUID(<<name>>, 
+0xbfdce839, 0x36eb, 0x4cdf, 0xa6, 0x7c, 0xad, 0xe7, 0xe7, 0x7b, 0x45, 0x7d);
+
+
+
+
+static constant 
+
+// {BFDCE839-36EB-4cdf-A67C-ADE7E77B457D}
+static const GUID <<name>> = 
+{ 0xbfdce839, 0x36eb, 0x4cdf, { 0xa6, 0x7c, 0xad, 0xe7, 0xe7, 0x7b, 0x45, 0x7d } };
+
+
+
+
+//======== id for type lib same component.
+
+//IMPLEMENT_OLECREATE
+
+// {67C932A0-3398-469f-95B3-4BBC80B81740}
+IMPLEMENT_OLECREATE(<<class>>, <<external_name>>, 
+0x67c932a0, 0x3398, 0x469f, 0x95, 0xb3, 0x4b, 0xbc, 0x80, 0xb8, 0x17, 0x40);
+
+
+
+//DEFINE_GUID
+
+// {67C932A0-3398-469f-95B3-4BBC80B81740}
+DEFINE_GUID(<<name>>, 
+0x67c932a0, 0x3398, 0x469f, 0x95, 0xb3, 0x4b, 0xbc, 0x80, 0xb8, 0x17, 0x40);
+
+
+
+//static const GUID
+
+// {67C932A0-3398-469f-95B3-4BBC80B81740}
+static const GUID <<name>> = 
+{ 0x67c932a0, 0x3398, 0x469f, { 0x95, 0xb3, 0x4b, 0xbc, 0x80, 0xb8, 0x17, 0x40 } };
+
+
+//Registry format
+
+{67C932A0-3398-469f-95B3-4BBC80B81740}
+
+
+
+//======== id for same component.
+
+//IMPLEMENT_OLECREATE
+// {5731B854-6B09-4585-B9F7-B5AD20B28833}
+IMPLEMENT_OLECREATE(<<class>>, <<external_name>>, 
+0x5731b854, 0x6b09, 0x4585, 0xb9, 0xf7, 0xb5, 0xad, 0x20, 0xb2, 0x88, 0x33);
+
+
+
+
+//DEFINE_GUID
+
+// {5731B854-6B09-4585-B9F7-B5AD20B28833}
+DEFINE_GUID(<<name>>, 
+0x5731b854, 0x6b09, 0x4585, 0xb9, 0xf7, 0xb5, 0xad, 0x20, 0xb2, 0x88, 0x33);
+
+
+
+//static const GUID
+// {5731B854-6B09-4585-B9F7-B5AD20B28833}
+static const GUID <<name>> = 
+{ 0x5731b854, 0x6b09, 0x4585, { 0xb9, 0xf7, 0xb5, 0xad, 0x20, 0xb2, 0x88, 0x33 } };
+
+
+
+
+//Registry format
+{5731B854-6B09-4585-B9F7-B5AD20B28833}
+
+
+
+
+

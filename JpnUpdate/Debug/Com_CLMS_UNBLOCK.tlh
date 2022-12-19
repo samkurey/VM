@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (8a42c270).
+//
+// d:\mtscomponents_context\jpnupdate\debug\Com_CLMS_UNBLOCK.tlh
+//
+// C++ source equivalent of Win32 type library Com_CLMS_UNBLOCK.tlb
+// compiler-generated file created 12/21/10 at 18:06:36 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ CLMS_UNBLOCK;
+struct __declspec(uuid("d974aab1-7dda-4090-8049-cf53046bc84c"))
+/* dual interface */ ICLMS_UNBLOCK;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(ICLMS_UNBLOCK, __uuidof(ICLMS_UNBLOCK));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("e17b1af5-7d71-4699-ae77-4c77c5a3f6f9"))
+CLMS_UNBLOCK;
+    // [ default ] interface ICLMS_UNBLOCK
+
+struct __declspec(uuid("d974aab1-7dda-4090-8049-cf53046bc84c"))
+ICLMS_UNBLOCK : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "d:\mtscomponents_context\jpnupdate\debug\Com_CLMS_UNBLOCK.tli"
+
+#pragma pack(pop)

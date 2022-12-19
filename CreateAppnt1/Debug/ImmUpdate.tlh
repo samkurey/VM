@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (7b07cfa6).
+//
+// d:\mtscomponents_context\createappnt1\debug\ImmUpdate.tlh
+//
+// C++ source equivalent of Win32 type library ImmUpdate.tlb
+// compiler-generated file created 02/26/14 at 17:24:55 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ ImmUpdateService;
+struct __declspec(uuid("71d23c19-daa3-4a30-95d8-9cb29974334e"))
+/* dual interface */ IImmUpdateService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IImmUpdateService, __uuidof(IImmUpdateService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("0829ec5b-5742-455b-b9ed-a5a5b34d2760"))
+ImmUpdateService;
+    // [ default ] interface IImmUpdateService
+
+struct __declspec(uuid("71d23c19-daa3-4a30-95d8-9cb29974334e"))
+IImmUpdateService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "d:\mtscomponents_context\createappnt1\debug\ImmUpdate.tli"
+
+#pragma pack(pop)

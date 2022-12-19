@@ -1,0 +1,1 @@
+void userlogr(char* szFormatString, ...);

@@ -1,0 +1,132 @@
+#include<stdio.h>
+#include<string.h>
+#include "gscbdef.h"
+#include <sqlca.h>
+
+extern "C" void userlog(char* szFormatString, ...);
+
+
+/************************************************************************************/
+/* Function Name:	EnableThreads()         										*/
+/* Input		:	None							              					*/
+/* Return Values:   None															*/
+/* Description	:	This function enables oracle thread support.					*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+void EnableThreads()
+{
+	
+	#ifdef DEBUG
+		userlog("Inside EnableThreads");
+	#endif
+	struct sqlca sqlca = {0};
+	EXEC SQL ENABLE THREADS;
+}
+
+/************************************************************************************/
+/* Function Name:	LoginToOracle()         										*/
+/* Input		:	1. sql context							              			*/
+/*					2. User id														*/
+/*					3. Password														*/
+/* Return Values:   GMPC_GOOD/oracle error											*/
+/* Description	:	This function connects to oracle using the userid and password	*/
+/*					read from the registry											*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+
+int LoginToOracle(sql_context *ctx, char *UserId, char *Passwd)
+{
+
+	struct sqlca sqlca = {0};
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	varchar pcUserId[8+1], pcPasswd[8+1];
+
+	sql_context pcctx;
+	EXEC SQL END DECLARE SECTION;
+
+#ifdef DEBUG
+	userlog("Inside LoginToOracle ");
+#endif
+
+	strcpy((char *)pcUserId.arr, UserId);
+	setlen(pcUserId);
+	strcpy((char *)pcPasswd.arr, Passwd);
+	setlen(pcPasswd);
+
+	EXEC SQL CONTEXT ALLOCATE :pcctx;
+
+	*ctx = pcctx;
+
+#ifdef DEBUG
+	userlog("Using sql context %u", *ctx);
+#endif
+
+	EXEC SQL CONTEXT USE :pcctx;
+
+	EXEC SQL CONNECT :pcUserId IDENTIFIED BY :pcPasswd;
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not connected !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	else 
+	{
+		//setcontex(Ctx);
+		userlog("connected !!");
+		return GMPC_GOOD;
+	}
+}
+
+/************************************************************************************/
+/* Function Name:	LogoutFromOracle()         										*/
+/* Input		:	1. sql context							              			*/
+/* Return Values:   GMPC_GOOD/oracle error											*/
+/* Description	:	This function disconnects from oracle							*/
+/* Limitations	:   None															*/
+/************************************************************************************/
+
+int LogoutFromOracle(void * ctx)
+{
+
+	struct sqlca sqlca = {0};
+
+	EXEC SQL BEGIN DECLARE SECTION;
+
+	sql_context pcctx;
+	EXEC SQL END DECLARE SECTION;
+
+
+	pcctx = ctx;
+	EXEC SQL CONTEXT USE:pcctx;
+
+	EXEC SQL COMMIT WORK RELEASE;
+
+	#ifdef DEBUG
+		userlog("Using sql context %u", ctx);
+	#endif
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not disconnected !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	
+	EXEC SQL CONTEXT FREE :pcctx;
+
+
+	if (sqlca.sqlcode)
+	{
+		userlog("Not freed !!, %s", SQLMSG);
+		return sqlca.sqlcode;
+	}
+	else 
+		userlog("termination ok !!");
+
+	return GMPC_GOOD;
+
+}
+

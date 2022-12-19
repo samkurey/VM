@@ -1,0 +1,32 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: SetApplStatL3 - Win32 Unicode Release MinDependency--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP4CE9.tmp" with contents
+[
+/nologo /o"Debug/SetApplStatL3.bsc" 
+.\Debug\StdAfx.sbr
+.\Debug\gscbcommon.sbr
+.\Debug\GSCBDB.sbr
+.\Debug\gscblog.sbr
+.\Debug\gscbutil.sbr
+.\Debug\SetApplStatL3.sbr
+.\Debug\SetApplStatL3_DB.sbr
+.\Debug\SetApplStatL3Service.sbr
+.\Debug\userlog.sbr
+.\Debug\userlog_r.sbr]
+Creating command line "bscmake.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP4CE9.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+SetApplStatL3.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

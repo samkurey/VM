@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (f5c21ad2).
+//
+// CardReprint.tlh
+//
+// C++ source equivalent of Win32 type library CardReprint.tlb
+// compiler-generated file created 12/04/06 at 19:15:04 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ CardReprintService;
+struct __declspec(uuid("42e76472-f135-4000-a591-7f2bffdddd55"))
+/* dual interface */ ICardReprintService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(ICardReprintService, __uuidof(ICardReprintService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("227f5e11-2fa8-427c-a988-ebd310db0009"))
+CardReprintService;
+    // [ default ] interface ICardReprintService
+
+struct __declspec(uuid("42e76472-f135-4000-a591-7f2bffdddd55"))
+ICardReprintService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "CardReprint.tli"
+
+#pragma pack(pop)

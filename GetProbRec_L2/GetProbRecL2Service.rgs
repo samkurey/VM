@@ -1,0 +1,26 @@
+HKCR
+{
+	GetProbRec_L2.GetProbRecL2Service.1 = s 'GetProbRecL2Service Class'
+	{
+		CLSID = s '{06AACDA2-E482-47CE-8845-3B9FF3C95A97}'
+	}
+	GetProbRec_L2.GetProbRecL2Service = s 'GetProbRecL2Service Class'
+	{
+		CLSID = s '{06AACDA2-E482-47CE-8845-3B9FF3C95A97}'
+		CurVer = s 'GetProbRec_L2.GetProbRecL2Service.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {06AACDA2-E482-47CE-8845-3B9FF3C95A97} = s 'GetProbRecL2Service Class'
+		{
+			ProgID = s 'GetProbRec_L2.GetProbRecL2Service.1'
+			VersionIndependentProgID = s 'GetProbRec_L2.GetProbRecL2Service'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{2DB54A75-E019-4473-ACCE-B760BFD06373}'
+		}
+	}
+}

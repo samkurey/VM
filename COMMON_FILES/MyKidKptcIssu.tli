@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (e2645cf9).
+//
+// MyKidKptcIssu.tli
+//
+// Wrapper implementations for Win32 type library MyKidKptcIssu.tlb
+// compiler-generated file created 03/13/09 at 12:25:20 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IMyKidKptcIssuService wrapper method implementations
+//
+
+inline HRESULT IMyKidKptcIssuService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

@@ -1,0 +1,26 @@
+HKCR
+{
+	TerminateAppl.TerminateApplService.1 = s 'TerminateApplService Class'
+	{
+		CLSID = s '{EDF3FB53-7E49-4405-8F2B-F14BB1738DB8}'
+	}
+	TerminateAppl.TerminateApplService = s 'TerminateApplService Class'
+	{
+		CLSID = s '{EDF3FB53-7E49-4405-8F2B-F14BB1738DB8}'
+		CurVer = s 'TerminateAppl.TerminateApplService.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {EDF3FB53-7E49-4405-8F2B-F14BB1738DB8} = s 'TerminateApplService Class'
+		{
+			ProgID = s 'TerminateAppl.TerminateApplService.1'
+			VersionIndependentProgID = s 'TerminateAppl.TerminateApplService'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{DA20547B-EE95-443B-9966-FF316BD122B3}'
+		}
+	}
+}

@@ -1,0 +1,654 @@
+/* $Header$ */
+
+/****************************************************************************/
+/* File Name   : gscblog.pc										            */
+/* Author      : Sangeeta Natu, Amit Sangrulkar, Bakul Waghmare				*/
+/* Description : This file contains common functions required for			*/
+/*               logging by all services.									*/
+/****************************************************************************/
+
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <sqlca.h>
+
+
+
+#define LOG_DEFINED    /* To define global variables used for logging */
+#include "gscbdef.h"
+#include "gscblog.h"
+#include "gscbio.h"
+#include  "userlog.h"
+
+extern PROG_ACCESS_LOG_T prog_log;
+extern APPL_EXCEP_LOG_T excep_log;
+extern TXN_LOG_T tran_log;
+
+
+/************************************************************************/
+/* Function Name  : log_error()											*/
+/* Input		  :	A structure containing details to be logged into	*/
+/*					PROGRAM_ACCESS_LOG table.				  			*/
+/*	                A structure containing details to be logged into	*/
+/*					APPL_EXCEPTION_LOG table.					        */
+/*																     	*/
+/* Description   : This function is used to call the standard logging   */
+/*                 functions in case of errors				            */
+/*																		*/				   
+/* Return Values : No Return Value										*/
+/* Limitations   : None													*/
+/************************************************************************/
+void log_error(void * ctx)
+{
+	int ret_code;
+	char curr_date_time[DATE_TIME_SIZE] = "";
+
+
+	/* Rollback the current transaction	*/
+	if(FAILURE == gscbrollback_trans(ctx))
+	{
+		userlog("log_error: %s", excep_log.error_msg);
+		return;
+	}
+
+	/* Begin a new transaction	*/
+	if(FAILURE == gscbbegin_trans(ctx))
+	{
+		userlog("log_error: %s", excep_log.error_msg);
+		return;
+	}
+
+	/* Log in Application exception log table */
+	if(FAILURE == (ret_code = appl_excep_log(ctx)))
+	{
+		/* Whether the rollback fails or not the logging	*/
+		/* is to be done into the userlog					*/
+		gscbrollback_trans(ctx);
+
+#ifdef DEBUG
+		userlog("log_error : Return code from appl_excep_log : %d\n", ret_code);	 
+#endif
+		userlog("log_error: %s", excep_log.error_msg);
+		return;
+	}
+
+	if(YES == excep_log.termination_flag)
+	{
+		/* Get current date-time for logging */
+		strcpy(curr_date_time, get_date_time());
+		strcpy(prog_log.access_end_time, curr_date_time);
+
+		/* Log in Program access log table */
+		if(FAILURE == (ret_code = prog_access_log(ctx)))
+		{
+			gscbrollback_trans(ctx);
+
+#ifdef DEBUG
+			userlog("log_error : Return code from prog_access_log : %d\n", ret_code);
+#endif
+			userlog("log_error: %s", excep_log.error_msg);
+			userlog("log_error: %s\n", prog_log.remarks);
+			return;
+		}
+	}
+
+	if(FAILURE == (ret_code = gscbcommit_trans(ctx)))
+	{
+#ifdef DEBUG
+			userlog("log_error : Return code from prog_access_log : %d\n", ret_code);
+#endif
+			userlog("log_error: %s", excep_log.error_msg);
+			userlog("log_error: %s\n", prog_log.remarks);
+			return;
+	}
+}
+
+/********************************************************************/
+/* Function Name : appl_excep_log()                                 */
+/* Input         : Structure containing error details to be logged  */                                                 
+/* Description   : This function is used to log the details of      */
+/*                 errors into the APPL_EXECPT_LOG table            */
+/* Return Values : SUCCESS / FAILURE                                */
+/* Limitations   : None                                             */
+/********************************************************************/
+int appl_excep_log(void * ctx)
+{
+
+	struct sqlca sqlca = {0};
+	EXEC SQL BEGIN DECLARE SECTION;
+	char application_id[APP_ID_SIZE];
+	varchar branch_code[BRANCH_CODE_SIZE];
+	varchar user_id[USER_ID_SIZE];
+	varchar workstation_id[WS_ID_SIZE];
+	varchar program_id[PROG_ID_SIZE];	
+	varchar error_date[DATE_TIME_SIZE]; /* Format should be DDMMYYYY HHMISS */
+
+	char severity;						/* F-Fatal, N-Non Fatal, W-Warning	*/
+
+	varchar error_msg[ERROR_MSG_SIZE];	/* Additional comments indicating	*/
+										/* details of the error				*/
+
+	char termination_flag;				/* Y -Yes, N -No */
+
+	short int application_id_ind = -1;
+	short int branch_code_ind = -1;
+	short int user_id_ind = -1;	
+	short int workstation_id_ind = -1;
+	short int program_id_ind = -1;
+	short int error_date_ind = -1;
+	short int severity_ind = -1;
+	short int error_msg_ind = -1;
+	short int termination_flag_ind = -1;
+	sql_context pcCtx;
+	EXEC SQL END DECLARE SECTION;  
+
+	FILE * logfp = NULL;		/* File pointer for logging into a log file */
+	char filename[FILENAME_SIZE];
+	char log_flag = 'A';
+	
+	/* Make sure message doesnt exceed ERROR_MSG_SIZE */	
+	excep_log.error_msg[ERROR_MSG_SIZE - 1] = '\0';
+
+	pcCtx = ctx; 
+	EXEC SQL CONTEXT USE :pcCtx; 	
+
+	
+
+#ifdef DEBUG
+	userlog("Input data\n");
+	userlog("appl_excep_log : Application id -  %s\n", excep_log.application_id);
+	userlog("appl_excep_log : Branch code - %s\n", excep_log.branch_code);
+	userlog("appl_excep_log : User Id - %s\n", excep_log.user_id);	
+	userlog("appl_excep_log : Workstation id - %s\n", excep_log.workstation_id);
+	userlog("appl_excep_log : Program id - %s\n", excep_log.program_id);	
+	userlog("appl_excep_log : Error date - %s\n", excep_log.error_date);	
+	userlog("appl_excep_log : Severity - %c\n", excep_log.severity);
+	userlog("appl_excep_log : error_msg - %s\n", excep_log.error_msg);
+	userlog("appl_excep_log : Termination Flag - %c\n", excep_log.termination_flag);
+#endif
+	
+	/* Copy data into host variables */
+	if (excep_log.application_id[0] != '\0')
+	{		
+		strcpy(application_id, excep_log.application_id);
+		application_id_ind = 0;
+	}
+
+	if (excep_log.branch_code[0] != '\0')
+	{
+		strcpy(branch_code.arr, excep_log.branch_code);
+		branch_code_ind = 0;
+		setlen(branch_code);
+	}
+
+	if (excep_log.user_id[0] != '\0')
+	{
+		strcpy(user_id.arr, excep_log.user_id); 
+		user_id_ind = 0;
+		setlen(user_id);
+	}
+
+	if (excep_log.workstation_id[0] != '\0')
+	{
+		strcpy(workstation_id.arr, excep_log.workstation_id);
+		workstation_id_ind =0;
+		setlen(workstation_id);
+	}
+
+	if (excep_log.program_id[0] != '\0')
+	{
+		strcpy(program_id.arr, excep_log.program_id);
+		program_id_ind =0;
+		setlen(program_id);
+	}
+
+	if (excep_log.error_date[0] != '\0')
+	{
+		strcpy(error_date.arr, excep_log.error_date);
+		error_date_ind =0;
+		setlen(error_date);
+	}
+
+	if (excep_log.severity != '\0')
+	{
+		severity =  excep_log.severity;
+		severity_ind =0;
+	}
+
+	if (excep_log.error_msg[0] != '\0')
+	{
+		strcpy(error_msg.arr, excep_log.error_msg);
+		error_msg_ind =0;
+		setlen(error_msg);
+	}
+
+	if (excep_log.termination_flag != '\0')
+	{
+		termination_flag = excep_log.termination_flag;
+		termination_flag_ind =0;
+	}
+
+	
+	EXEC SQL INSERT INTO APPL_EXCEPT_LOG (APPLID, PROGRAMID, BRANCHCODE, WSID, TIMESTAMP,
+			 PROGRAMINITIATOR, ERRORMSG, SEVERITYCODE, PROGRAMTERMFLAG )
+			 VALUES ( :application_id:application_id_ind, :program_id:program_id_ind,
+			 :branch_code:branch_code_ind, :workstation_id:workstation_id_ind, 
+			 TO_DATE(:error_date:error_date_ind, 'DDMMYYYY HH24MISS'), 
+			 :user_id:user_id_ind, :error_msg:error_msg_ind, 
+			 :severity:severity_ind, :termination_flag:termination_flag_ind);
+			 
+
+	if (SQLCODE != 0)
+	{
+#ifdef DEBUG
+		userlog("appl_excep_log: Failed to insert record into APPL_EXCEPT_LOG: %s\n", SQLMSG);
+#endif
+
+		/* Log the error in the appl_exception_log file */
+		get_file_name(filename, log_flag);
+		logfp = fopen(filename, "a");
+
+		if (logfp == NULL)
+			return FAILURE;			
+		else
+		{
+			/* Log the error in the following format :
+			< Application id>:<Program Id>:< Error date>:<error_msg>:<Branch code>:<Program Initiator>:<Workstation Id>:<Severity>:<Termination flag> */
+
+			if((fprintf(logfp, "%s:%s:%s:%s:%s:%s:%s:%c:%c\n", 
+				excep_log.application_id, excep_log.program_id, 
+				excep_log.error_date, excep_log.error_msg, 
+				excep_log.branch_code, excep_log.workstation_id, 
+				excep_log.user_id, excep_log.severity, 
+				excep_log.termination_flag)) != 0)
+			{
+				fclose(logfp); 
+				return FAILURE;
+			}
+			else
+			{
+				fclose(logfp); 
+				return SUCCESS;
+			}
+		}
+	}
+
+	return SUCCESS;
+}
+
+
+/********************************************************************/
+/* Function Name : prog_access_log()                                */
+/* Input         :                                                  */
+/*                 Structure containing information required to log */
+/*                 details of the program / service being executed  */
+/* Description   : This function is used to log the details of      */
+/*                 program / service being executed into the        */
+/*                 PROGRAM_ACCESS_LOG table                         */
+/* Return Values : SUCCESS / FAILURE                                */
+/* Limitations   : None                                             */
+/********************************************************************/
+int prog_access_log(void * ctx)
+{
+	struct sqlca sqlca = {0};
+	EXEC SQL BEGIN DECLARE SECTION;
+	char application_id[APP_ID_SIZE];
+	varchar branch_code[BRANCH_CODE_SIZE];
+	varchar user_id[USER_ID_SIZE];
+	varchar workstation_id[WS_ID_SIZE];
+	varchar program_id[PROG_ID_SIZE];			/* The service id in which the error occurred	*/
+
+	varchar access_start_time[DATE_TIME_SIZE];  /* Format should be DDMMYYYY HHMISS				*/
+
+	varchar access_end_time[DATE_TIME_SIZE];	/* Format should be DDMMYYYY HHMISS				*/
+
+	varchar remarks[LOG_REMARK_SIZE];			/* Comments indicating service  initiation or	*/
+												/* Successful/Unsuccessful completion of the	*/
+												/* service										*/
+	short int application_id_ind = -1;
+	short int branch_code_ind = -1;
+	short int user_id_ind = -1;	
+	short int workstation_id_ind = -1;
+	short int program_id_ind = -1;
+	short int access_start_time_ind = -1;
+	short int access_end_time_ind = -1;
+	short int remarks_ind = -1;
+	sql_context pcCtx; 
+	EXEC SQL END DECLARE SECTION;  
+
+	FILE * logfp = NULL;		/* File pointer for logging into a log file */
+	char filename[FILENAME_SIZE];
+	char log_flag = 'P';
+
+	/* Make sure message doesnt exceed LOG_REMARK_SIZE */	
+	prog_log.remarks[LOG_REMARK_SIZE - 1] = '\0';	
+
+	pcCtx = ctx; 
+	EXEC SQL CONTEXT USE :pcCtx; 	
+
+
+
+	/* Copy data into host variables */
+	if (prog_log.application_id[0] != '\0')
+	{		
+		strcpy(application_id, prog_log.application_id);
+		application_id_ind = 0;
+		
+	}
+
+	if (prog_log.branch_code[0] != '\0')
+	{
+		strcpy(branch_code.arr, prog_log.branch_code);
+		branch_code_ind = 0;
+		setlen(branch_code);
+	}
+
+	if (prog_log.user_id[0] != '\0')
+	{
+		strcpy(user_id.arr, prog_log.user_id); 
+		user_id_ind = 0;
+		setlen(user_id);
+	}
+
+	if (prog_log.workstation_id[0] != '\0')
+	{
+		strcpy(workstation_id.arr, prog_log.workstation_id);
+		workstation_id_ind =0;
+		setlen(workstation_id);
+	}
+
+	if (prog_log.program_id[0] != '\0')
+	{
+		strcpy(program_id.arr, prog_log.program_id);
+		program_id_ind =0;
+		setlen(program_id);
+	}
+
+	if (prog_log.access_start_time[0] != '\0')
+	{
+		strcpy(access_start_time.arr, prog_log.access_start_time);
+		access_start_time_ind =0;
+		setlen(access_start_time);
+	}
+
+	if (prog_log.access_end_time[0] != '\0')
+	{
+		strcpy(access_end_time.arr, prog_log.access_end_time);
+		access_end_time_ind =0;
+		setlen(access_end_time);
+	}
+
+	if (prog_log.remarks[0] != '\0')
+	{
+		strcpy(remarks.arr, prog_log.remarks);
+		remarks_ind =0;
+		setlen(remarks);
+	}
+
+		
+	EXEC SQL INSERT INTO PROGRAM_ACCESS_LOG (APPLID, ACCESSSTARTDATETIME, 
+			 ACCESSENDDATETIME, PROGRAMID, REMARKS, BRANCHCODE, USERID, WSID)
+			 VALUES ( :application_id:application_id_ind, 
+			 TO_DATE(:access_start_time:access_start_time_ind, 'DDMMYYYY HH24MISS'),
+			 TO_DATE(:access_end_time:access_end_time_ind, 'DDMMYYYY HH24MISS'),
+			 :program_id:program_id_ind, :remarks:remarks_ind, 
+			 :branch_code:branch_code_ind, :user_id:user_id_ind, 
+			 :workstation_id:workstation_id_ind);
+	
+	if (SQLCODE != 0)
+	{
+#ifdef DEBUG
+		userlog("prog_access_log: Failed to insert record into PROGRAM_ACCESS_LOG: %s\n", SQLMSG);
+#endif
+
+		/* Log the error in the program_access_log file */
+		get_file_name(filename, log_flag);
+
+		logfp = fopen(filename, "a");
+		if (logfp == NULL)
+			return FAILURE;
+		else
+		{
+			/* Log the error in the following format :
+			< Application id>:< Access start date>:<Access end date>:<Program Id>:<Remarks>:<Branch code>:<Program Initiator>:<Workstation Id>*/
+
+
+			if((fprintf(logfp, "%s:%s:%s:%s:%s:%s:%s:%s\n", prog_log.application_id, prog_log.access_start_time,access_end_time.arr, prog_log.program_id,
+				prog_log.remarks, prog_log.branch_code, prog_log.user_id, workstation_id.arr)) != 0)				
+			{
+				fclose(logfp);  
+				return FAILURE;
+			}
+			else
+			{
+				fclose(logfp);  
+				return SUCCESS;
+			}
+		}
+	}
+
+	return SUCCESS;
+}
+
+
+/********************************************************************/
+/* Function Name : txn_log()                                        */
+/* Input         :                                                  */
+/*                 Structure containing information required to log */
+/*                 details of a transaction                         */
+/* Description   : This function is used to log the details of the  */
+/*                 transaction in progress into the APPL_TXN_LOG    */
+/*                 table                                            */
+/* Return Values : SUCCESS / FAILURE                                */
+/* Limitations   : None                                             */
+/********************************************************************/
+//int txn_log(TXN_LOG_T tran_log,void * ctx)
+int txn_log(void * ctx)
+{
+	struct sqlca sqlca = {0};
+	EXEC SQL BEGIN DECLARE SECTION;
+	varchar application_id[APP_ID_SIZE];			
+	varchar branch_code[BRANCH_CODE_SIZE];
+	varchar user_id[USER_ID_SIZE];
+	varchar workstation_id[WS_ID_SIZE];
+	varchar kpt_no[KPT_SIZE];
+	varchar txn_code[TRANSACTION_CODE_SIZE];
+	varchar txn_date[DATE_TIME_SIZE];		/* Format should be DDMMYYYY HHMISS	*/
+
+
+	short int application_id_ind;
+	short int branch_code_ind;
+	short int user_id_ind;	
+	short int workstation_id_ind;
+	short int kpt_no_ind;
+	short int txn_code_ind;
+	short int txn_date_ind;
+	sql_context pcCtx; 
+	EXEC SQL END DECLARE SECTION;  
+
+	FILE * logfp = NULL;		/* File pointer for logging into a log file	*/
+	char filename[FILENAME_SIZE];
+	char log_flag = 'T';
+
+	pcCtx = ctx; 
+	EXEC SQL CONTEXT USE :pcCtx; 	
+
+
+
+	/* Copy data into host variables */
+	if (tran_log.application_id[0] != '\0')
+	{		
+		strcpy(application_id.arr, tran_log.application_id);
+		application_id_ind = 0;
+		setlen(application_id);
+	}
+
+	if (tran_log.branch_code[0] != '\0')
+	{
+		strcpy(branch_code.arr, tran_log.branch_code);
+		branch_code_ind = 0;
+		setlen(branch_code);
+	}
+
+	if (tran_log.user_id[0] != '\0')
+	{
+		strcpy(user_id.arr, tran_log.user_id); 
+		user_id_ind = 0;
+		setlen(user_id);
+	}
+
+	if (tran_log.workstation_id[0] != '\0')
+	{
+		strcpy(workstation_id.arr, tran_log.workstation_id);
+		workstation_id_ind =0;
+		setlen(workstation_id);
+	}
+
+	if (tran_log.kpt_no[0] != '\0')
+	{
+		strcpy(kpt_no.arr, tran_log.kpt_no);
+		kpt_no_ind =0;
+		setlen(kpt_no);
+	}
+
+	if (tran_log.txn_code[0] != '\0')
+	{
+		strcpy(txn_code.arr, tran_log.txn_code);
+		txn_code_ind =0;
+		setlen(txn_code);
+	}
+
+	if (tran_log.txn_date[0] != '\0')
+	{
+		strcpy(txn_date.arr, tran_log.txn_date);
+		txn_date_ind =0;
+		setlen(txn_date);
+	}
+	
+	
+	EXEC SQL INSERT INTO APPL_TXN_LOG (APPLID, KPTNO, TXNCODE, TXNDATE, 
+			 BRANCHCODE, USERID, WSID, TIMESTAMP) VALUES 
+			 ( :application_id:application_id_ind, :kpt_no:kpt_no_ind, 
+			 :txn_code:txn_code_ind, 
+			 TO_DATE(:txn_date:txn_date_ind, 'DDMMYYYY HH24MISS'), 
+			 :branch_code:branch_code_ind, :user_id:user_id_ind, 
+			 :workstation_id:workstation_id_ind, 
+			 TO_DATE(:txn_date:txn_date_ind, 'DDMMYYYY HH24MISS'));
+
+	if (SQLCODE != 0)
+	{
+#ifdef DEBUG
+		userlog ("txn_log: Failed to insert record into APPL_TXN_LOG: %s\n", SQLMSG);
+#endif
+
+		/* Log the error in the txn_log file */
+		get_file_name(filename, log_flag);
+
+		logfp = fopen(filename, "a");
+		if (logfp == NULL)
+			return FAILURE;
+		else
+		{
+			/* Log the error in the following format :
+			<AppID>:<KptNo>:<TxnCode>:<TxnDate>:<Branch code>:<UserID>:<WorkstationId>:<Timestamp> */
+
+			if((fprintf(logfp, "%s:%s:%s:%s:%s:%s:%s:%s\n", tran_log.application_id, tran_log.kpt_no, tran_log.txn_code, tran_log.txn_date, tran_log.branch_code, tran_log.user_id, 
+					tran_log.workstation_id, tran_log.txn_date)) != 0)
+			{
+				fclose(logfp);  
+				return FAILURE;
+			}
+			else
+			{
+				fclose(logfp);
+				return SUCCESS;
+			}
+		}
+	}
+
+	return SUCCESS;
+}
+
+/************************************************************************/
+/* Function Name : get_file_name()										*/
+/* Input		 : log flag indicating in which table logging is        */
+/*                 occuring											    */
+/*																     	*/
+/* Description   : This function is used to construct the file name in  */
+/*                 which logging is to be done if logging in database   */
+/*                 fails                                                */
+/*																		*/				   
+/* Return Values : File name     										*/
+/* Limitations   : None													*/
+/************************************************************************/
+void get_file_name(char *filename, char log_flag)
+{
+	struct sqlca sqlca = {0};
+	char today[DATE_SIZE];
+
+	/* Construct the file name using current date */
+	strcpy(today, get_date());
+	strcpy(filename, LOG_PATH);	/* Copy the path for logging */
+	strcat(filename, today);
+
+	if (log_flag == 'A')
+	{
+		strcat(filename, "_excep");
+		strcat(filename,".log");
+	}
+	else if (log_flag == 'P')
+	{
+		strcat(filename, "_program");
+		strcat(filename,".log");
+	}
+
+	return;
+}
+
+/************************************************************************/
+/* Function Name : log_exit()											*/
+/* Input		 : None												    */
+/* Description   : This function is used to log successful exit of		*/
+/*				   a service											*/
+/* Return Values : None		     										*/
+/* Limitations   : None													*/
+/************************************************************************/
+void log_exit(void * ctx)
+{
+
+	int ret_code;
+	char curr_date_time[DATE_TIME_SIZE] = "";
+
+
+	/* Begin a new transaction	*/
+	if(FAILURE == gscbbegin_trans(ctx))
+	{
+		userlog("log_error: %s", prog_log.remarks);
+		return;
+	}
+
+	/* Get current date-time for logging */
+	strcpy(curr_date_time, get_date_time());
+	strcpy(prog_log.access_end_time, curr_date_time);
+
+	/* Log in Program access log table */
+	if(FAILURE == (ret_code = prog_access_log(ctx)))
+	{
+		gscbrollback_trans(ctx);
+
+#ifdef DEBUG
+		userlog("log_error : Return code from prog_access_log : %d\n", ret_code);
+#endif
+		userlog("log_error: %s\n", prog_log.remarks);
+		return;
+	}
+
+	if(FAILURE == (ret_code = gscbcommit_trans(ctx)))
+	{
+#ifdef DEBUG
+			userlog("log_error : Return code from prog_access_log : %d\n", ret_code);
+#endif
+			userlog("log_error: %s\n", prog_log.remarks);
+			return;
+	}
+}

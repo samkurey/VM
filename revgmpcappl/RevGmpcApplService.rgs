@@ -1,0 +1,26 @@
+HKCR
+{
+	RevGmpcAppl.RevGmpcApplService.1 = s 'RevGmpcApplService Class'
+	{
+		CLSID = s '{50E16411-6BA0-4052-95F2-5A2C400FAB4D}'
+	}
+	RevGmpcAppl.RevGmpcApplService = s 'RevGmpcApplService Class'
+	{
+		CLSID = s '{50E16411-6BA0-4052-95F2-5A2C400FAB4D}'
+		CurVer = s 'RevGmpcAppl.RevGmpcApplService.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {50E16411-6BA0-4052-95F2-5A2C400FAB4D} = s 'RevGmpcApplService Class'
+		{
+			ProgID = s 'RevGmpcAppl.RevGmpcApplService.1'
+			VersionIndependentProgID = s 'RevGmpcAppl.RevGmpcApplService'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{0AF1532A-F8B9-4144-9128-3217147BEBF2}'
+		}
+	}
+}

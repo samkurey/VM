@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (52cf7fc9).
+//
+// JpjUpdate.tlh
+//
+// C++ source equivalent of Win32 type library JpjUpdate.tlb
+// compiler-generated file created 04/22/21 at 14:32:32 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ JpjUpdateService;
+struct __declspec(uuid("93698f04-eadc-47c6-a387-0248cfdb9298"))
+/* dual interface */ IJpjUpdateService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IJpjUpdateService, __uuidof(IJpjUpdateService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("6f0af1d4-8d0f-4c97-aba3-fa965fcbe974"))
+JpjUpdateService;
+    // [ default ] interface IJpjUpdateService
+
+struct __declspec(uuid("93698f04-eadc-47c6-a387-0248cfdb9298"))
+IJpjUpdateService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "JpjUpdate.tli"
+
+#pragma pack(pop)

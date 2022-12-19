@@ -1,0 +1,61 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (90dbfc46).
+//
+// CreateAppnt.tlh
+//
+// C++ source equivalent of Win32 type library CreateAppnt.tlb
+// compiler-generated file created 12/22/05 at 11:29:06 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ CreateAppntService;
+struct __declspec(uuid("c405f780-37e1-49c3-bc00-e456461c176b"))
+/* dual interface */ ICreateAppntService;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(ICreateAppntService, __uuidof(ICreateAppntService));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("8a499612-38ed-435b-81f1-c7ec22210b4a"))
+CreateAppntService;
+    // [ default ] interface ICreateAppntService
+
+struct __declspec(uuid("c405f780-37e1-49c3-bc00-e456461c176b"))
+ICreateAppntService : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_Execute (
+        SAFEARRAY * pDataReq,
+        SAFEARRAY * * pDataResp ) = 0;
+};
+
+//
+// Wrapper method implementations
+//
+
+#include "CreateAppnt.tli"
+
+#pragma pack(pop)

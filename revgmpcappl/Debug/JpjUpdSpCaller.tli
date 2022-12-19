@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (9fe27b53).
+//
+// d:\mtscomponents_context\revgmpcappl\debug\JpjUpdSpCaller.tli
+//
+// Wrapper implementations for Win32 type library JpjUpdSpCaller.tlb
+// compiler-generated file created 05/25/15 at 17:56:06 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IJpjUpdSpCallerService wrapper method implementations
+//
+
+inline HRESULT IJpjUpdSpCallerService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

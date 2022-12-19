@@ -1,0 +1,18 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8168.0 (90dbfc46).
+//
+// CreateAppnt.tli
+//
+// Wrapper implementations for Win32 type library CreateAppnt.tlb
+// compiler-generated file created 12/22/05 at 11:29:06 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface ICreateAppntService wrapper method implementations
+//
+
+inline HRESULT ICreateAppntService::Execute ( SAFEARRAY * pDataReq, SAFEARRAY * * pDataResp ) {
+    HRESULT _hr = raw_Execute(pDataReq, pDataResp);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

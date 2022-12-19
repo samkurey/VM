@@ -1,0 +1,13 @@
+SCC = This is a Source Code Control file
+
+[liupdategmpcstat.dsp]
+SCC_Aux_Path = "\\10.23.191.24\E$\sourcecode"
+SCC_Project_Name = "$/IJPN-Source/MTSComponents_2008/GSCB/ALL_LEGACY_INTERFACE/jpnmsg/licancelgmpcupdate", DFPDAAAA
+
+[liupdategmpcstat.mak]
+SCC_Aux_Path = "\\10.23.191.24\E$\sourcecode"
+SCC_Project_Name = "$/IJPN-Source/MTSComponents_2008/GSCB/ALL_LEGACY_INTERFACE/jpnmsg/licancelgmpcupdate", DFPDAAAA
+
+[licancelgmpcupdate.dsw]
+SCC_Aux_Path = "\\10.23.191.24\E$\sourcecode"
+SCC_Project_Name = "$/IJPN-Source/MTSComponents_2008/GSCB/ALL_LEGACY_INTERFACE/jpnmsg/licancelgmpcupdate", DFPDAAAA

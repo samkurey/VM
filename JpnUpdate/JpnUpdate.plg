@@ -1,0 +1,147 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: JpnUpdate - Win32 Unicode Release MinDependency--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPBDA8.bat" with contents
+[
+@echo off
+proc .\JpnUpdate_DB unsafe_null=yes dbms=v8 sqlcheck=full parse=full  userid=gscb/gscb@gscb include="D:\MTSComponents_context\COMMON_FILES" sys_include="D:\Program Files\Microsoft Visual Studio\VC98\Include" sys_include="D:\oracle\product\10.2.0\db_1\precomp\public" sys_include="D:\oracle\product\10.2.0\db_1\oci\include"
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPBDA8.bat"
+Creating command line "midl.exe /tlb ".\JpnUpdate.tlb" /h "JpnUpdate.h" /iid "JpnUpdate_i.c" /Oicf "D:\MTSComponents_context\JpnUpdate\JpnUpdate.idl""
+Performing Custom Build Step on .\JpnUpdate_DB.pc
+
+Pro*C/C++: Release 10.2.0.5.0 - Production on Thu Jun 8 11:14:57 2017
+
+Copyright (c) 1982, 2007, Oracle.  All rights reserved.
+
+System default option values taken from: D:\oracle\product\10.2.0\db_1\precomp\admin\pcscfg.cfg
+
+Creating command line "rc.exe /l 0x409 /fo"Debug/JpnUpdate.res" /d "NDEBUG" "D:\MTSComponents_context\JpnUpdate\JpnUpdate.rc"" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F5.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "DEBUG" /D "_USRDLL" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\MTSComponents_context\COMMON_FILES\gscbcommon.c"
+"D:\MTSComponents_context\COMMON_FILES\GSCBDB.cpp"
+"D:\MTSComponents_context\COMMON_FILES\gscblog.c"
+"D:\MTSComponents_context\COMMON_FILES\gscbutil.c"
+"D:\MTSComponents_context\JpnUpdate\JpnUpdate.cpp"
+"D:\MTSComponents_context\JpnUpdate\JpnUpdate_DB.c"
+"D:\MTSComponents_context\JpnUpdate\JpnUpdateService.cpp"
+"D:\MTSComponents_context\JpnUpdate\userlog.c"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F5.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F6.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "DEBUG" /D "_USRDLL" /FR"Debug/" /Fp"Debug/JpnUpdate.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\MTSComponents_context\JpnUpdate\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F6.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F7.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mtx.lib mtxguid.lib delayimp.lib orasqx10.lib orasql10.lib li_update_gmpc_stat.lib HTPIJPNCPIC.lib VIC32MS.LIB li_jpn_update.lib li_jpn_update_address.lib li_jpn_update_payment.lib li_jpn_gmpc_surrender.lib li_mykad_issuance.lib li_nrs_update.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/JpnUpdate.pdb" /debug /machine:I386 /def:".\JpnUpdate.def" /force /out:"D:\IJPN\BIN\JpnUpdate.dll" /implib:"Debug/JpnUpdate.lib" /pdbtype:sept /delayload:mtxex.dll 
+.\Debug\gscbcommon.obj
+.\Debug\GSCBDB.obj
+.\Debug\gscblog.obj
+.\Debug\gscbutil.obj
+.\Debug\JpnUpdate.obj
+.\Debug\JpnUpdate_DB.obj
+.\Debug\JpnUpdateService.obj
+.\Debug\StdAfx.obj
+.\Debug\userlog.obj
+.\Debug\JpnUpdate.res
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC7F7.tmp"
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC808.bat" with contents
+[
+@echo off
+if "%OS%"=="" goto NOTNT
+if not "%OS%"=="Windows_NT" goto NOTNT
+regsvr32 /s /c "\IJPN\BIN\JpnUpdate.dll"
+echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
+echo Execute mtxrereg.exe before using MTS components in MTS
+goto end
+:NOTNT
+echo Warning : Cannot register Unicode DLL on Windows 95
+:end
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\2\RSPC808.bat"
+Creating Type Library...
+Microsoft (R) MIDL Compiler Version 5.01.0164  
+Copyright (c) Microsoft Corp 1991-1997. All rights reserved.
+Processing D:\MTSComponents_context\JpnUpdate\JpnUpdate.idl
+JpnUpdate.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oaidl.idl
+oaidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\objidl.idl
+objidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\unknwn.idl
+unknwn.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\wtypes.idl
+wtypes.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ocidl.idl
+ocidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oleidl.idl
+oleidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\servprov.idl
+servprov.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\urlmon.idl
+urlmon.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\msxml.idl
+msxml.idl
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+gscbcommon.c
+Generating Code...
+Compiling...
+GSCBDB.cpp
+Generating Code...
+Compiling...
+gscblog.c
+gscbutil.c
+Generating Code...
+Compiling...
+JpnUpdate.cpp
+Generating Code...
+Compiling...
+JpnUpdate_DB.c
+Generating Code...
+Compiling...
+JpnUpdateService.cpp
+Generating Code...
+Compiling...
+userlog.c
+Generating Code...
+Linking...
+LINK : warning LNK4075: ignoring /INCREMENTAL due to /FORCE specification
+li_jpn_update.lib(li_jpn_update.obj) : warning LNK4006: _CreateLowResImage already defined in JpnUpdate_DB.obj; second definition ignored
+li_jpn_update.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+li_jpn_update_payment.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+li_jpn_gmpc_surrender.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+li_jpn_update.lib(li_jpn_update.obj) : warning LNK4006: _CreateLowResImage already defined in JpnUpdate_DB.obj; second definition ignored
+li_jpn_update.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+li_jpn_update_payment.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+li_jpn_gmpc_surrender.lib(li_call_dll.obj) : warning LNK4006: _dump_to_file already defined in li_update_gmpc_stat.lib(li_call_dll.obj); second definition ignored
+   Creating library Debug/JpnUpdate.lib and object Debug/JpnUpdate.exp
+LINK : warning LNK4098: defaultlib "LIBCD" conflicts with use of other libs; use /NODEFAULTLIB:library
+D:\IJPN\BIN\JpnUpdate.dll : warning LNK4088: image being generated due to /FORCE option; image may not run
+<h3>Output Window</h3>
+Performing registration
+Execute mtxrereg.exe before using MTS components in MTS
+Creating command line "bscmake.exe /nologo /o"Debug/JpnUpdate.bsc"  .\Debug\StdAfx.sbr .\Debug\gscbcommon.sbr .\Debug\GSCBDB.sbr .\Debug\gscblog.sbr .\Debug\gscbutil.sbr .\Debug\JpnUpdate.sbr .\Debug\JpnUpdate_DB.sbr .\Debug\JpnUpdateService.sbr .\Debug\userlog.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+JpnUpdate.dll - 0 error(s), 11 warning(s)
+</pre>
+</body>
+</html>

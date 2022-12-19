@@ -1,0 +1,9 @@
+SCC = This is a Source Code Control file
+
+[JPNStatusUpdate_NT.dsp]
+SCC_Aux_Path = "\\Ijpnsrcsvr\SourceCode\"
+SCC_Project_Name = "$/IJPN-Source/MTSComponents_Context/GSCB/JPNStat_Upd", DRIBAAAA
+
+[JPNStatusUpdate_NT.dsw]
+SCC_Aux_Path = "\\Ijpnsrcsvr\SourceCode\"
+SCC_Project_Name = "$/IJPN-Source/MTSComponents_Context/GSCB/JPNStat_Upd", DRIBAAAA

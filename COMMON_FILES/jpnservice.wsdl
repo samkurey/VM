@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="JPNServiceImplService" targetNamespace="http://service.jpn.gov.my/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.jpn.gov.my/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="http://service.jpn.gov.my/" schemaLocation="jpnservice_schema1.xsd"/>
+</schema>
+  </wsdl:types>
+  <wsdl:message name="jpnCDLRenewEnqResponse">
+    <wsdl:part name="parameters" element="tns:jpnCDLRenewEnqResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnCDLReversalSubResponse">
+    <wsdl:part name="parameters" element="tns:jpnCDLReversalSubResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnLicEnq">
+    <wsdl:part name="parameters" element="tns:jpnLicEnq">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnNameSub">
+    <wsdl:part name="parameters" element="tns:jpnNameSub">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnReconResponse">
+    <wsdl:part name="parameters" element="tns:jpnReconResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnRecon">
+    <wsdl:part name="parameters" element="tns:jpnRecon">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnIDCatSubResponse">
+    <wsdl:part name="parameters" element="tns:jpnIDCatSubResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnCDLReversalSub">
+    <wsdl:part name="parameters" element="tns:jpnCDLReversalSub">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnCDLRenewEnq">
+    <wsdl:part name="parameters" element="tns:jpnCDLRenewEnq">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnIDCatSub">
+    <wsdl:part name="parameters" element="tns:jpnIDCatSub">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnKPTSubResponse">
+    <wsdl:part name="parameters" element="tns:jpnKPTSubResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnNameSubResponse">
+    <wsdl:part name="parameters" element="tns:jpnNameSubResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnKPTSub">
+    <wsdl:part name="parameters" element="tns:jpnKPTSub">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnCDLRenewSub">
+    <wsdl:part name="parameters" element="tns:jpnCDLRenewSub">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnLicEnqResponse">
+    <wsdl:part name="parameters" element="tns:jpnLicEnqResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="jpnCDLRenewSubResponse">
+    <wsdl:part name="parameters" element="tns:jpnCDLRenewSubResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="JPNService">
+    <wsdl:operation name="jpnKPTSub">
+      <wsdl:input name="jpnKPTSub" message="tns:jpnKPTSub">
+    </wsdl:input>
+      <wsdl:output name="jpnKPTSubResponse" message="tns:jpnKPTSubResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLRenewEnq">
+      <wsdl:input name="jpnCDLRenewEnq" message="tns:jpnCDLRenewEnq">
+    </wsdl:input>
+      <wsdl:output name="jpnCDLRenewEnqResponse" message="tns:jpnCDLRenewEnqResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnLicEnq">
+      <wsdl:input name="jpnLicEnq" message="tns:jpnLicEnq">
+    </wsdl:input>
+      <wsdl:output name="jpnLicEnqResponse" message="tns:jpnLicEnqResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnRecon">
+      <wsdl:input name="jpnRecon" message="tns:jpnRecon">
+    </wsdl:input>
+      <wsdl:output name="jpnReconResponse" message="tns:jpnReconResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnIDCatSub">
+      <wsdl:input name="jpnIDCatSub" message="tns:jpnIDCatSub">
+    </wsdl:input>
+      <wsdl:output name="jpnIDCatSubResponse" message="tns:jpnIDCatSubResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnNameSub">
+      <wsdl:input name="jpnNameSub" message="tns:jpnNameSub">
+    </wsdl:input>
+      <wsdl:output name="jpnNameSubResponse" message="tns:jpnNameSubResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLReversalSub">
+      <wsdl:input name="jpnCDLReversalSub" message="tns:jpnCDLReversalSub">
+    </wsdl:input>
+      <wsdl:output name="jpnCDLReversalSubResponse" message="tns:jpnCDLReversalSubResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLRenewSub">
+      <wsdl:input name="jpnCDLRenewSub" message="tns:jpnCDLRenewSub">
+    </wsdl:input>
+      <wsdl:output name="jpnCDLRenewSubResponse" message="tns:jpnCDLRenewSubResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="JPNServiceImplServiceSoapBinding" type="tns:JPNService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="jpnKPTSub">
+      <soap:operation soapAction="urn:JpnKPTSub" style="document"/>
+      <wsdl:input name="jpnKPTSub">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnKPTSubResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLRenewEnq">
+      <soap:operation soapAction="urn:JpnCDLRenewEnq" style="document"/>
+      <wsdl:input name="jpnCDLRenewEnq">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnCDLRenewEnqResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnLicEnq">
+      <soap:operation soapAction="urn:JpnLicEnq" style="document"/>
+      <wsdl:input name="jpnLicEnq">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnLicEnqResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnIDCatSub">
+      <soap:operation soapAction="urn:JpnIDCatSub" style="document"/>
+      <wsdl:input name="jpnIDCatSub">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnIDCatSubResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnRecon">
+      <soap:operation soapAction="urn:JpnRecon" style="document"/>
+      <wsdl:input name="jpnRecon">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnReconResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLReversalSub">
+      <soap:operation soapAction="urn:JpnCDLReversalSub" style="document"/>
+      <wsdl:input name="jpnCDLReversalSub">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnCDLReversalSubResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnNameSub">
+      <soap:operation soapAction="urn:JpnNameSub" style="document"/>
+      <wsdl:input name="jpnNameSub">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnNameSubResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="jpnCDLRenewSub">
+      <soap:operation soapAction="urn:JpnCDLRenewSub" style="document"/>
+      <wsdl:input name="jpnCDLRenewSub">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="jpnCDLRenewSubResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="JPNServiceImplService">
+    <wsdl:port name="JPNServiceImplPort" binding="tns:JPNServiceImplServiceSoapBinding">
+      <soap:address location="http://localhost:8080/JPNService/services/JPNServiceImplPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

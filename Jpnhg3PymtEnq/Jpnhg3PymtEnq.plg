@@ -1,0 +1,144 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Jpnhg3PymtEnq - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP288F.bat" with contents
+[
+@echo off
+proc .\Jpnhg3PymtEnq_DB unsafe_null=yes dbms=v8 sqlcheck=full parse=full  userid=gscb/gscb@gscb include="D:\MTSComponents_context\COMMON_FILES" sys_include="D:\Program Files\Microsoft Visual Studio\VC98\Include" sys_include="D:\oracle\product\10.2.0\db_1\precomp\public" sys_include="D:\oracle\product\10.2.0\db_1\oci\include"
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP288F.bat"
+Creating command line "midl.exe /tlb ".\Jpnhg3PymtEnq.tlb" /h "Jpnhg3PymtEnq.h" /iid "Jpnhg3PymtEnq_i.c" /Oicf "D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.idl""
+Performing Custom Build Step on .\Jpnhg3PymtEnq_DB.pc
+
+Pro*C/C++: Release 10.2.0.5.0 - Production on Fri Jun 3 14:17:50 2016
+
+Copyright (c) 1982, 2007, Oracle.  All rights reserved.
+
+System default option values taken from: D:\oracle\product\10.2.0\db_1\precomp\admin\pcscfg.cfg
+
+Creating command line "rc.exe /l 0x4409 /fo"Debug/Jpnhg3PymtEnq.res" /d "_DEBUG" "D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.rc"" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31A4.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEBUG" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\MTSComponents_context\COMMON_FILES\gscbcommon.c"
+"D:\MTSComponents_context\COMMON_FILES\GSCBDB.cpp"
+"D:\MTSComponents_context\COMMON_FILES\gscblog.c"
+"D:\MTSComponents_context\COMMON_FILES\gscbutil.c"
+"D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.cpp"
+"D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq_DB.c"
+"D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnqService.cpp"
+"D:\MTSComponents_context\COMMON_FILES\userlog_r.c"
+"D:\MTSComponents_context\Jpnhg3PymtEnq\userlog.c"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31A4.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31A5.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEBUG" /FR"Debug/" /Fp"Debug/Jpnhg3PymtEnq.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\MTSComponents_context\Jpnhg3PymtEnq\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31A5.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31C5.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mtx.lib mtxguid.lib oraSQX10.LIB oraSQL10.LIB delayimp.lib HTPIJPNCPIC.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/Jpnhg3PymtEnq.pdb" /debug /machine:I386 /def:".\Jpnhg3PymtEnq.def" /out:"D:/ijpn/bin/Jpnhg3PymtEnq.dll" /implib:"Debug/Jpnhg3PymtEnq.lib" /pdbtype:sept 
+.\Debug\gscbcommon.obj
+.\Debug\GSCBDB.obj
+.\Debug\gscblog.obj
+.\Debug\gscbutil.obj
+.\Debug\Jpnhg3PymtEnq.obj
+.\Debug\Jpnhg3PymtEnq_DB.obj
+.\Debug\Jpnhg3PymtEnqService.obj
+.\Debug\StdAfx.obj
+.\Debug\userlog_r.obj
+.\Debug\Jpnhg3PymtEnq.res
+.\Debug\userlog.obj
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31C5.tmp"
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31D6.bat" with contents
+[
+@echo off
+regsvr32 /s /c "\ijpn\bin\Jpnhg3PymtEnq.dll"
+echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
+]
+Creating command line "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP31D6.bat"
+Creating Type Library...
+Microsoft (R) MIDL Compiler Version 5.01.0164  
+Copyright (c) Microsoft Corp 1991-1997. All rights reserved.
+Processing D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.idl
+Jpnhg3PymtEnq.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oaidl.idl
+oaidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\objidl.idl
+objidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\unknwn.idl
+unknwn.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\wtypes.idl
+wtypes.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ocidl.idl
+ocidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oleidl.idl
+oleidl.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\servprov.idl
+servprov.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\urlmon.idl
+urlmon.idl
+Processing D:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\msxml.idl
+msxml.idl
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+gscbcommon.c
+Generating Code...
+Compiling...
+GSCBDB.cpp
+Generating Code...
+Compiling...
+gscblog.c
+gscbutil.c
+Generating Code...
+Compiling...
+Jpnhg3PymtEnq.cpp
+Generating Code...
+Compiling...
+Jpnhg3PymtEnq_DB.c
+Generating Code...
+Compiling...
+Jpnhg3PymtEnqService.cpp
+Generating Code...
+Compiling...
+userlog_r.c
+userlog.c
+Generating Code...
+Linking...
+   Creating library Debug/Jpnhg3PymtEnq.lib and object Debug/Jpnhg3PymtEnq.exp
+<h3>Output Window</h3>
+Performing registration
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP56B5.tmp" with contents
+[
+/nologo /o"Debug/Jpnhg3PymtEnq.bsc" 
+.\Debug\StdAfx.sbr
+.\Debug\gscbcommon.sbr
+.\Debug\GSCBDB.sbr
+.\Debug\gscblog.sbr
+.\Debug\gscbutil.sbr
+.\Debug\Jpnhg3PymtEnq.sbr
+.\Debug\Jpnhg3PymtEnq_DB.sbr
+.\Debug\Jpnhg3PymtEnqService.sbr
+.\Debug\userlog_r.sbr
+.\Debug\userlog.sbr]
+Creating command line "bscmake.exe @C:\Users\ADMINI~1\AppData\Local\Temp\1\RSP56B5.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+Jpnhg3PymtEnq.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
