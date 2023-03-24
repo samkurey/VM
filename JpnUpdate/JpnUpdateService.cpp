@@ -15,6 +15,12 @@
 #include "jpn_update_io.h"
 #include "jpn_update.h"
 
+//added by samsuri on 29 dec 2022
+#include <fstream>
+#import "IJPNAtlComNet.tlb" 
+using namespace IJPNAtlComNet;
+using namespace std;
+
 extern void EnableThreads();
 extern int LogoutFromOracle(void * ctx);
 extern int LoginToOracle(void **ctx);
@@ -70,6 +76,46 @@ void CJpnUpdateService::Deactivate()
 	return;
 } 
 
+//added by samsuri on 29 dec 2022---------------
+//purpose: to update temporary doc number to host via java webservice
+//-------------------------------------------------------------------
+void callWebservice(char* kptNo)
+{
+	CoInitialize(NULL);
+
+	try
+	{
+		IIJPNAtlComNetPtr pFunction;
+		pFunction.CreateInstance(__uuidof(ClsIJPN));
+		
+		//BSTR myInput = ::SysAllocString(L"790715086151");	
+		BSTR myInput =  _com_util::ConvertStringToBSTR(kptNo);
+		
+
+		BSTR result = pFunction->UpdateTempDocNo(myInput);
+		//char str[250];
+		//memset(str,0,250);
+
+		char *p= _com_util::ConvertBSTRToString(result);
+		//strcpy(testDest,p );
+
+		//sprintf(str, "UpdateTempDocNo result: %s",  p);
+		userlog("UpdateTempDocNo result: %s",  p);
+
+		//free memory here
+		delete[] p;
+		::SysFreeString(myInput);
+		::SysFreeString(result);	
+	}
+	catch(_com_error e)
+	{
+		userlog("Exception error in callWebservice: %s",e.ErrorMessage());
+		
+	}
+
+	CoUninitialize();		
+}
+
 
 STDMETHODIMP CJpnUpdateService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataResp)
 {
@@ -81,7 +127,7 @@ STDMETHODIMP CJpnUpdateService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataRe
 	
     //Pointers to byte arrays
 	unsigned char *pucReqData = NULL;
-	unsigned char *pucRespData = NULL;
+	unsigned char *pucRespData = NULL;	
 		
 	//Lock access to array data
 	SafeArrayAccessData( pDataReq, (void**)&pucReqData);
@@ -99,6 +145,7 @@ STDMETHODIMP CJpnUpdateService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataRe
 	memcpy(reqBuf, pucReqData, lSize);
 
 	SafeArrayUnaccessData(pDataReq);
+	
 
 	nReturn = Jpn_Update(( JPN_UPDATE_REQ_T *)reqBuf, &resp, &lRespSize,sql_context);
 
@@ -125,9 +172,23 @@ STDMETHODIMP CJpnUpdateService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataRe
 	//Copy the memory into the safearray
 	memcpy(pucRespData, resp, lRespSize);
 	SafeArrayUnaccessData(*pDataResp);
+
+	//added by samsuri on 29 dec 2022---------------
+
+	//remarked temporary for release as not yet UAT	
+	// userlog("KptNo to send webservice: %s",resp->kptNo);
+	// if(strcmp(resp->kptNo, "NO") != 0 && nReturn == 0)
+	// {
+	// 	callWebservice(resp->kptNo);
+	// }
+
+	//finish added----------------------------------
+	
 	free(resp);
 	#ifdef DEBUG
 		userlog("Successfully executed");
 	#endif
+
+
 	return S_OK;
 }

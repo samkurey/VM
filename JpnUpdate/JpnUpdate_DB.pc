@@ -49,6 +49,7 @@
 #include "jpn_update.h"
 
 
+
 //EXEC SQL INCLUDE SQLCA;
 
 //LI_P_HEADER_T hdr; //Commented on 11/08/06 by kasi Global scope sends wrong values 
@@ -58,6 +59,7 @@ APPL_EXCEP_LOG_T excep_log = { {""},{""},{""},{""},{""},{""}, 0,{""}} ;
 PROG_ACCESS_LOG_T prog_log = { {""},{""},{""},{""},{""},{""},{""},{""} };
 TXN_LOG_T tran_log;
 //extern void userlog(void * uContext,char* szFormatString, ...);
+
 
 int Jpn_Update(JPN_UPDATE_REQ_T *pReq, 
 			 JPN_UPDATE_RESP_T **pResp, long *pRespSize,void * ctx)
@@ -74,6 +76,8 @@ int Jpn_Update(JPN_UPDATE_REQ_T *pReq,
 	ADDRESS_T *new_address = NULL;
 	LEGACY_REQUEST_T legacy_req;
 	LI_NRS_UPDATE_REQ_T nrs_data;
+
+	
 
 	int resp_length = 0;
 	int count =  0;
@@ -110,6 +114,9 @@ int Jpn_Update(JPN_UPDATE_REQ_T *pReq,
 	char txn_short_desc[61] = {0};      //Added by Salmi, Date 19th June 2020, CRAPPL-  SKP002/CR/2020
 	char apprv_status = '\0';			//Added by Salmi, Date 19th June 2020, CRAPPL-  SKP002/CR/2020
 	char apprv_userid[USER_ID_SIZE] = {0};	//Added by Salmi, Date 19th June 2020, CRAPPL-  SKP002/CR/2020
+
+	char kptNo[13] = {0}; //added by samsuri on 29 Dec 2022
+
 	sql_context pcCtx; // Modification for IJPN
 	EXEC SQL END DECLARE SECTION;
 
@@ -122,6 +129,8 @@ int Jpn_Update(JPN_UPDATE_REQ_T *pReq,
 #ifdef DEBUG
 	userlog("JPN_UPDATE : Entered server:::%u",ctx);
 #endif
+
+	
 
 	/* Set pointer to data received by the service */
 	req = (JPN_UPDATE_REQ_T *) pReq;
@@ -195,6 +204,7 @@ int Jpn_Update(JPN_UPDATE_REQ_T *pReq,
 
 	/* Copy header info from request to response */
 	resp->header = req->header;
+	strcpy(resp->kptNo,"NO"); //added by samsuri on 29 dec 2022
 
 #ifdef DEBUG
 	userlog("JPN_UPDATE : Copied content of header from request to response");
@@ -592,6 +602,22 @@ when there is no payment data to be sent, req from vasanth */
 
 						}
 
+						//added by samsuri on 29 dec 2022----------------
+						userlog("Inside send to webservice - payment 1");
+						EXEC SQL SELECT KPTNO INTO :kptNo
+						FROM APPLICATION
+						WHERE APPLID = :appl_id AND APPLID IN 
+						(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+							
+						if (SQLCODE != 0)
+						{
+							userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+						}
+						userlog("kptNo is: %s",kptNo);
+						strcpy(resp->kptNo,kptNo);
+						//--------------------finish added
+
+
 						payment_upd_flag = YES;
 
 						/* Update the Payment update flag to YES */
@@ -629,6 +655,21 @@ when there is no payment data to be sent, req from vasanth */
 								*pResp = resp;
 								return ret_code;
 							}
+
+							//added by samsuri on 29 dec 2022----------------
+							userlog("Inside send to webservice - tangguh");
+							EXEC SQL SELECT KPTNO INTO :kptNo
+									FROM APPLICATION
+								WHERE APPLID = :appl_id;
+								
+							if (SQLCODE != 0)
+							{
+								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							}
+							userlog("kptNo is: %s",kptNo);
+							strcpy(resp->kptNo,kptNo);
+							//--------------------finish added
+
 
 						}
 
@@ -752,6 +793,20 @@ when there is no payment data to be sent, req from vasanth */
 								}
 
 							}
+							//added by samsuri on 29 dec 2022----------------
+							userlog("Inside send to webservice - payment 2");
+							EXEC SQL SELECT KPTNO INTO :kptNo
+							FROM APPLICATION
+							WHERE APPLID = :appl_id AND APPLID IN 
+							(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+								
+							if (SQLCODE != 0)
+							{
+								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							}
+							userlog("kptNo is: %s",kptNo);
+							strcpy(resp->kptNo,kptNo);
+							//--------------------finish added
 
 							/* Update the Payment update flag to YES */
 
@@ -973,6 +1028,21 @@ when there is no payment data to be sent, req from vasanth */
 								
 							}
 
+							//added by samsuri on 29 dec 2022----------------
+							userlog("Inside send to webservice - payment 3");
+							EXEC SQL SELECT KPTNO INTO :kptNo
+							FROM APPLICATION
+							WHERE APPLID = :appl_id AND APPLID IN 
+							(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+								
+							if (SQLCODE != 0)
+							{
+								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							}
+							userlog("kptNo is: %s",kptNo);
+							strcpy(resp->kptNo,kptNo);
+							//--------------------finish added
+
 							if (SUCCESS == ret_code)
 							{
 								/* Update the Payment update flag to YES */
@@ -1082,6 +1152,21 @@ when there is no payment data to be sent, req from vasanth */
 						#ifdef DEBUG
 							userlog("JPN_UPDATE : upd_card_details() failed with return code %d", ret_code);
 						#endif
+
+							//ADDED BY SAMSURI ON 5 JAN 2023
+							//----------------------------------------------------
+							EXEC SQL UPDATE IJPN_LEGACY_REQUEST 
+							SET 
+								LEGREJCODE     = 'ERR001',
+								LEGREJREASON   = 'RECORD PROBLEM',
+								LEGREQFINISH   =  SYSDATE, 
+								LEGREQSTAT     = -5			
+								WHERE APPLID   = :appl_id
+								AND LEGREQMSGID = :msgid
+							AND LEGREQFLAG    = 'C';
+							
+							//----------------------------------------------------						
+							
 							free(txn_details_orig);
 							//tpreturn(TPSUCCESS, ret_code, (char *)resp, sizeof (JPN_UPDATE_RESP_T), 0);
 							*pRespSize = resp_length;
@@ -1252,6 +1337,22 @@ when there is no payment data to be sent, req from vasanth */
 									
 								}
 
+								//added by samsuri on 29 dec 2022----------------
+								userlog("Inside send to webservice - payment 4");
+								EXEC SQL SELECT KPTNO INTO :kptNo
+								FROM APPLICATION
+								WHERE APPLID = :appl_id AND APPLID IN 
+								(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+									
+								if (SQLCODE != 0)
+								{
+									userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+								}
+								userlog("kptNo is: %s",kptNo);
+								strcpy(resp->kptNo,kptNo);
+								//--------------------finish added
+
+
 								if (SUCCESS == ret_code)
 								{
 									/* Update the Payment update flag to YES */
@@ -1364,6 +1465,21 @@ when there is no payment data to be sent, req from vasanth */
 					}
 
 				}
+
+				//added by samsuri on 29 dec 2022----------------
+				userlog("Inside send to webservice - payment 5");
+				EXEC SQL SELECT KPTNO INTO :kptNo
+				FROM APPLICATION
+				WHERE APPLID = :appl_id AND APPLID IN 
+				(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+					
+				if (SQLCODE != 0)
+				{
+					userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+				}
+				userlog("kptNo is: %s",kptNo);
+				strcpy(resp->kptNo,kptNo);
+				//--------------------finish added
 
 				/* Update the Payment update flag to YES */
 
@@ -2665,7 +2781,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 	char request_flag = 0;
 	short request_flag_ind  = -1;
 
-	//added by samsuri on 16 dec 2022
+	//added by samsuri on 16 dec 2022: SKP008/SA/2022
 	char ori_legRegDate[DATE_TIME_SIZE] = {0};
 	short ori_legRegDate_ind = -1;
 
@@ -2704,13 +2820,16 @@ EXEC SQL BEGIN DECLARE SECTION;
 	userlog("insert_legacy_req : Request flag  - %c", request_flag);
 #endif
 
-	//added by samsuri on 16 dec 2022	
-	EXEC SQL SELECT MAX(TO_CHAR(LEGREQDATETIME, 'DDMMYYYY HH24MISS'))  INTO :ori_legRegDate:ori_legRegDate_ind FROM IJPN_LEGACY_REQUEST WHERE APPLID=:appl_id;
+	//---------------added by samsuri on 16 dec 2022 : SKP008/SA/2022	
+	EXEC SQL SELECT MAX(TO_CHAR(LEGREQDATETIME, 'DDMMYYYY HH24MISS'))  
+	INTO :ori_legRegDate:ori_legRegDate_ind FROM IJPN_LEGACY_REQUEST 
+	WHERE APPLID=:appl_id AND LEGREQFLAG=:request_flag;
 	if (SQLCODE != 0)
 	{
 		userlog("insert_legacy_req : Selecting LEGREQDATETIME from IJPN_LEGACY_REQUEST failed : %s", SQLMSG);
 	}	
 	userlog("insert_legacy_req : LEGREQDATETIME : %s", ori_legRegDate);
+	//---------------FINISH ADDED
 
 	/* Delete record from LEGACY_REQUEST table for the applid inserted by */
 	/* CREATE_APPLNT service											  */
@@ -2757,7 +2876,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 	userlog("insert_legacy_req : Message id - %d", msg_id);
 #endif
 
-	//added/modified by samsuri on 16 dec 2022
+	//added/modified by samsuri on 16 dec 2022: SKP008/SA/2022
 	userlog("insert_legacy_req : ori_legRegDate_ind : %d", ori_legRegDate_ind);
 	if (ori_legRegDate_ind == 0)
 	{		
@@ -4875,7 +4994,8 @@ comment ended 26/01/2010 */
 	EXEC SQL SELECT APRVLDOCNO, NAMECHGCODE, TO_CHAR(NAMEREGDATE, 'DDMMYYYY'),
 			 LEGAPPLID, SPONSORIDNO, RELATIONCODE, COLLCENTER, TO_CHAR(CARDCOLLDATE,'DDMMYYYY'),
 			 APPLPRIORITY,APPLSTAT,TO_CHAR(TIMESTAMP,'DDMMYYYY'), //TO_CHAR(APPLDATE,'DDMMYYYY') changed this on 06/11/06
-			 SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14),EMAIL // EMAIL added by samsuri on 20 oct 2022
+			 SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14) // EMAIL added by samsuri on 20 oct 2022
+			 //SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14),EMAIL // EMAIL added by samsuri on 20 oct 2022: REMARKED AS NOT READY TO DEPLOY
 		 INTO :name_appr_ref_num:name_appr_ref_num_ind,
 			  :name_chg_reason_code:name_chg_reason_code_ind,
 			  :name_reg_date:name_reg_date_ind,
@@ -4885,7 +5005,8 @@ comment ended 26/01/2010 */
 			  :appl_status:appl_status_ind,:appldate:appldate_ind,
 			  :sponsoridtype:sponsoridtype_ind,
 			  :a_branch_code:a_branch_code_ind,
-			  :telephone_no:telephone_no_ind,:email:email_ind // email added by samsuri on 20 oct 2022
+			  :telephone_no:telephone_no_ind // email added by samsuri on 20 oct 2022
+			  //:telephone_no:telephone_no_ind,:email:email_ind // email added by samsuri on 20 oct 2022
 		 FROM  APPLICATION 
 		 WHERE APPLID = :appl_id;
 
@@ -5270,11 +5391,13 @@ comment ended 26/01/2010 */
 	setlen(docserno);
 	setnull(docserno);
 
-	if (sqlca.sqlcode != 0 && sqlca.sqlcode != 1403)
+	userlog("upd_appnt_demo_info : Select from APPL_DOC_SERNO result : %s", SQLMSG); 
+
+	if((sqlca.sqlcode != 0) && (sqlca.sqlcode != 1403))
 	{
-#ifdef DEBUG
+		#ifdef DEBUG
 		userlog("upd_appnt_demo_info : Select from APPL_DOC_SERNO failed : %s", SQLMSG); 
-#endif
+		#endif
 		strcpy(prog_log.remarks,"upd_appnt_demo_info : Select from APPL_DOC_SERNO failed");
 		sprintf(excep_log.error_msg,"upd_appnt_demo_info : Select from APPL_DOC_SERNO failed  :%s", SQLMSG);
 		excep_log.termination_flag = YES;
@@ -5284,6 +5407,31 @@ comment ended 26/01/2010 */
 				
 		return SELECT_ERROR;
 	}
+
+	//added by samsuri on 21 dec 2022-------------------------
+	userlog("upd_appnt_demo_info : Select from APPL_DOC_SERNO sqlca.sqlcode: %d",sqlca.sqlcode); 
+	if(sqlca.sqlcode == 1403)
+	{		
+
+		// SELECT DOCSERNO INTO :docserno:docserno_ind 
+		// FROM APPL_DOC_SERNO
+		// WHERE KPTNO = :kptno;
+	userlog("upd_appnt_demo_info : KPTNO TO CHECK AT APPL_DOC_SERNO : %s",kptno); 
+
+	EXEC SQL SELECT DOCSERNO INTO :docserno:docserno_ind 
+		FROM APPL_DOC_SERNO
+		WHERE KPTNO = :kptno
+		AND TIMESTAMP = 
+		(SELECT MAX(TIMESTAMP) FROM APPL_DOC_SERNO WHERE KPTNO = :kptno);
+
+		if (sqlca.sqlcode != 0 && sqlca.sqlcode != 1403)
+		{
+			#ifdef DEBUG
+			userlog("upd_appnt_demo_info : Select from APPL_DOC_SERNO BY KPTNO failed : %s", SQLMSG); 
+			#endif
+		}
+	}
+	//END ADDED---------------------------
 
 	/* commented this code on 07/06/2017 as the host data length is increased to 15 from 7
 	//jpn_doc_no 
@@ -5295,6 +5443,8 @@ comment ended 26/01/2010 */
 	}
 	*/
 
+	userlog("upd_appnt_demo_info : docserno : %s", docserno.arr); //added by samsuri on 21 dec 2022
+	
 	//jpn_doc_no ; comment opened on 07/06/2017 as the host data length is increased to 15 from 7
 	if((docserno_ind == 0) && (docserno.arr[0] != '\0'))
 	{
@@ -7033,7 +7183,7 @@ comment ended 26/01/2010 */
 			LEGREJCODE     = :reject_code:reject_code_ind,
 			LEGREJREASON   = :reason_desc:reason_desc_ind,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			LEGREQSTAT     = -2,			
 			USERID         = :appl_user_id,			
 			TXNWSID        = :appl_ws_id
@@ -7918,10 +8068,12 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 	/* Added appldate & userid commenting below query, changed on 10/05/2004 */
 	telephone_no[0] = '\0';
 	EXEC SQL SELECT KPTNO, APPLSTAT, TO_CHAR(APPLDATE,'DDMMYYYY'), 
-		USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14),EMAIL
+		USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14)
+		//USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14),EMAIL //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
 		INTO :kpt_no:kpt_no_ind, :applstat:applstat_ind,
 			 :appl_date:appl_date_ind,:appln_staff_id:appln_staff_id_ind,
-			 :tstamp:tstamp_ind,:telephone_no:telephone_no_ind,email:email_ind
+			 :tstamp:tstamp_ind,:telephone_no:telephone_no_ind
+			 //:tstamp:tstamp_ind,:telephone_no:telephone_no_ind,email:email_ind //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
 		FROM APPLICATION
 		WHERE APPLID = :appl_id;
 
@@ -9128,7 +9280,7 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 			LEGREJCODE     = :reject_code:reject_code_ind,
 			LEGREJREASON   = :reason_desc:reason_desc_ind,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			LEGREQSTAT     = -2,			
 			USERID         = :appl_user_id,			
 			TXNWSID        = :appl_ws_id
@@ -9209,7 +9361,7 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 				LEGREJCODE     = :reject_code:reject_code_ind,
 				LEGREJREASON   = :reason_desc:reason_desc_ind,
 				//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-				LEGREQFINISH   =  SYSDATE,
+				LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 				LEGREQSTAT     = -2,			
 				USERID         = :appl_user_id,			
 				TXNWSID        = :appl_ws_id
@@ -9237,6 +9389,10 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 			return error_code;
 
 		}
+
+		//TODO: CALL WEBSERVICE TO UPDATE TEMP DOC SERNO HERE - SAMSURI
+
+
 	}
 	else if((request_flag != GMPC_STAT_UPD) && (request_flag != APPL_IN_PROG))
 	{
@@ -9286,7 +9442,7 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 				LEGREJCODE     = :reject_code:reject_code_ind,
 				LEGREJREASON   = :reason_desc:reason_desc_ind,
 				//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-				LEGREQFINISH   =  SYSDATE,
+				LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 				LEGREQSTAT     = -2,			
 				USERID         = :appl_user_id,			
 				TXNWSID        = :appl_ws_id
@@ -9679,7 +9835,7 @@ int upd_address(JPN_UPDATE_REQ_T *req, int msgid, ADDRESS_T *old_address, ADDRES
 			LEGREJCODE     = :reject_code:reject_code_ind,
 			LEGREJREASON   = :reason_desc:reason_desc_ind,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			LEGREQSTAT     = -2,			
 			USERID         = :appl_user_id,			
 			TXNWSID        = :appl_ws_id
@@ -9819,10 +9975,10 @@ int upd_payment(JPN_UPDATE_REQ_T *req, int msgid, int transaction_srno, int requ
 	if (SQLCODE != 0)
 	{
 #ifdef DEBUG
-		userlog("upd_payment : Select from APPNT_JPN_INFO failed : %s", SQLMSG); 
+		userlog("upd_payment : Select from APPLICATION failed : %s", SQLMSG); 
 #endif
-		strcpy(prog_log.remarks,"upd_payment : Select from APPNT_JPN_INFO failed");
-		sprintf(excep_log.error_msg,"upd_payment : Select from APPNT_JPN_INFO failed :%s", SQLMSG);
+		strcpy(prog_log.remarks,"upd_payment : Select from APPLICATION failed");
+		sprintf(excep_log.error_msg,"upd_payment : Select from APPLICATION failed :%s", SQLMSG);
 		excep_log.termination_flag = YES;
 		excep_log.severity = FATAL;
 
@@ -10113,7 +10269,7 @@ int upd_payment(JPN_UPDATE_REQ_T *req, int msgid, int transaction_srno, int requ
 			LEGREJCODE     = :reject_code:reject_code_ind,
 			LEGREJREASON   = :reason_desc:reason_desc_ind,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			LEGREQSTAT     = -2,			
 			USERID         = :appl_user_id,			
 			TXNWSID        = :appl_ws_id
@@ -10144,6 +10300,9 @@ int upd_payment(JPN_UPDATE_REQ_T *req, int msgid, int transaction_srno, int requ
 		return error_code;
 
 	}
+
+	//TODO: CALL WEBSERVICE TO UPDATE TEMP DOC SERNO - SAMSURI
+
 		
 //	li_end();
 
@@ -10782,6 +10941,8 @@ EXEC SQL BEGIN DECLARE SECTION;
 		char appl_id[APP_ID_SIZE] = {0};
 		char appl_status = 0;
 		short appl_status_ind = -1;		
+		int CardLostCount = 0; //added by samsuri on 8 aug 2022
+		short CardLostCount_ind = -1;
 		
 	sql_context pcCtx; // Modification for IJPN
 	EXEC SQL END DECLARE SECTION;
@@ -10796,7 +10957,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 	userlog("get_appl_stat : Appl id - %s", appl_id);
 #endif
 
-	EXEC SQL SELECT APPLSTAT INTO :appl_status:appl_status_ind
+	EXEC SQL SELECT APPLSTAT, CARDLOSTCOUNT INTO :appl_status:appl_status_ind, :CardLostCount:CardLostCount_ind //modified by samsuri on 8 aug 2022
 		FROM APPLICATION
 		WHERE APPLID = :appl_id;
 
@@ -10822,6 +10983,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 
 #ifdef DEBUG
 	userlog(" get_appl_stat : Appl status - %c", *appl_stat);	
+	userlog(" get_appl_stat : CardLostCount - %d", CardLostCount); //added by samsuri on 8 aug 2022
 #endif
 
 	return SUCCESS;
@@ -10898,7 +11060,7 @@ int update_legacy_req(JPN_UPDATE_REQ_T *req, int msgid, char *leg_msgid, char *a
 			USERID         = :user_id,
 			BRANCHCODE     = :branch_code,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			TXNWSID        = :ws_id:ws_id_ind
 		WHERE APPLID       = :appl_id
 		AND LEGREQMSGID    = :mesg_id;
@@ -11647,6 +11809,7 @@ int update_leg_application_stat(JPN_UPDATE_REQ_T *req, char application_stat, in
 		char apprv_status = ' '; //Added by Salmi, Date 19th June 2020 CRAPPL-  SKP002/CR/2020
 		short apprv_status_ind = -1;  //Added by Salmi, Date 19th June 2020 CRAPPL-  SKP002/CR/2020
 		int apprv_count = 0;
+		
 
 	sql_context pcCtx; // Modification for IJPN
 	EXEC SQL END DECLARE SECTION;
@@ -11948,7 +12111,8 @@ int update_leg_application_stat(JPN_UPDATE_REQ_T *req, char application_stat, in
 end ijpn */
 	}
 
-		return SUCCESS;
+
+	return SUCCESS;
 }
 
 /*****************************************************************************************/
@@ -12410,7 +12574,7 @@ end IJPN */
 			LEGREJCODE     = :reject_code:reject_code_ind,
 			LEGREJREASON   = :reason_desc:reason_desc_ind,
 			//LEGREQDATETIME =  SYSDATE, //REMARKED BY SAMSURI ON 10 NOV 2022
-			LEGREQFINISH   =  SYSDATE,
+			LEGREQFINISH   =  SYSDATE, //ADDED BY SAMSURI  ON 10 NOV 2022: SKP008/SA/2022
 			LEGREQSTAT     = -2,			
 			USERID         = :user_id,			
 			TXNWSID        = :appl_ws_id
@@ -12728,9 +12892,11 @@ int get_appnt_jpn_info_data(HEADER_T header, LI_NRS_UPDATE_REQ_T *nrs_data,void 
 
 
 	EXEC SQL SELECT RTRIM(IDTYPE), IDNO, TO_CHAR(APPLDATE,'DDMMYYYY'),CONTACTNO, LEGAPPLID, BRANCHCODE, 
-		USERID,APPLPRIORITY,EMAIL //added by samsuri on 20 oct 2022
+		USERID,APPLPRIORITY
+		//USERID,APPLPRIORITY,EMAIL //added by samsuri on 20 oct 2022 , REMARKED AS NOT READY TO DEPLOY
         INTO :idtype:idtype_ind,:idno:idno_ind,:reg_date:reg_date_ind,:telephone_no:telephone_no_ind,:appl_no:appl_no_ind,
-			  :branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind,email:email_ind //added by samsuri on 20 oct 2022
+			  :branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind
+			  //:branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind,email:email_ind //added by samsuri on 20 oct 2022, NOT READY
 		FROM APPLICATION
 		WHERE APPLID = :applid;
 

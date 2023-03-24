@@ -31,18 +31,19 @@
 #include "pdrm_update_io.h"
 
 //--uncomment all the headers below before compiling dll.
-//#include "AfisUpdate_IO.h"
+/*
+#include "AfisUpdate_IO.h"
 
 
-//#import  "JpnUpdate.tlb" no_namespace
-//#import  "ImmUpdate.tlb" no_namespace
-//#import  "JpjUpdate.tlb" no_namespace
-//#import  "PDRMUpdate.tlb" no_namespace
-//#import  "JpjUpdSpCaller.tlb" no_namespace
+#import  "JpnUpdate.tlb" no_namespace
+#import  "ImmUpdate.tlb" no_namespace
+#import  "JpjUpdate.tlb" no_namespace
+#import  "PDRMUpdate.tlb" no_namespace
+#import  "JpjUpdSpCaller.tlb" no_namespace
 
 
-//#import  "AfisUpdate.tlb" no_namespace 
-
+#import  "AfisUpdate.tlb" no_namespace 
+*/
 //--uncomment all the headers below before compiling dll.
 
 extern "C" PROG_ACCESS_LOG_T prog_log;
@@ -3553,6 +3554,22 @@ int all_probs_resolved(char *applid,void * ctx)
 
 }
 
+//added by samsuri 23 june 2020
+//trim left space
+char* LTrim(char* szX)
+{
+    if(' '==szX[0]) while(' '==(++szX)[0]);
+    return szX;
+}
+
+//trim right space
+char* RTrim(char* szX)
+{
+    int i = strlen(szX);
+    while(' '==szX[--i]) szX[i] = 0;
+    return szX;
+}
+
 /****************************************************************************/
 /* Function name: put_approved_data											*/
 /* Description	: This function 				*/
@@ -4874,8 +4891,40 @@ int put_approved_data(SET_APPL_STAT_L3_REQ_T *pReq, NAME_ADDRESS_T *name_add,
 		AND (INVSERVICEFLAG != 'S' OR INVSERVICEFLAG IS NULL);
 
 	
+		//todo: samsuri to add police retired here - remove rjind/KTIND if request rjind is null	5 JAN 2023
 		
+		userlog("put_approved_data: police/ARMY rjind is  [%s]", rjind);			
+		//if(strcmp(rjind, "RJ") != 0)
+		if(rjind[0]  == '\0' || strcmp(RTrim(rjind), "") == 0)
+		{
 
+			EXEC SQL UPDATE APPNT_JPN_INFO SET
+				RJIND = NULL, 
+				RJSTARTDATE = NULL,
+				RJENDDATE = NULL,
+				INVSERVICEFLAG = NULL		
+			WHERE APPLID = :hv_applid AND IDTYPE IN ('93');	//remove 92
+
+			userlog("put_approved_data: police rjind is set to NULL finish");					
+		}
+	
+		userlog("put_approved_data: police/ARMY ktindcode is  [%s]", ktindcode);			
+		//if(strcmp(ktindcode, "KT") != 0)
+		if(ktindcode[0]  == '\0' || strcmp(RTrim(ktindcode), "") == 0)
+		{
+
+			EXEC SQL UPDATE APPNT_JPN_INFO SET
+				KTINDCODE = NULL, 
+				KTSTARTDATE = NULL,
+				KTENDDATE = NULL,
+				INVSERVICEFLAG = NULL,
+				KTAREACODE = NULL		
+			WHERE APPLID = :hv_applid AND IDTYPE IN ('93');	//remove 92
+
+			userlog("put_approved_data: police KTINDCODE is set to NULL finish");					
+		}
+
+		//finish added--------------------------------
 
 return GMPC_GOOD;
 }

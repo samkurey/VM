@@ -40,6 +40,13 @@ typedef struct li_update_gmpc_stat_req
 	int   applpriority;     // added this on 30/01/07
 
 
+	//Added by Salmi Date: 23th Mar,2020  Added new field id, CRAPPL-  SKP002/CR/2020
+	char  approval_status; 
+	char  user1[USER_ID_SIZE];
+	char  user1_kptno[KPT_SIZE];
+	char  remark[201];
+	//Added by Salmi Date: 23th Mar,2020  Added new field id, CRAPPL-  SKP002/CR/2020-End
+    char  jkind; //Added by Salmi Date 12 Apr, 2021 MyKas Tamat Tempoh
 	//char appln_type[APPLN_TYPE_SIZE]; // removed as per the IJPN requirement
 	/*char doc_type[DOC_TYPE_SIZE];*/ /* Removed as per HTP MOM dt 14th June 2000 */
 
@@ -49,6 +56,11 @@ typedef struct li_update_gmpc_stat_req
 	/*char issuance_staff_id[USER_ID_SIZE];
 	char issuance_date[DATE_SIZE]; */ // removed as per the IJPN requirement
 
+	//added by samsuri on 8 aug 2022
+	int  lostcntneg;    
+	int  lostcntcrime;  
+	int  lostcntdis;    
+	
 } LI_UPDATE_GMPC_STAT_REQ_T;
 
 #if defined(__cplusplus)

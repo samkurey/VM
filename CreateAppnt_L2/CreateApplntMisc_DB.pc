@@ -784,6 +784,20 @@ sql_context pcCtx; // Modification for IJPN
 	userlog("insert_into_card_blacklist : Card status - %d", card_stat);
 #endif
 
+	EXEC SQL SELECT MAX(CARDVERSIONNO)-1
+	INTO :card_ver_no:card_ver_no_ind 
+	FROM CARD_STATUS 
+	WHERE KPTNO = :kpt_no:kpt_no_ind;
+
+	userlog("insert_into_card_blacklist : card_ver_no - %d", card_ver_no);
+
+	EXEC SQL SELECT MAX(CARDVERSIONNO)
+	INTO :card_ver_no:card_ver_no_ind 
+	FROM CARD_STATUS 
+	WHERE KPTNO = :kpt_no:kpt_no_ind;
+
+	userlog("insert_into_card_blacklist : max card_ver_no - %d", card_ver_no);
+
 	EXEC SQL SELECT C.CARDVERSIONNO,  C.CARDSTAT, C.CHIPSERNO, 
 					A.COLLCENTER,
 					TO_CHAR(A.CARDCOLLDATE,'DDMMYYYY'), 
@@ -805,9 +819,9 @@ sql_context pcCtx; // Modification for IJPN
 				 :wrong_batchno:wrong_batchno_ind
 			FROM CARD_STATUS C, APPLICATION A
 			WHERE C.APPLID = A.APPLID
-			  AND C.KPTNO = :kpt_no:kpt_no_ind 
+			  AND C.KPTNO = :kpt_no:kpt_no_ind
 			  AND C.CARDSTAT IN (11,14,16,17) //:card_stat:card_stat_ind
-			  AND C.CARDVERSIONNO = 
+			  AND C.CARDVERSIONNO =
 				  (SELECT MAX(CARDVERSIONNO)-1 FROM CARD_STATUS 
 				     WHERE KPTNO = :kpt_no:kpt_no_ind);    // Added this condition on 10/05/2007
 			  //AND C.CARDSTAT = :card_stat:card_stat_ind; // commented on 10/05/2007
@@ -828,21 +842,51 @@ sql_context pcCtx; // Modification for IJPN
 	}
 	else if (NO_DATA_FOUND)
 	{
-#ifdef DEBUG
+
 		//userlog("insert_into_card_blacklist : No Active card exists for the applicant");
 		userlog("insert_into_card_blacklist : No Active card exists for the applicant %s: %s", kpt_no, SQLMSG);
 		userlog("insert_into_card_blacklist : card_coll_date - %s", card_coll_date);
 		userlog("insert_into_card_blacklist : card_coll_center - %s", card_coll_center);
 
-#endif
-		strcpy(prog_log.remarks,"insert_into_card_blacklist: No Active card exists for the applicant");
-		strcpy(excep_log.error_msg, "insert_into_card_blacklist: No Active card exists for the applicant");
-		excep_log.termination_flag = YES;
-		excep_log.severity = FATAL;
+		EXEC SQL SELECT C.CARDVERSIONNO,  C.CARDSTAT, C.CHIPSERNO, 
+					A.COLLCENTER,
+					TO_CHAR(A.CARDCOLLDATE,'DDMMYYYY'), 
+					TO_CHAR(C.CARDPERSONALDATE,'DDMMYYYY'),
+					C.USERID, C.WSID, 
+					TO_CHAR(C.TIMESTAMP,'DDMMYYYY HH24MISS'),
+					C.BRANCHCODE,	C.AGENCYONCHIP, C.WRONGBATCHNO
+			INTO :card_ver_no:card_ver_no_ind, 
+				 :old_card_stat:old_card_stat_ind,
+				 :card_srno:card_srno_ind,
+				 :card_coll_center:card_coll_center_ind,
+				 :card_coll_date:card_coll_date_ind,
+				 :card_personal_date:card_personal_date_ind,
+				 :old_user_id:old_user_id_ind,
+				 :old_wsid:old_wsid_ind,
+				 :old_timestamp:old_timestamp_ind,
+				 :old_branch_code:old_branch_code_ind,
+				 :ag_on_chip:ag_on_chip_ind,
+				 :wrong_batchno:wrong_batchno_ind
+			FROM CARD_STATUS C, APPLICATION A
+			WHERE C.APPLID = A.APPLID
+			  AND C.KPTNO = :kpt_no
+			  AND C.CARDSTAT IN (11,14,16,17) //:card_stat:card_stat_ind
+			  AND C.CARDVERSIONNO IN 
+				  (SELECT MAX(CARDVERSIONNO)-2 FROM CARD_STATUS 
+				     WHERE KPTNO = :kpt_no);    // Added this condition on 10/05/2007
 
-		log_error(ctx);
+		if (NO_DATA_FOUND)
+		{
+			strcpy(prog_log.remarks,"insert_into_card_blacklist: No Active card exists for the applicant");
+			strcpy(excep_log.error_msg, "insert_into_card_blacklist: No Active card exists for the applicant");
+			excep_log.termination_flag = YES;
+			excep_log.severity = FATAL;
 
-		return NO_ACTIVE_CARD;
+			log_error(ctx);
+
+			return NO_ACTIVE_CARD;
+			
+		}
 	}
 
 	setnull(card_srno);

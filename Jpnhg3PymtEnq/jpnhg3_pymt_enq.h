@@ -25,6 +25,7 @@ extern "C" {
 /* Function Prototypes	*/
 
 int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *, JPNHG3_PYMT_ENQ_RESP_T *, void * ctx);
+int usk_processing(JPNHG3_PYMT_ENQ_REQ_T *, JPNHG3_USK_ENQ_RESP_T *, void * ctx);
 
 
 

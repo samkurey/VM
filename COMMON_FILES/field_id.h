@@ -817,6 +817,9 @@
 /* Added on 18/04/06 for IJPN */
 #define FID_TELEPHONE_NO         			1337
 
+/* Added on 20 oct 2022 by samsuri */
+#define FID_EMAIL		         			1341
+
 /* Added on 10/05/06 for IJPN */
 #define FID_CARDPERSONALDATE       			3242
 

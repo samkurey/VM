@@ -80,7 +80,7 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : Service initiated");
+		userlog("get_prob_rec L1 : Service initiated");
 	#endif
 
 	/* Set pointer to data received by the service */
@@ -88,11 +88,11 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 
 #ifdef DEBUG
 	userlog("");
-	userlog("GET_PROB_REC : REQUEST BUFFER");
-	userlog("GET_PROB_REC : Branch/SSC Code - %s", req->header.branch_code);
-	userlog("GET_PROB_REC : Workstation Id - %s", req->header.workstation_id);
-	userlog("GET_PROB_REC : Application Id - %s", req->header.application_id);
-	userlog("GET_PROB_REC : User Id - %s", req->header.user_id);	
+	userlog("get_prob_rec L1 : REQUEST BUFFER");
+	userlog("get_prob_rec L1 : Branch/SSC Code - %s", req->header.branch_code);
+	userlog("get_prob_rec L1 : Workstation Id - %s", req->header.workstation_id);
+	userlog("get_prob_rec L1 : Application Id - %s", req->header.application_id);
+	userlog("get_prob_rec L1 : User Id - %s", req->header.user_id);	
 #endif
 
 	/* Get current date-time for logging */
@@ -138,7 +138,7 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 	if (resp == NULL)
 	{
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : malloc failed ");
+		userlog("get_prob_rec L1 : malloc failed ");
 	#endif
 
 		/* Log the error */
@@ -156,7 +156,7 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 	memset(resp,'\0', resp_length);
 
 #ifdef DEBUG
-	userlog("GET_PROB_REC : The address of resp buffer allocated is 0x%X",resp);
+	userlog("get_prob_rec L1 : The address of resp buffer allocated is 0x%X",resp);
 #endif
 
 	/* Copy header info from request to response */
@@ -168,7 +168,7 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 	if (ret_val != SUCCESS)
 	{
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : check header failed");
+		userlog("get_prob_rec L1 : check header failed");
 	#endif
 
 		/* Log the error */
@@ -191,7 +191,7 @@ int Get_Prob_Rec(GET_PROB_REC_REQ_T *pReq,
 		if (check_id_type(req->applicant_id_type,ctx) == INVALID)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Invalid Id Type specified in request buffer");
+				userlog("get_prob_rec L1 : Invalid Id Type specified in request buffer");
 			#endif
 
 			/* Log the error */
@@ -225,7 +225,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 			
 		strcpy(branchcode, req->header.branch_code);
 
-		userlog("GET_PROB_REC : branchcode : %s",branchcode);
+		userlog("get_prob_rec L1 : branchcode : %s",branchcode);
 
 		/* Get the enqtype and check whether A or E or Blank
 			and do the processing accordingly  */
@@ -240,7 +240,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if((SQLCODE != 0) && (SQLCODE != 1403))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : Selecting count from APPNT_PROBL_DATA failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : Selecting count from APPNT_PROBL_DATA failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : Selecting count from APPNT_PROBL_DATA failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC : Selecting count from APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -256,8 +256,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 			   sleep mode as there are no records to process */
 
 			#ifdef DEBUG
-				userlog(" GET_PROB_REC : NO DATA FOUND in APPNT_PROBL_DATA table while selecting count: %s", SQLMSG);
-				userlog(" GET_PROB_REC : Returning resp->enqtype_ind as NULL ");
+				userlog("get_prob_rec L1 : NO DATA FOUND in APPNT_PROBL_DATA table while selecting count: %s", SQLMSG);
+				userlog("get_prob_rec L1 : Returning resp->enqtype_ind as NULL ");
 			#endif
 				
 			resp->enqtype_ind = '\0';
@@ -280,8 +280,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : appl_id : %s",appl_id);
-		userlog("GET_PROB_REC : enqtype : %c",enqtype);
+		userlog("get_prob_rec L1 : appl_id : %s",appl_id);
+		userlog("get_prob_rec L1 : enqtype : %c",enqtype);
 	#endif
   // for enqtype=A send only address info
   // for enqtype=E send only either appl or outstand txn fee
@@ -299,7 +299,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	if (new_resp == NULL)
 	{
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : malloc failed for enqtype=X ");
+		userlog("get_prob_rec L1 : malloc failed for enqtype=X ");
 	#endif
 
 		/* Log the error */
@@ -330,7 +330,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_time_version_rec() function");
+				userlog("get_prob_rec L1 : Error in get_time_version_rec() function");
 			#endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -353,7 +353,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	if (new_resp == NULL)
 	{
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : malloc failed for enqtype=A ");
+		userlog("get_prob_rec L1 : malloc failed for enqtype=A ");
 	#endif
 
 		/* Log the error */
@@ -384,7 +384,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_addr_info_rec() function");
+				userlog("get_prob_rec L1 : Error in get_addr_info_rec() function");
 			#endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -402,8 +402,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		strcpy(resp->header.application_id,appl_id);
 
 		#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_addr_info_rec (resp->header.application_id): %s",resp->header.application_id);
-			userlog("GET_PROB_REC : get_addr_info_rec (resp->addr_info_ind): %c",resp->addr_info_ind);
+			userlog("get_prob_rec L1 : get_addr_info_rec (resp->header.application_id): %s",resp->header.application_id);
+			userlog("get_prob_rec L1 : get_addr_info_rec (resp->addr_info_ind): %c",resp->addr_info_ind);
 		#endif
 
 		resp->enqtype_ind = 'A';
@@ -433,7 +433,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	  if (new_resp == NULL)
 	  {
 	   #ifdef DEBUG
-		 userlog("GET_PROB_REC : malloc failed for enqtype=E ");
+		 userlog("get_prob_rec L1 : malloc failed for enqtype=E ");
 	   #endif
 
 		/* Log the error */
@@ -464,7 +464,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_appl_txn_rec() function");
+				userlog("get_prob_rec L1 : Error in get_appl_txn_rec() function");
 			#endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -479,8 +479,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		strcpy(resp->header.application_id,appl_id);
 
 		#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_appl_txn_rec (resp->header.application_id): %s",resp->header.application_id);
-			userlog("GET_PROB_REC : get_appl_txn_rec (resp->appl_txn_cnt): %d",resp->appl_txn_cnt);
+			userlog("get_prob_rec L1 : get_appl_txn_rec (resp->header.application_id): %s",resp->header.application_id);
+			userlog("get_prob_rec L1 : get_appl_txn_rec (resp->appl_txn_cnt): %d",resp->appl_txn_cnt);
 		#endif
 
 	}
@@ -502,7 +502,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	  if (new_resp == NULL)
 	  {
 	   #ifdef DEBUG
-		 userlog("GET_PROB_REC : malloc failed for enqtype=E and OUTSTAND_TXN_FEE");
+		 userlog("get_prob_rec L1 : malloc failed for enqtype=E and OUTSTAND_TXN_FEE");
 	   #endif
 
 		/* Log the error */
@@ -533,7 +533,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 		 #ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_outstand_txn_rec() function");
+				userlog("get_prob_rec L1 : Error in get_outstand_txn_rec() function");
 		 #endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -549,8 +549,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		strcpy(resp->header.application_id,appl_id);
 
 		#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_outstand_txn_rec (resp->header.application_id): %s",resp->header.application_id);
-			userlog("GET_PROB_REC : get_outstand_txn_rec (resp->outstand_txn_cnt): %d",resp->appl_txn_cnt);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec (resp->header.application_id): %s",resp->header.application_id);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec (resp->outstand_txn_cnt): %d",resp->appl_txn_cnt);
 		#endif
 
 		resp->enqtype_ind = 'E';
@@ -567,7 +567,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : enqtype == 'M'  ");
+		userlog("get_prob_rec L1 : enqtype == 'M'  ");
 	#endif
 			return GMPC_GOOD;
 		}
@@ -581,20 +581,35 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		// to take care if probl_record data not exists
 		if(acnt == 0)
 		{
+			//added by samsuri on 24 feb 2023
+			EXEC SQL SELECT COUNT(*) INTO :acnt
+			FROM  USK_COMPOUND_FEE
+			WHERE APPLID = :appl_id;
 
-		EXEC SQL UPDATE APPNT_PROBL_DATA 
-			SET SENDFLAG = 'F'
-				WHERE APPLID = :appl_id;
+			if(acnt > 0)
+			{
+				EXEC SQL SELECT OLDAPPLID INTO :appl_id
+							FROM  USK_COMPOUND_FEE
+							WHERE APPLID = :appl_id;
+
+				userlog("get_prob_rec L1 : new appl_id: %s ",appl_id);							
+				strcpy(resp->header.application_id,appl_id);
+			}
+			else
+			{
+				EXEC SQL UPDATE APPNT_PROBL_DATA 
+					SET SENDFLAG = 'F'
+						WHERE APPLID = :appl_id;
 
 
-			resp->enqtype_ind = '\0';
+					resp->enqtype_ind = '\0';
 
-			*pRespSize = resp_length;
-			//memcpy(*pResp, resp, resp_length);
-			*pResp = resp;
+					*pRespSize = resp_length;
+					//memcpy(*pResp, resp, resp_length);
+					*pResp = resp;
 
-			return GMPC_GOOD;
-
+					return GMPC_GOOD;
+			}
 		}
 
 	orig_resp = resp;
@@ -605,7 +620,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	if (new_resp == NULL)
 	{
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : malloc failed  ");
+		userlog("get_prob_rec L1 : malloc failed  ");
 	#endif
 
 		/* Log the error */
@@ -636,7 +651,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_other_gsc_problem_recs() function");
+				userlog("get_prob_rec L1 : Error in get_other_gsc_problem_recs() function");
 			#endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -654,8 +669,8 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		strcpy(resp->header.application_id,lappl_id);
 
 		#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_other_gsc_problem_recs (resp->header.application_id): %s",resp->header.application_id);
-			userlog("GET_PROB_REC : get_other_gsc_problem_recs (resp->other_gsc_problem_ind): %c",resp->other_gsc_problem_ind);
+			userlog("get_prob_rec L1 : get_other_gsc_problem_recs (resp->header.application_id): %s",resp->header.application_id);
+			userlog("get_prob_rec L1 : get_other_gsc_problem_recs (resp->other_gsc_problem_ind): %c",resp->other_gsc_problem_ind);
 		#endif
 
 		ret_val = 0;
@@ -663,7 +678,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		if(ret_val != GMPC_GOOD)
 		{
 			#ifdef DEBUG
-				userlog("GET_PROB_REC : Error in get_prob_appl_details() function");
+				userlog("get_prob_rec L1 : Error in get_prob_appl_details() function");
 			#endif
 			//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 			*pRespSize = resp_length;
@@ -673,7 +688,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		}
 
 		#ifdef DEBUG
-				userlog("GET_PROB_REC : get_prob_count (prob_count): %d",prob_count);
+				userlog("get_prob_rec L1 : get_prob_count (prob_count): %d",prob_count);
 		#endif
 
 	/* To attach the appl_missed_opex and probl_record structures to the response buffer */
@@ -681,7 +696,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : ****Before attaching to resp buffer****");
+		userlog("get_prob_rec L1 : ****Before attaching to resp buffer****");
 	#endif
 
 	orig_resp = resp;
@@ -723,7 +738,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	orig_prob_details = prob_details;
 
 #ifdef DEBUG
-	userlog("GET_PROB_REC : The address of resp buffer reallocated is 0x%X",resp);
+	userlog("get_prob_rec L1 : The address of resp buffer reallocated is 0x%X",resp);
 #endif
 
 	ret_val = 0;
@@ -731,7 +746,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	if(ret_val != GMPC_GOOD)
 	{
 		#ifdef DEBUG
-			userlog("GET_PROB_REC : Error in get_appl_missed_opex_rec() function");
+			userlog("get_prob_rec L1 : Error in get_appl_missed_opex_rec() function");
 		#endif
 		//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 				*pRespSize = resp_length;
@@ -747,7 +762,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 		resp->missed_opex_ind = 'N';
 
 	#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_appl_missed_opex_rec (resp->missed_opex_ind): %c",resp->missed_opex_ind);
+			userlog("get_prob_rec L1 : get_appl_missed_opex_rec (resp->missed_opex_ind): %c",resp->missed_opex_ind);
 	#endif
 	
 	ret_val = 0;
@@ -755,7 +770,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	if(ret_val != GMPC_GOOD)
 		{
 		#ifdef DEBUG
-			userlog("GET_PROB_REC : Error in get_probl_record_recs() function");
+			userlog("get_prob_rec L1 : Error in get_probl_record_recs() function");
 		#endif
 				//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 				*pRespSize = resp_length;
@@ -767,7 +782,7 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	resp->probl_record_cnt = prob_count;
 
 	#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_probl_record_recs (resp->probl_record_cnt): %d",resp->probl_record_cnt);
+			userlog("get_prob_rec L1 : get_probl_record_recs (resp->probl_record_cnt): %d",resp->probl_record_cnt);
 	#endif
 	
 
@@ -784,26 +799,26 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	#ifdef DEBUG
 		userlog("start printing the response buffer ");
 		userlog(" ");	
-		userlog("GET_PROB_REC : response buffer (resp->header.application_id): %s",temp_resp->header.application_id);
-		userlog("GET_PROB_REC : response buffer (resp->other_gsc_problem_ind): %c",temp_resp->other_gsc_problem_ind);
-		userlog("GET_PROB_REC : response buffer (resp->header.application_id): %d",temp_resp->probl_record_cnt);
-		userlog("GET_PROB_REC : response buffer (resp->other_gsc_problem_ind): %c",temp_resp->missed_opex_ind);
+		userlog("get_prob_rec L1 : response buffer (resp->header.application_id): %s",temp_resp->header.application_id);
+		userlog("get_prob_rec L1 : response buffer (resp->other_gsc_problem_ind): %c",temp_resp->other_gsc_problem_ind);
+		userlog("get_prob_rec L1 : response buffer (resp->header.application_id): %d",temp_resp->probl_record_cnt);
+		userlog("get_prob_rec L1 : response buffer (resp->other_gsc_problem_ind): %c",temp_resp->missed_opex_ind);
 
-		userlog("GET_PROB_REC : response buffer : other_gsc->applstat - %c", orig_other_gsc->applstat);
-		userlog("GET_PROB_REC : response buffer : other_gsc->kptno - %s", orig_other_gsc->kptno);
-		userlog("GET_PROB_REC : response buffer : other_gsc->collcenter - %s", orig_other_gsc->collcenter);
-		userlog("GET_PROB_REC : response buffer : other_gsc->cardcolldate - %s", orig_other_gsc->cardcolldate);
-		userlog("GET_PROB_REC : response buffer : other_gsc->idtype - %s", orig_other_gsc->idtype);
-		userlog("GET_PROB_REC : response buffer : other_gsc->idno - %s", orig_other_gsc->idno);
-		userlog("GET_PROB_REC : response buffer : other_gsc->userid - %s", orig_other_gsc->userid);
-		userlog("GET_PROB_REC : response buffer : other_gsc->contactno - %s", orig_other_gsc->contactno);
-		userlog("GET_PROB_REC : response buffer : other_gsc->sscbranchcode - %s", orig_other_gsc->sscbranchcode);
-		userlog("GET_PROB_REC : response buffer : other_gsc->qticketno - %ld", orig_other_gsc->qticketno);
-		userlog("GET_PROB_REC : response buffer : other_gsc->licidno - %s", orig_other_gsc->licidno);
-		userlog("GET_PROB_REC : response buffer : other_gsc->ownercat - %c", orig_other_gsc->ownercat);		
-		userlog("GET_PROB_REC : response buffer : other_gsc->applremarks - %s", orig_other_gsc->applremarks);
-		userlog("GET_PROB_REC : response buffer : other_gsc->applpriority - %d", orig_other_gsc->applpriority);
-		userlog("GET_PROB_REC : response buffer : other_gsc->timestamp - %s", orig_other_gsc->timestamp);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->applstat - %c", orig_other_gsc->applstat);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->kptno - %s", orig_other_gsc->kptno);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->collcenter - %s", orig_other_gsc->collcenter);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->cardcolldate - %s", orig_other_gsc->cardcolldate);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->idtype - %s", orig_other_gsc->idtype);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->idno - %s", orig_other_gsc->idno);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->userid - %s", orig_other_gsc->userid);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->contactno - %s", orig_other_gsc->contactno);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->sscbranchcode - %s", orig_other_gsc->sscbranchcode);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->qticketno - %ld", orig_other_gsc->qticketno);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->licidno - %s", orig_other_gsc->licidno);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->ownercat - %c", orig_other_gsc->ownercat);		
+		userlog("get_prob_rec L1 : response buffer : other_gsc->applremarks - %s", orig_other_gsc->applremarks);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->applpriority - %d", orig_other_gsc->applpriority);
+		userlog("get_prob_rec L1 : response buffer : other_gsc->timestamp - %s", orig_other_gsc->timestamp);
 		userlog(" ");
 	#endif
 
@@ -878,28 +893,28 @@ if(strcmp(req->header.application_id,"\0") == 0)
 	{
 			#ifdef DEBUG
 			userlog(" ***** PROBL_RECORD Details *****");
-			userlog(" GET_PROB_REC: response buffer : prob_no : %d", orig_prob_details->prob_no);
-			userlog(" GET_PROB_REC: response buffer : id_type : %s", orig_prob_details->id_type);
-			userlog(" GET_PROB_REC: response buffer : id_no : %s", orig_prob_details->id_no);
-			userlog(" GET_PROB_REC: response buffer : prob_date : %s", orig_prob_details->prob_date);
-			userlog(" GET_PROB_REC: response buffer : reason_code : %s", orig_prob_details->reason_code);
-			userlog(" GET_PROB_REC: response buffer : reason_srno : %d", orig_prob_details->reason_srno);
-			userlog(" GET_PROB_REC: response buffer : prob_stat : %c", orig_prob_details->prob_stat);
-			userlog(" GET_PROB_REC: response buffer : prob_remarks : %s", orig_prob_details->prob_remarks);
-			userlog(" GET_PROB_REC: response buffer : prob_solve_date : %s", orig_prob_details->prob_solve_date);
-			userlog(" GET_PROB_REC: response buffer : user_id : %s", orig_prob_details->user_id);
-			userlog(" GET_PROB_REC: response buffer : workstation_id : %s", orig_prob_details->workstation_id);
-			userlog(" GET_PROB_REC: response buffer : action_date : %s", orig_prob_details->action_date);
-			userlog(" GET_PROB_REC: response buffer : action_remarks : %s", orig_prob_details->action_remarks);
-			userlog(" GET_PROB_REC: response buffer : action_user_id : %s", orig_prob_details->action_user_id);
-			userlog(" GET_PROB_REC: response buffer : branch_code : %s", orig_prob_details->branch_code);
-			userlog(" GET_PROB_REC: response buffer : txn_code : %s", orig_prob_details->txn_code);
-			userlog(" GET_PROB_REC: response buffer : legacy_type : %s", orig_prob_details->legacy_type);
-			userlog(" GET_PROB_REC: response buffer : gscbupdflag : %c", orig_prob_details->gscbupdflag);
-			userlog(" GET_PROB_REC: response buffer : genkpt : %c", orig_prob_details->genkpt);
-			userlog(" GET_PROB_REC: response buffer : bskrecd : %c", orig_prob_details->bskrecd);
+			userlog("get_prob_rec L1 : response buffer : prob_no : %d", orig_prob_details->prob_no);
+			userlog("get_prob_rec L1 : response buffer : id_type : %s", orig_prob_details->id_type);
+			userlog("get_prob_rec L1 : response buffer : id_no : %s", orig_prob_details->id_no);
+			userlog("get_prob_rec L1 : response buffer : prob_date : %s", orig_prob_details->prob_date);
+			userlog("get_prob_rec L1 : response buffer : reason_code : %s", orig_prob_details->reason_code);
+			userlog("get_prob_rec L1 : response buffer : reason_srno : %d", orig_prob_details->reason_srno);
+			userlog("get_prob_rec L1 : response buffer : prob_stat : %c", orig_prob_details->prob_stat);
+			userlog("get_prob_rec L1 : response buffer : prob_remarks : %s", orig_prob_details->prob_remarks);
+			userlog("get_prob_rec L1 : response buffer : prob_solve_date : %s", orig_prob_details->prob_solve_date);
+			userlog("get_prob_rec L1 : response buffer : user_id : %s", orig_prob_details->user_id);
+			userlog("get_prob_rec L1 : response buffer : workstation_id : %s", orig_prob_details->workstation_id);
+			userlog("get_prob_rec L1 : response buffer : action_date : %s", orig_prob_details->action_date);
+			userlog("get_prob_rec L1 : response buffer : action_remarks : %s", orig_prob_details->action_remarks);
+			userlog("get_prob_rec L1 : response buffer : action_user_id : %s", orig_prob_details->action_user_id);
+			userlog("get_prob_rec L1 : response buffer : branch_code : %s", orig_prob_details->branch_code);
+			userlog("get_prob_rec L1 : response buffer : txn_code : %s", orig_prob_details->txn_code);
+			userlog("get_prob_rec L1 : response buffer : legacy_type : %s", orig_prob_details->legacy_type);
+			userlog("get_prob_rec L1 : response buffer : gscbupdflag : %c", orig_prob_details->gscbupdflag);
+			userlog("get_prob_rec L1 : response buffer : genkpt : %c", orig_prob_details->genkpt);
+			userlog("get_prob_rec L1 : response buffer : bskrecd : %c", orig_prob_details->bskrecd);
 			userlog(" ");
-			userlog("GET_PROB_REC : get_probl_record_recs (resp->probl_record_cnt): %d",resp->probl_record_cnt);
+			userlog("get_prob_rec L1 : get_probl_record_recs (resp->probl_record_cnt): %d",resp->probl_record_cnt);
 			userlog("end printing the response buffer ");
 		#endif		
 		
@@ -912,14 +927,16 @@ if(strcmp(req->header.application_id,"\0") == 0)
 else if(strcmp(req->header.application_id,"\0") != 0)
 {
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : The application_id before updating the ENQFLAG in PROBL_RECORD table to Y : %s",req->header.application_id);
+		userlog("get_prob_rec L1 : The application_id before updating the ENQFLAG in PROBL_RECORD table to Y : %s",req->header.application_id);
 	#endif
 		ret_val = 0;
-		ret_val = update_probl_record(req->header.application_id,req->updstatus, ctx);
+
+		//modified by samsuri on 27 feb 2023
+		ret_val = update_probl_record(req->header.application_id, req->header.branch_code, req->updstatus, ctx);
 		if(ret_val != GMPC_GOOD)
 		{
 		#ifdef DEBUG
-			userlog("GET_PROB_REC : Error in update_probl_record() function");
+			userlog("get_prob_rec L1 : Error in update_probl_record() function");
 		#endif
 		//tpreturn(TPSUCCESS, ret_val, (char *) resp, resp_length, 0);
 				*pRespSize = resp_length;
@@ -928,7 +945,7 @@ else if(strcmp(req->header.application_id,"\0") != 0)
 		 return ret_val;
 		}
 #ifdef DEBUG
-	userlog("GET_PROB_REC : The ENQFLAG in PROBL_RECORD table is successfully updated to Y ");
+	userlog("get_prob_rec L1 : The ENQFLAG in PROBL_RECORD table is successfully updated to Y ");
 #endif
 		resp->upd_flag = 'Y';
 }
@@ -939,17 +956,17 @@ else if(strcmp(req->header.application_id,"\0") != 0)
 	log_exit(ctx);
 
 	#ifdef DEBUG		
-		userlog("GET_PROB_REC : The serivce completed successfully");
+		userlog("get_prob_rec L1 : The serivce completed successfully");
 	#endif		
 
 	//tpreturn(TPSUCCESS, GMPC_GOOD, (char *) resp, resp_length, 0);
-		userlog("GET_PROB_REC : Response buffer size %d ", resp_length);
+		userlog("get_prob_rec L1 : Response buffer size %d ", resp_length);
 		*pRespSize = resp_length;
-		userlog("GET_PROB_REC : After swap buffer size %d ", resp_length);
+		userlog("get_prob_rec L1 : After swap buffer size %d ", resp_length);
 		//memcpy(*pResp, resp, resp_length);
 		*pResp  = resp;
 		
-		userlog("GET_PROB_REC : After swap Memory size %d ", resp_length);
+		userlog("get_prob_rec L1 : After swap Memory size %d ", resp_length);
 
 	return GMPC_GOOD;
 
@@ -968,8 +985,8 @@ int check_id_type(char *id_type,void * ctx)
 int ret_val;
 
 #ifdef DEBUG
-	userlog("GET_PROB_REC : in check_id_type() function");
-	userlog("GET_PROB_REC : the input ID type is %d",atoi(id_type));
+	userlog("get_prob_rec L1 : in check_id_type() function");
+	userlog("get_prob_rec L1 : the input ID type is %d",atoi(id_type));
 #endif
 	
 /*Check input data for valid ID type*/
@@ -1010,7 +1027,8 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 	struct sqlca sqlca = {0}; // added on 07/03/06
 	EXEC SQL BEGIN DECLARE SECTION;
 
-	char appl_id[APP_ID_SIZE];
+	char appl_id[APP_ID_SIZE] = {0};
+	char tmpAppl_id[APP_ID_SIZE] = {0};
 	char branchcode[BRANCH_CODE_SIZE];
 
 	char applstat;
@@ -1056,13 +1074,13 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 	EXEC SQL CONTEXT USE :pcCtx;// Modification for IJPN
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : sbranchcode - %s", sbranchcode);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : sbranchcode - %s", sbranchcode);
 	#endif
 
 	strcpy(branchcode, sbranchcode);
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : branchcode - %s", branchcode);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : branchcode - %s", branchcode);
 	#endif
 	 /* the following select is included for IJPN on 12/04/05 */
 
@@ -1076,7 +1094,7 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 	  if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_other_gsc_problem_recs : Selecting appl_id from APPNT_PROBL_DATA failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_other_gsc_problem_recs : Selecting appl_id from APPNT_PROBL_DATA failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_other_gsc_problem_recs: Selecting appl_id from APPNT_PROBL_DATA failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC : get_other_gsc_problem_recs: Selecting appl_id from APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1089,12 +1107,35 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 		else if(NO_DATA_FOUND)
 		{
 			#ifdef DEBUG
-				userlog(" GET_PROB_REC : get_other_gsc_problem_recs : NO DATA FOUND in APPNT_PROBL_DATA table : %s", SQLMSG);
+				userlog("get_prob_rec L1 : get_other_gsc_problem_recs : NO DATA FOUND in APPNT_PROBL_DATA table : %s", SQLMSG);
 			#endif			
 			*other_gsc_flag = 1;
 			return GMPC_GOOD;
 		}
 
+	//added by samsuri on 24 feb 2023
+	userlog("get_prob_rec L1 : get_other_gsc_problem_recs : appl_id - [%s]", appl_id);
+	if(appl_id[0] != '\0')
+	{
+		
+		strcpy(tmpAppl_id,appl_id);
+
+		EXEC SQL SELECT OLDAPPLID INTO :appl_id
+					FROM  USK_COMPOUND_FEE
+					WHERE APPLID = :appl_id;
+
+		userlog("get_prob_rec L1 : after read USK table. Appl_id: [%s] ",appl_id);							
+		if(NO_DATA_FOUND)
+		{
+			#ifdef DEBUG
+				userlog("get_prob_rec L1 : get_other_gsc_problem_recs : NO DATA FOUND in USK_COMPOUND_FEE table : %s", SQLMSG);
+			#endif			
+			// *other_gsc_flag = 1;
+			// return GMPC_GOOD;
+		}
+		
+
+	}
 
 	EXEC SQL SELECT APPLID,APPLSTAT,KPTNO,COLLCENTER,TO_CHAR(CARDCOLLDATE,'DDMMYYYY'),
 			IDTYPE,IDNO,USERID,CONTACTNO,SSCBRANCHCODE,
@@ -1110,13 +1151,13 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 		FROM
 			 APPLICATION 
 		WHERE (APPLID = :appl_id)		
-		AND	  APPLSTAT IN ('X','Q','T','H');
+		AND	  APPLSTAT IN ('X','Q','T','H','A','9','D');//samsuri added 'A','9','D'
 		
 
 		if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_other_gsc_problem_recs : Selecting other gsc problem records from APPLICATION & PROBL_RECORD failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_other_gsc_problem_recs : Selecting other gsc problem records from APPLICATION & PROBL_RECORD failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_other_gsc_problem_recs: Selecting other gsc problem records failed from APPLICATION & PROBL_RECORD");
 			sprintf(excep_log.error_msg, "GET_PROB_REC : get_other_gsc_problem_recs: Selecting other gsc problem records failed from APPLICATION & PROBL_RECORD : %s", SQLMSG);
@@ -1129,25 +1170,42 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 		else if(NO_DATA_FOUND)
 		{
 			#ifdef DEBUG
-				userlog(" GET_PROB_REC : get_other_gsc_problem_recs : NO DATA FOUND in APPL_MISSED_OPEX table for given APPLID : %s", SQLMSG);
+				userlog("get_prob_rec L1 : get_other_gsc_problem_recs : NO DATA FOUND in APPL_MISSED_OPEX table for given APPLID : %s", SQLMSG);
 			#endif
 			EXEC SQL UPDATE APPNT_PROBL_DATA 
 					SET SENDFLAG = 'Y'
-					WHERE APPLID = :appl_id;
+					WHERE APPLID = :appl_id
+					AND SSCBRANCHCODE= :branchcode;
 
-			if(SQLCODE) 
+			userlog("get_prob_rec L1 : get_other_gsc_problem_recs : UPDATE APPNT_PROBL_DATA APPLID: %s  branchcode: %s SQL: %d", 
+				appl_id, branchcode, SQLCODE);
+
+			if(NO_DATA_FOUND)
 			{
-			#ifdef DEBUG
-			userlog(" GET_PROB_REC : get_other_gsc_problem_recs : Updating SENDFLAG in APPNT_PROBL_DATA failed : %s", SQLMSG);
-			#endif
-			strcpy(prog_log.remarks,"GET_PROB_REC : get_other_gsc_problem_recs: Updating SENDFLAG in APPNT_PROBL_DATA failed");
-			sprintf(excep_log.error_msg, "GET_PROB_REC : get_other_gsc_problem_recs: Updating SENDFLAG in APPNT_PROBL_DATA failed : %s", SQLMSG);
-			excep_log.termination_flag = YES;
-			excep_log.severity = FATAL;
-			log_error(ctx);
-				
-			return UPDATE_ERROR;
+				EXEC SQL UPDATE APPNT_PROBL_DATA 
+						SET SENDFLAG = 'Y'
+						WHERE APPLID = :tmpAppl_id
+						AND SSCBRANCHCODE= :branchcode;
+
+				userlog("get_prob_rec L1 : get_other_gsc_problem_recs : UPDATE APPNT_PROBL_DATA APPLID: %s  branchcode: %s SQL: %d", 
+				tmpAppl_id, branchcode, SQLCODE);
 			}
+			else if(SQLCODE) 
+			{
+				#ifdef DEBUG
+				userlog("get_prob_rec L1 : get_other_gsc_problem_recs : Updating SENDFLAG in APPNT_PROBL_DATA failed : %s", SQLMSG);
+				#endif
+				strcpy(prog_log.remarks,"GET_PROB_REC : get_other_gsc_problem_recs: Updating SENDFLAG in APPNT_PROBL_DATA failed");
+				sprintf(excep_log.error_msg, "GET_PROB_REC : get_other_gsc_problem_recs: Updating SENDFLAG in APPNT_PROBL_DATA failed : %s", SQLMSG);
+				excep_log.termination_flag = YES;
+				excep_log.severity = FATAL;
+				log_error(ctx);
+					
+				return UPDATE_ERROR;
+			}
+
+			
+
 			*other_gsc_flag = 1;
 			return GMPC_GOOD;
 		}
@@ -1161,24 +1219,24 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 
 	#ifdef DEBUG
 		userlog(" ");
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : appl_id - %s", appl_id);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : applstat - %c", applstat);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : kptno - %s", kptno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : collcenter - %s", collcenter);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : cardcolldate - %s", cardcolldate);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : idtype - %s", idtype);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : idno - %s", idno.arr);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : userid - %s", userid);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : contactno - %s", contactno.arr);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : sscbranchcode - %s", sscbranchcode);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : qticketno - %ld", qticketno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : licidno - %s", licidno.arr);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : ownercat - %c", ownercat);		
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : applremarks - %s", applremarks.arr);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : applpriority - %d", applpriority);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : timestamp - %s", timestamp);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : lapplid - %s", lapplid);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : email - %s", email.arr); //added by samsuri on 28 sept 2022
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : appl_id - %s", appl_id);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : applstat - %c", applstat);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : kptno - %s", kptno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : collcenter - %s", collcenter);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : cardcolldate - %s", cardcolldate);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : idtype - %s", idtype);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : idno - %s", idno.arr);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : userid - %s", userid);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : contactno - %s", contactno.arr);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : sscbranchcode - %s", sscbranchcode);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : qticketno - %ld", qticketno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : licidno - %s", licidno.arr);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : ownercat - %c", ownercat);		
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : applremarks - %s", applremarks.arr);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : applpriority - %d", applpriority);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : timestamp - %s", timestamp);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : lapplid - %s", lapplid);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : email - %s", email.arr); //added by samsuri on 28 sept 2022
 		userlog(" ");
 	#endif
 	
@@ -1186,7 +1244,7 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 		
 
 	#ifdef DEBUG			
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : lappl_id - %s", lappl_id);	
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : lappl_id - %s", lappl_id);	
 	#endif
 
 		other_gsc->applstat = applstat;
@@ -1209,29 +1267,29 @@ int get_other_gsc_problem_recs(char lappl_id[20], OTHER_GSC_PROBLEMS_T* other_gs
 
 	#ifdef DEBUG
 		userlog(" ");		
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->applstat - %c", other_gsc->applstat);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->kptno - %s", other_gsc->kptno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->collcenter - %s", other_gsc->collcenter);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->cardcolldate - %s", other_gsc->cardcolldate);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->idtype - %s", other_gsc->idtype);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->idno - %s", other_gsc->idno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->userid - %s", other_gsc->userid);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->contactno - %s", other_gsc->contactno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->sscbranchcode - %s", other_gsc->sscbranchcode);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->qticketno - %ld", other_gsc->qticketno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->licidno - %s", other_gsc->licidno);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->ownercat - %c", other_gsc->ownercat);		
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->applremarks - %s", other_gsc->applremarks);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->applpriority - %d", other_gsc->applpriority);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->timestamp - %s", other_gsc->timestamp);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->legapplid - %s", other_gsc->legapplid);
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : other_gsc->email - %s", other_gsc->email); //added by samsuri on 28 sept 2022
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->applstat - %c", other_gsc->applstat);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->kptno - %s", other_gsc->kptno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->collcenter - %s", other_gsc->collcenter);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->cardcolldate - %s", other_gsc->cardcolldate);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->idtype - %s", other_gsc->idtype);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->idno - %s", other_gsc->idno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->userid - %s", other_gsc->userid);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->contactno - %s", other_gsc->contactno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->sscbranchcode - %s", other_gsc->sscbranchcode);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->qticketno - %ld", other_gsc->qticketno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->licidno - %s", other_gsc->licidno);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->ownercat - %c", other_gsc->ownercat);		
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->applremarks - %s", other_gsc->applremarks);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->applpriority - %d", other_gsc->applpriority);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->timestamp - %s", other_gsc->timestamp);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->legapplid - %s", other_gsc->legapplid);
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : other_gsc->email - %s", other_gsc->email); //added by samsuri on 28 sept 2022
 		userlog(" ");
 	#endif
 
 		
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_other_gsc_problem_recs : Record selected successfully");
+		userlog("get_prob_rec L1 : get_other_gsc_problem_recs : Record selected successfully");
 	#endif
 
 
@@ -1379,8 +1437,8 @@ int get_appl_missed_opex_rec(char lappl_id[20], APPL_MISSED_OPEX_T *missed_opex_
 	strcpy(hv_applid, lappl_id);
 
 	#ifdef DEBUG			
-			userlog("GET_PROB_REC : get_appl_missed_opex_rec :lappl_id): %s",lappl_id);
-			userlog("GET_PROB_REC : get_appl_missed_opex_rec :hv_applid): %s",hv_applid);
+			userlog("get_prob_rec L1 : get_appl_missed_opex_rec :lappl_id): %s",lappl_id);
+			userlog("get_prob_rec L1 : get_appl_missed_opex_rec :hv_applid): %s",hv_applid);
 	#endif
 
 	EXEC SQL 
@@ -1489,56 +1547,56 @@ int get_appl_missed_opex_rec(char lappl_id[20], APPL_MISSED_OPEX_T *missed_opex_
 
 	#ifdef DEBUG
 		userlog(" ");
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_applid - %s", hv_applid);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_address1 - %s", hv_address1.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_address2 - %s", hv_address2.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_address3 - %s", hv_address3.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_birthdate - %s", hv_birthdate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_birthdistrictcode - %d", hv_birthdistrictcode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_birthplacecode - %s", hv_birthplacecode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_cardlostcnt - %d", hv_cardlostcnt);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_citizennationcode - %s", hv_citizennationcode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_citycode - %d", hv_citycode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_colourarticlecode - %s", hv_colourarticlecode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_currlongname - %s", hv_currlongname.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_currlongname1 - %s", hv_currshortname1.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_currlongname2 - %s", hv_currshortname2.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_fatheridno - %s", hv_fatheridno.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_fatheridtype - %s", hv_fatheridtype);		
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_gender - %c", hv_gender);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_gmpcshortname1 - %s", hv_gmpcshortname1.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_gmpcshortname2 - %s", hv_gmpcshortname2.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_gmpcshortname3 - %s", hv_gmpcshortname2.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_hkind - %c", hv_hkind);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_iccolorcode - %c", hv_iccolorcode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_idnumber - %s", hv_idnumber.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_idtype - %s", hv_idtype);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_immexpirydate - %s", hv_immexpirydate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_immrefno - %s", hv_immrefno.arr);		
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_kppno - %s", hv_kppno);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_kptno - %s", hv_kptno);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_ktindcode - %s", hv_ktindcode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_lastcardissuedate - %s", hv_lastcardissuedate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_militaryid - %s", hv_militaryid);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_motheridno - %s", hv_motheridno.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_motheridtype - %s", hv_motheridtype);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_origname - %s", hv_origname.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_orignameind - %c", hv_orignameind);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_passportissuecountry - %s", hv_passportissuecountry);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_passportissuedate - %s", hv_passportissuedate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_passportno - %s", hv_passportno.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_permitissuedate - %s", hv_permitissuedate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_permitno - %s", hv_permitno.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_policeid - %s", hv_policeid);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_policeretiredate - %s", hv_policeretiredate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_polmilitarycode - %c", hv_polmilitarycode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_polmilitaryjoindate - %s", hv_polmilitaryjoindate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_postcode - %s", hv_postcode.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_racecode - %s", hv_racecode);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_ktstartdate - %s", hv_ktstartdate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_ktenddate - %s", hv_ktenddate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_ptissuedate - %s", hv_ptissuedate);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_birthregndate - %s", hv_birthregndate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_applid - %s", hv_applid);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_address1 - %s", hv_address1.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_address2 - %s", hv_address2.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_address3 - %s", hv_address3.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_birthdate - %s", hv_birthdate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_birthdistrictcode - %d", hv_birthdistrictcode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_birthplacecode - %s", hv_birthplacecode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_cardlostcnt - %d", hv_cardlostcnt);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_citizennationcode - %s", hv_citizennationcode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_citycode - %d", hv_citycode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_colourarticlecode - %s", hv_colourarticlecode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_currlongname - %s", hv_currlongname.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_currlongname1 - %s", hv_currshortname1.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_currlongname2 - %s", hv_currshortname2.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_fatheridno - %s", hv_fatheridno.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_fatheridtype - %s", hv_fatheridtype);		
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_gender - %c", hv_gender);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_gmpcshortname1 - %s", hv_gmpcshortname1.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_gmpcshortname2 - %s", hv_gmpcshortname2.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_gmpcshortname3 - %s", hv_gmpcshortname2.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_hkind - %c", hv_hkind);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_iccolorcode - %c", hv_iccolorcode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_idnumber - %s", hv_idnumber.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_idtype - %s", hv_idtype);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_immexpirydate - %s", hv_immexpirydate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_immrefno - %s", hv_immrefno.arr);		
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_kppno - %s", hv_kppno);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_kptno - %s", hv_kptno);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_ktindcode - %s", hv_ktindcode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_lastcardissuedate - %s", hv_lastcardissuedate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_militaryid - %s", hv_militaryid);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_motheridno - %s", hv_motheridno.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_motheridtype - %s", hv_motheridtype);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_origname - %s", hv_origname.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_orignameind - %c", hv_orignameind);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_passportissuecountry - %s", hv_passportissuecountry);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_passportissuedate - %s", hv_passportissuedate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_passportno - %s", hv_passportno.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_permitissuedate - %s", hv_permitissuedate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_permitno - %s", hv_permitno.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_policeid - %s", hv_policeid);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_policeretiredate - %s", hv_policeretiredate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_polmilitarycode - %c", hv_polmilitarycode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_polmilitaryjoindate - %s", hv_polmilitaryjoindate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_postcode - %s", hv_postcode.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_racecode - %s", hv_racecode);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_ktstartdate - %s", hv_ktstartdate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_ktenddate - %s", hv_ktenddate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_ptissuedate - %s", hv_ptissuedate);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_birthregndate - %s", hv_birthregndate);
 	#endif
 	
 			
@@ -1784,8 +1842,8 @@ int get_appl_missed_opex_rec(char lappl_id[20], APPL_MISSED_OPEX_T *missed_opex_
 
 		#ifdef DEBUG
 		userlog("----------> TESTING <----------");
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : hv_immrefno - %s", hv_immrefno.arr);
-		userlog("GET_PROB_REC : get_appl_missed_opex_rec : missed_opex_rec->immrefno - %s", missed_opex_rec->immrefno);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : hv_immrefno - %s", hv_immrefno.arr);
+		userlog("get_prob_rec L1 : get_appl_missed_opex_rec : missed_opex_rec->immrefno - %s", missed_opex_rec->immrefno);
 		userlog("----------> TESTING <----------");
 		#endif
 	}
@@ -2145,13 +2203,13 @@ int get_probl_record_recs(char lappl_id[20], PROBL_RECORD_T *prob_details,void *
 
 #ifdef DEBUG
 		userlog(" ");
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.prob_no - %d", local_prob_details.prob_no);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.id_type - %s", local_prob_details.id_type.arr);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.id_no - %s", local_prob_details.id_no.arr);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.prob_date - %s", local_prob_details.prob_date.arr);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.reason_code - %s", local_prob_details.reason_code);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.reason_srno - %d", local_prob_details.reason_srno);
-		userlog("GET_PROB_REC : get_prob_record_recs : local_prob_details.prob_stat - %c", local_prob_details.prob_stat);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.prob_no - %d", local_prob_details.prob_no);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.id_type - %s", local_prob_details.id_type.arr);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.id_no - %s", local_prob_details.id_no.arr);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.prob_date - %s", local_prob_details.prob_date.arr);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.reason_code - %s", local_prob_details.reason_code);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.reason_srno - %d", local_prob_details.reason_srno);
+		userlog("get_prob_rec L1 : get_prob_record_recs : local_prob_details.prob_stat - %c", local_prob_details.prob_stat);
 		userlog(" ");
 #endif
 
@@ -2254,11 +2312,18 @@ int get_probl_record_recs(char lappl_id[20], PROBL_RECORD_T *prob_details,void *
 }
 
 
-int update_probl_record(char *appl_id,char updstat, void * ctx)
+int update_probl_record(char *appl_id, char *sscBranch, char updstat, void * ctx)
 {
 	struct sqlca sqlca = {0}; // added on 07/03/06
 	EXEC SQL BEGIN DECLARE SECTION;
+	
 	char updstatus='\0';
+	char sendFlag='\0'; //added by samsuri on 28 feb 2023
+	varchar MaxApplid[APP_ID_SIZE] = {0};	//added by samsuri on 9 mar 2023
+	varchar hv_GQDBranch[BRANCH_CODE_SIZE] = {0};	//added by samsuri on 9 mar 2023
+	varchar hv_USKSSCBranch[BRANCH_CODE_SIZE] = {0};	//added by samsuri on 9 mar 2023
+	int USKMaxSerNo = 0;
+	
 	sql_context pcCtx; // Modification for IJPN
 	EXEC SQL END DECLARE SECTION;
 
@@ -2270,12 +2335,12 @@ int update_probl_record(char *appl_id,char updstat, void * ctx)
 
 	EXEC SQL UPDATE PROBL_RECORD
 		SET ENQFLAG = 'Y'
-				 WHERE APPLID = :appl_id;
+				 WHERE APPLID = :appl_id;				
 	
 	if ((SQLCODE != 0) && (SQLCODE != 1403))
 	{
 	#ifdef DEBUG
-		userlog(" GET_PROB_REC :update_probl_record : Error in updating ENQFLAG of prob_details : %s", SQLMSG);
+		userlog("get_prob_rec L1 :update_probl_record : Error in updating ENQFLAG of prob_details : %s", SQLMSG);
 	#endif
 	/* Log the error */
 	strcpy(prog_log.remarks,"GET_PROB_REC :update_probl_record : Error in updating ENQFLAG of prob_details ");
@@ -2286,29 +2351,92 @@ int update_probl_record(char *appl_id,char updstat, void * ctx)
 	return UPDATE_ERROR;
 	}
 	#ifdef DEBUG
-		userlog(" GET_PROB_REC : update_probl_record : Updated the ENQFLAG in PROBL_RECORD to Y successfully");
+		userlog("get_prob_rec L1 : update_probl_record : Updated the ENQFLAG in PROBL_RECORD to Y successfully");
 	#endif
 
-	
-	EXEC SQL UPDATE APPNT_PROBL_DATA 
-					SET SENDFLAG = :updstatus //'Y' changed on 19/09/2005 for IJPN
-					WHERE APPLID = :appl_id;
+	strcpy((char*)hv_GQDBranch.arr,"101999"); //replace to prod branchcode later
+	setlen(hv_GQDBranch);
 
-	if (SQLCODE != 0)
+	//ADDED by samsuri on 27 feb 2023	
+	EXEC SQL SELECT SENDFLAG INTO :sendFlag
+				FROM  APPNT_PROBL_DATA
+				WHERE APPLID = :appl_id
+				AND SSCBRANCHCODE = :sscBranch; //added by samsuri on 9 mar 2023
+
+	//get max txnserno
+	EXEC SQL SELECT MAX(TXNSERNO) INTO :USKMaxSerNo
+				FROM  USK_COMPOUND_FEE
+				WHERE OLDAPPLID = :appl_id;
+
+	//get max applid from USK table
+	EXEC SQL SELECT APPLID, SSCBRANCH INTO :MaxApplid,:hv_USKSSCBranch
+				FROM  USK_COMPOUND_FEE
+				WHERE OLDAPPLID = :appl_id
+				AND TXNSERNO=:USKMaxSerNo;
+		
+	userlog(" get_prob_record_recs : Checking USK applid: %s USKMaxSerNo: %d  MaxApplid: %s sscBranch: %s hv_USKSSCBranch: %s sendFlag: %c",appl_id, USKMaxSerNo, MaxApplid.arr,sscBranch,hv_USKSSCBranch.arr,sendFlag);
+
+	if(sendFlag != 'Y')
 	{
-	#ifdef DEBUG
-		userlog(" GET_PROB_REC :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA : %s", SQLMSG);
-	#endif
-	/* Log the error */
-	strcpy(prog_log.remarks,"GET_PROB_REC :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA ");
-	sprintf(excep_log.error_msg,"GET_PROB_REC :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA : %s", SQLMSG);
-	excep_log.termination_flag = 'Y';
-	excep_log.severity = FATAL;
-	log_error(ctx);
-	return UPDATE_ERROR;
+		EXEC SQL UPDATE APPNT_PROBL_DATA 
+						SET SENDFLAG = :updstatus,
+						TIMESTAMP = SYSDATE //'Y' changed on 19/09/2005 for IJPN
+						WHERE APPLID = :appl_id
+						AND SSCBRANCHCODE = :sscBranch;
+
 	}
+
+
+	if(SQLCODE == 1403)
+	{
+		userlog("get_prob_rec L1 : Checking USK applid for 1403 MaxApplid: %s sscBranch: %s",MaxApplid.arr,sscBranch);
+		
+		EXEC SQL UPDATE APPNT_PROBL_DATA 
+						SET SENDFLAG = :updstatus,
+						TIMESTAMP = SYSDATE //'Y' changed on 19/09/2005 for IJPN
+						WHERE APPLID = :MaxApplid
+						AND SSCBRANCHCODE = :sscBranch;
+
+	}
+	else if (SQLCODE != 0)
+	{
+		#ifdef DEBUG
+			userlog("get_prob_rec L1 :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA : %s", SQLMSG);
+		#endif
+		/* Log the error */
+		strcpy(prog_log.remarks,"GET_PROB_REC :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA ");
+		sprintf(excep_log.error_msg,"GET_PROB_REC :update_probl_record : Error while updating SENDFLAG of APPNT_PROBL_DATA : %s", SQLMSG);
+		excep_log.termination_flag = 'Y';
+		excep_log.severity = FATAL;
+		log_error(ctx);
+		return UPDATE_ERROR;
+	}
+
+	if(strcmp(sscBranch,hv_USKSSCBranch.arr) == 0)
+	{
+		EXEC SQL UPDATE APPNT_PROBL_DATA 
+						SET SENDFLAG = :updstatus,
+						TIMESTAMP = SYSDATE //'Y' changed on 19/09/2005 for IJPN
+						WHERE APPLID = :MaxApplid
+						AND SSCBRANCHCODE = :hv_USKSSCBranch;
+
+	}
+
+	//to send data to GQD if only 1 record in USK record
+	// if(sendFlag == 'Y' && MaxApplid.arr[0] != '\0')
+	// {
+	// 	EXEC SQL UPDATE APPNT_PROBL_DATA 
+	// 					SET SENDFLAG = 'N',
+	// 					TIMESTAMP = SYSDATE, //'Y' changed on 19/09/2005 for IJPN
+	// 					SSCBRANCHCODE = :hv_GQDBranch
+	// 					WHERE APPLID = :appl_id
+	// 					AND SSCBRANCHCODE = :sscBranch;
+
+	// 	userlog("get_prob_rec L1 :update_probl_record : updating GQD SENDFLAG to N for appl_id : %s Result: %s",appl_id, SQLMSG);
+	// }
+
 	#ifdef DEBUG
-		userlog(" GET_PROB_REC : update_probl_record : Updated the ENQFLAG in PROBL_RECORD to Y successfully");
+		userlog("get_prob_rec L1 : update_probl_record : Updated the ENQFLAG in APPNT_PROBL_DATA to Y successfully");
 	#endif
 
 
@@ -2364,14 +2492,14 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 	memset(addr_info,'\0', sizeof(ADDRESS_INFO_T));
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_addr_info_rec : appl_id : %s",appl_id);
+		userlog("get_prob_rec L1 : get_addr_info_rec : appl_id : %s",appl_id);
 	#endif
 
 	strcpy(applid.arr,appl_id);
 	setlen(applid);
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_addr_info_rec : applid : %s",applid.arr);
+		userlog("get_prob_rec L1 : get_addr_info_rec : applid : %s",applid.arr);
 	#endif
 
 
@@ -2390,7 +2518,7 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 		if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_addr_info_rec : Select from APPNT_JPN_INFO failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_addr_info_rec : Select from APPNT_JPN_INFO failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_addr_info_rec : Select from APPNT_JPN_INFO failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC : get_addr_info_rec : Select from APPNT_JPN_INFO failed : %s", SQLMSG);
@@ -2403,7 +2531,7 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 		else if(NO_DATA_FOUND)
 		{
 			#ifdef DEBUG
-				userlog(" GET_PROB_REC : get_addr_info_rec : NO DATA FOUND in APPNT_JPN_INFO table : %s", SQLMSG);
+				userlog("get_prob_rec L1 : get_addr_info_rec : NO DATA FOUND in APPNT_JPN_INFO table : %s", SQLMSG);
 			#endif			
 			*addr_info_flag = 1;
 			return GMPC_GOOD;
@@ -2421,15 +2549,15 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_addr_info_rec : shortname1 - %s", shortname1.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : shortname2 - %s", shortname2.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : shortname3 - %s", shortname3.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : address1 - %s", address1.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : address2 - %s", address2.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : address3 - %s", address3.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : statecode - %s", statecode.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : postcode - %s", postcode.arr);
-			userlog("GET_PROB_REC : get_addr_info_rec : citycode - %d", citycode);			
+			userlog("get_prob_rec L1 : get_addr_info_rec : shortname1 - %s", shortname1.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : shortname2 - %s", shortname2.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : shortname3 - %s", shortname3.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : address1 - %s", address1.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : address2 - %s", address2.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : address3 - %s", address3.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : statecode - %s", statecode.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : postcode - %s", postcode.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : citycode - %d", citycode);			
 		#endif
 		
 		//strcpy(addr_info->applid,applid.arr);
@@ -2451,7 +2579,7 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 		if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_addr_info_rec : Select from APPLICATION failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_addr_info_rec : Select from APPLICATION failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_addr_info_rec : Select from APPLICATION failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC : get_addr_info_rec : Select from APPLICATION failed : %s", SQLMSG);
@@ -2465,7 +2593,7 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 		setnull(collcenter);
 
 		 #ifdef DEBUG
-			userlog("GET_PROB_REC : get_addr_info_rec : collcenter : %s", collcenter.arr);
+			userlog("get_prob_rec L1 : get_addr_info_rec : collcenter : %s", collcenter.arr);
 			userlog(" ");
 		 #endif
 
@@ -2474,23 +2602,23 @@ int get_addr_info_rec(char *appl_id, ADDRESS_INFO_T *addr_info, int *addr_info_f
 	
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->gmpcshortname1 - %s", addr_info->gmpcshortname1);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->gmpcshortname2 - %s", addr_info->gmpcshortname2);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->gmpcshortname3 - %s", addr_info->gmpcshortname3);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->address1 - %s", addr_info->address1);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->address2 - %s", addr_info->address2);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->address3 - %s", addr_info->address3);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->statecode - %s", addr_info->statecode);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->postcode - %s", addr_info->postcode);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->citycode - %d", addr_info->citycode);
-			userlog("GET_PROB_REC : get_addr_info_rec : addr_info->collcenter : %s", addr_info->collcenter);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->gmpcshortname1 - %s", addr_info->gmpcshortname1);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->gmpcshortname2 - %s", addr_info->gmpcshortname2);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->gmpcshortname3 - %s", addr_info->gmpcshortname3);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->address1 - %s", addr_info->address1);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->address2 - %s", addr_info->address2);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->address3 - %s", addr_info->address3);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->statecode - %s", addr_info->statecode);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->postcode - %s", addr_info->postcode);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->citycode - %d", addr_info->citycode);
+			userlog("get_prob_rec L1 : get_addr_info_rec : addr_info->collcenter : %s", addr_info->collcenter);
 			userlog(" ");
 		#endif
 
 		*addr_info_flag = 0; // record found 
 
 		#ifdef DEBUG
-			userlog("GET_PROB_REC : get_addr_info_rec : Record selected successfully");
+			userlog("get_prob_rec L1 : get_addr_info_rec : Record selected successfully");
 		#endif
 
 	return SUCCESS;
@@ -2520,14 +2648,14 @@ int get_appl_txn_rec(char *appl_id, APPL_TXN_FEE_T *appl_txn, int fee_cnt, void 
 	memset(appl_txn,'\0', sizeof(APPL_TXN_FEE_T));
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_appl_txn_rec : appl_id : %s",appl_id);
+		userlog("get_prob_rec L1 : get_appl_txn_rec : appl_id : %s",appl_id);
 	#endif
 
 	strcpy(applid.arr,appl_id);
 	setlen(applid);
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_appl_txn_rec : applid : %s",applid.arr);
+		userlog("get_prob_rec L1 : get_appl_txn_rec : applid : %s",applid.arr);
 	#endif
 
 	EXEC SQL DECLARE fee_cur CURSOR FOR 
@@ -2543,7 +2671,7 @@ int get_appl_txn_rec(char *appl_id, APPL_TXN_FEE_T *appl_txn, int fee_cnt, void 
 		if(SQLCODE != 0) 
 		{
 		 #ifdef DEBUG
-			userlog("GET_PROB_REC : get_appl_txn_rec : open fee_cur failed ");
+			userlog("get_prob_rec L1 : get_appl_txn_rec : open fee_cur failed ");
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_appl_txn_rec : open fee_cur failed");
 			sprintf(excep_log.error_msg,"GET_PROB_REC : get_appl_txn_rec : open fee_cur failed:%s ",SQLMSG);
@@ -2566,7 +2694,7 @@ int get_appl_txn_rec(char *appl_id, APPL_TXN_FEE_T *appl_txn, int fee_cnt, void 
 			if((SQLCODE != 0) && (sqlca.sqlcode != 1403))
 			{
 				#ifdef DEBUG
-					userlog("GET_PROB_REC : get_appl_txn_rec : fee_cur failed while SELECT from appl_txn_fee :%s",SQLMSG);
+					userlog("get_prob_rec L1 : get_appl_txn_rec : fee_cur failed while SELECT from appl_txn_fee :%s",SQLMSG);
 				#endif
 				strcpy(prog_log.remarks,"GET_PROB_REC : get_appl_txn_rec : fee_cur failed while SELECT from appl_txn_fee");
 				sprintf(excep_log.error_msg,"GET_PROB_REC : get_appl_txn_rec : fee_cur failed while SELECT from appl_txn_fee:%s ",SQLMSG);
@@ -2581,10 +2709,10 @@ int get_appl_txn_rec(char *appl_id, APPL_TXN_FEE_T *appl_txn, int fee_cnt, void 
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_appl_txn_rec :  ltxnserno - %d", ltxnserno);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  lfeetype - %s", lfeetype);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  lfeeamt - %f", lfeeamt);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  lagencyrevncode - %d", lagencyrevncode);					
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  ltxnserno - %d", ltxnserno);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  lfeetype - %s", lfeetype);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  lfeeamt - %f", lfeeamt);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  lagencyrevncode - %d", lagencyrevncode);					
 		#endif
 
 
@@ -2596,10 +2724,10 @@ int get_appl_txn_rec(char *appl_id, APPL_TXN_FEE_T *appl_txn, int fee_cnt, void 
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_appl_txn_rec :  appl_txn->txnserno - %d", appl_txn->txnserno);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  appl_txn->feetype - %s", appl_txn->feetype);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  appl_txn->feeamt - %f", appl_txn->feeamt);
-			userlog("GET_PROB_REC : get_appl_txn_rec :  appl_txn->agencyrevncode - %d", appl_txn->agencyrevncode);					
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  appl_txn->txnserno - %d", appl_txn->txnserno);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  appl_txn->feetype - %s", appl_txn->feetype);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  appl_txn->feeamt - %f", appl_txn->feeamt);
+			userlog("get_prob_rec L1 : get_appl_txn_rec :  appl_txn->agencyrevncode - %d", appl_txn->agencyrevncode);					
 		#endif
 
 
@@ -2636,14 +2764,14 @@ int get_outstand_txn_rec(char *appl_id, OUTSTAND_TXN_FEE_T *outstand_txn, int fe
 	memset(outstand_txn,'\0', sizeof(OUTSTAND_TXN_FEE_T));
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_outstand_txn_rec : appl_id : %s",appl_id);
+		userlog("get_prob_rec L1 : get_outstand_txn_rec : appl_id : %s",appl_id);
 	#endif
 
 	strcpy(applid.arr,appl_id);
 	setlen(applid);
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_outstand_txn_rec : applid : %s",applid.arr);
+		userlog("get_prob_rec L1 : get_outstand_txn_rec : applid : %s",applid.arr);
 	#endif
 
 	EXEC SQL DECLARE fee_cur1 CURSOR FOR 
@@ -2659,7 +2787,7 @@ int get_outstand_txn_rec(char *appl_id, OUTSTAND_TXN_FEE_T *outstand_txn, int fe
 		if(SQLCODE != 0) 
 		{
 		 #ifdef DEBUG
-			userlog("GET_PROB_REC : get_outstand_txn_rec : open fee_cur1 failed ");
+			userlog("get_prob_rec L1 : get_outstand_txn_rec : open fee_cur1 failed ");
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC : get_outstand_txn_rec : open fee_cur1 failed");
 			sprintf(excep_log.error_msg,"GET_PROB_REC : get_outstand_txn_rec : open fee_cur1 failed:%s ",SQLMSG);
@@ -2683,7 +2811,7 @@ int get_outstand_txn_rec(char *appl_id, OUTSTAND_TXN_FEE_T *outstand_txn, int fe
 			if((SQLCODE != 0) && (sqlca.sqlcode != 1403))
 			{
 				#ifdef DEBUG
-					userlog("GET_PROB_REC : get_outstand_txn_rec : fee_cur1 failed while SELECT from appl_txn_fee :%s",SQLMSG);
+					userlog("get_prob_rec L1 : get_outstand_txn_rec : fee_cur1 failed while SELECT from appl_txn_fee :%s",SQLMSG);
 				#endif
 				strcpy(prog_log.remarks,"GET_PROB_REC : get_outstand_txn_rec : fee_cur1 failed while SELECT from appl_txn_fee");
 				sprintf(excep_log.error_msg,"GET_PROB_REC : get_outstand_txn_rec : fee_cur1 failed while SELECT from appl_txn_fee:%s ",SQLMSG);
@@ -2698,11 +2826,11 @@ int get_outstand_txn_rec(char *appl_id, OUTSTAND_TXN_FEE_T *outstand_txn, int fe
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  ltxnserno - %d", ltxnserno);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  lfeetype - %s", lfeetype);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  lfeeamt - %f", lfeeamt);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  lagencyrevncode - %d", lagencyrevncode);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  lsend_gsc - %c", lsend_gsc);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  ltxnserno - %d", ltxnserno);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  lfeetype - %s", lfeetype);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  lfeeamt - %f", lfeeamt);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  lagencyrevncode - %d", lagencyrevncode);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  lsend_gsc - %c", lsend_gsc);
 		#endif
 
 			outstand_txn->txnserno = ltxnserno;
@@ -2714,11 +2842,11 @@ int get_outstand_txn_rec(char *appl_id, OUTSTAND_TXN_FEE_T *outstand_txn, int fe
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  outstand_txn->txnserno - %d", outstand_txn->txnserno);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  outstand_txn->feetype - %s", outstand_txn->feetype);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  outstand_txn->feeamt - %f", outstand_txn->feeamt);
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  outstand_txn->agencyrevncode - %d", outstand_txn->agencyrevncode);					
-			userlog("GET_PROB_REC : get_outstand_txn_rec :  outstand_txn->send_gsc - %c", outstand_txn->send_gsc);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  outstand_txn->txnserno - %d", outstand_txn->txnserno);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  outstand_txn->feetype - %s", outstand_txn->feetype);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  outstand_txn->feeamt - %f", outstand_txn->feeamt);
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  outstand_txn->agencyrevncode - %d", outstand_txn->agencyrevncode);					
+			userlog("get_prob_rec L1 : get_outstand_txn_rec :  outstand_txn->send_gsc - %c", outstand_txn->send_gsc);
 		#endif
 
 
@@ -2760,14 +2888,14 @@ int get_time_ver_rec(char *appl_id, TIME_VERSION_T *time_version,  void * ctx)
 	memset(time_version,'\0', sizeof(TIME_VERSION_T));
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_time_ver_rec : appl_id : %s",appl_id);
+		userlog("get_prob_rec L1 : get_time_ver_rec : appl_id : %s",appl_id);
 	#endif
 
 	strcpy(applid.arr,appl_id);
 	setlen(applid);
 
 	#ifdef DEBUG
-		userlog("GET_PROB_REC : get_time_ver_rec : applid : %s",applid.arr);
+		userlog("get_prob_rec L1 : get_time_ver_rec : applid : %s",applid.arr);
 	#endif
 
 
@@ -2780,7 +2908,7 @@ int get_time_ver_rec(char *appl_id, TIME_VERSION_T *time_version,  void * ctx)
 	if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_time_ver_rec : Select from APPLICATION failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_time_ver_rec : Select from APPLICATION failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC :  get_time_ver_rec: Select from APPLICATION failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC :  get_time_ver_rec : Select from APPLICATION failed : %s", SQLMSG);
@@ -2801,7 +2929,7 @@ int get_time_ver_rec(char *appl_id, TIME_VERSION_T *time_version,  void * ctx)
 	if((SQLCODE) && !(NO_DATA_FOUND))
 		{
 		 #ifdef DEBUG
-			userlog(" GET_PROB_REC : get_time_ver_rec : Select from CARD_STATUS failed : %s", SQLMSG);
+			userlog("get_prob_rec L1 : get_time_ver_rec : Select from CARD_STATUS failed : %s", SQLMSG);
 		 #endif
 			strcpy(prog_log.remarks,"GET_PROB_REC :  get_time_ver_rec: Select from CARD_STATUS failed");
 			sprintf(excep_log.error_msg, "GET_PROB_REC :  get_time_ver_rec : Select from CARD_STATUS failed : %s", SQLMSG);
@@ -2818,8 +2946,8 @@ int get_time_ver_rec(char *appl_id, TIME_VERSION_T *time_version,  void * ctx)
 
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC :  get_time_ver_rec :time stamp - %s", timeStatmp.arr);
-			userlog("GET_PROB_REC : get_time_ver_rec : version - %d", version);
+			userlog("get_prob_rec L1 :  get_time_ver_rec :time stamp - %s", timeStatmp.arr);
+			userlog("get_prob_rec L1 : get_time_ver_rec : version - %d", version);
 			userlog(" ");
 		#endif
 		
@@ -2831,16 +2959,16 @@ int get_time_ver_rec(char *appl_id, TIME_VERSION_T *time_version,  void * ctx)
 	
 		#ifdef DEBUG
 			userlog(" ");
-			userlog("GET_PROB_REC : get_time_ver_rec : time stamp - %s",time_version->timeStamp);
-			userlog("GET_PROB_REC : get_time_ver_rec : version - %d",  time_version->cardVersion);
-			userlog("GET_PROB_REC : get_time_ver_rec : agencyonchip - %s", lagencyonchip);
+			userlog("get_prob_rec L1 : get_time_ver_rec : time stamp - %s",time_version->timeStamp);
+			userlog("get_prob_rec L1 : get_time_ver_rec : version - %d",  time_version->cardVersion);
+			userlog("get_prob_rec L1 : get_time_ver_rec : agencyonchip - %s", lagencyonchip);
 			userlog(" ");
 		#endif
 
 	
 
 		#ifdef DEBUG
-			userlog("GET_PROB_REC : get_time_ver_rec : Record selected successfully");
+			userlog("get_prob_rec L1 : get_time_ver_rec : Record selected successfully");
 		#endif
 
 	return SUCCESS;

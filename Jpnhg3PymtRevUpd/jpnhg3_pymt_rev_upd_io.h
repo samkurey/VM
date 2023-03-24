@@ -37,31 +37,32 @@ typedef struct jpnhg3_pymt_rev_upd_req_s
 	char  indicator1[20+1];
 	char  indicator2[20+1];
 
-	//samsuri todo: add data for new table USK_COMPOUND_FEE
+	//samsuri todo: add data for new table USK_COMPOUND_FEE -updated 16 feb 2023
 	char  uskApplid[APP_ID_SIZE];
+	char  uskOldApplid[APP_ID_SIZE];
+	int  txnSerNo;
 	char idType[ID_TYPE_SIZE]; //3
 	char idNo[ID_NUMBER2_SIZE]; //13
-	char gmpcName [101];
-	char feeType[FEE_TYPE_SIZE]; //4
+	char gmpcName [151];
+	int cardLostCount;	
 	char lostReasonCode[3];
-	int cardLostCount;
-	float uskOrigAmt;
-	float uskReduction;
-	float uskPayAmt;
-	int uskagencyRevCode;
-	char uskRemark[501];
-	char uskUserID[USER_ID_SIZE]; //9
-	char uskWsId[4];
-	char uskDateTime[DATE_TIME_SIZE + 4];
-	float panelReduction;
-	float panelPayment;
-	char panelRemark[501];
-	char panelUserId[USER_ID_SIZE];
-	char panelWsId[4];
-	char panelDateTime[DATE_TIME_SIZE + 4];
-	char paymReceipt[RECEIPT_SIZE];
-	char collBranch[7];
-	char paymDateTime[DATE_TIME_SIZE + 4];
+	float CF;
+	char appealDate[DATE_TIME_SIZE + 4];
+	char appealBranch[BRANCH_CODE_SIZE]; //7
+	char appealUserID[USER_ID_SIZE]; //9
+	char appealRemark[251];
+	float appealPercent;
+	float amtToPay;
+	char appealStatus[26];
+	char sscBranch[BRANCH_CODE_SIZE]; 
+	char sscUserID[USER_ID_SIZE]; 
+	char sscWsID[4]; 
+	char sscDateTime[DATE_TIME_SIZE + 4];
+	char sscRemark[251];
+	char payReceipt[RECEIPT_SIZE];
+	char payBranch[BRANCH_CODE_SIZE]; 
+	char payUserID[USER_ID_SIZE]; 
+	char payDateTime[DATE_TIME_SIZE + 4];
 
 	//outstand_txn_fee
 	int OutStandTxnSerNo;
@@ -69,6 +70,16 @@ typedef struct jpnhg3_pymt_rev_upd_req_s
 	float OutStandFeeAmt;
 	int OutStandAgencyRevnCode;
 	char OutStandSendGSC[2]; 
+
+	//samsuri added on 22 feb 2023
+	//licclass - take from lostReasonCode table usk
+	char prob_stat;
+	char gUser1[USER_ID_SIZE];
+	char gUser1TimeStamp[DATE_TIME_SIZE + 4];
+	char gUser2[USER_ID_SIZE];
+	char gUser2TimeStamp[DATE_TIME_SIZE + 4];
+	//genkpt - icsc will update base on hv_amtToPay < 1
+
 
 } JPNHG3_PYMT_REV_UPD_REQ_T;
 

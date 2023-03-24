@@ -72,7 +72,9 @@ void CJpnhg3PymtEnqService::Deactivate()
 
 STDMETHODIMP CJpnhg3PymtEnqService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataResp)
 {
+
 	JPNHG3_PYMT_ENQ_RESP_T *resp=NULL;
+	//JPNHG3_PYMT_ENQ_REQ_T *req=NULL; //added by samsuri on 13 mar 2023
 	unsigned char* reqBuf = NULL;
 	
 	long lSize,lRespSize=0;
@@ -80,58 +82,109 @@ STDMETHODIMP CJpnhg3PymtEnqService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDa
 
 	FILE *fptr=NULL;
 	
+//	char szError[251] = {0};
 	
-    //Pointers to byte arrays
+	//Pointers to byte arrays
 	unsigned char *pucReqData = NULL;
 	unsigned char *pucRespData = NULL;
-		
-	//Lock access to array data
-	SafeArrayAccessData( pDataReq, (void**)&pucReqData);
 
-	//Get number of elements in array. This is the number of bytes
-	lSize = pDataReq->rgsabound->cElements;
-    
-	reqBuf = (unsigned char *)malloc(lSize);
-	if(!reqBuf)
-	{
-	return E_FAIL;
-	}
+	try
+	{							
+		//Lock access to array data
+		SafeArrayAccessData( pDataReq, (void**)&pucReqData);
 
-	memcpy(reqBuf, pucReqData, lSize);
-
-	SafeArrayUnaccessData(pDataReq);
-
-	nReturn = Jpnhg3_Pymt_Enq(( JPNHG3_PYMT_ENQ_REQ_T *)reqBuf, &resp, &lRespSize,sql_context);
-
-	
-	#ifdef DEBUG
-		userlog("Return Code : %d",nReturn);
-	#endif
-	if(resp == NULL)
-	{
-		free(resp);
-		userlog("Failed to execute the service - Response NULL ");
+		//Get number of elements in array. This is the number of bytes
+		lSize = pDataReq->rgsabound->cElements;
+		reqBuf = (unsigned char *)malloc(lSize);
+		if(!reqBuf)
+		{
 		return E_FAIL;
+		}
+
+		memcpy(reqBuf, pucReqData, lSize);
+
+		SafeArrayUnaccessData(pDataReq);
+
+		// fptr = fopen("d:\\ijpn\\log\\hg3enqreq.txt","wb");
+		// fwrite(pucReqData, 250,1,fptr); //2500
+		// fclose(fptr);
+
+		nReturn = Jpnhg3_Pymt_Enq(( JPNHG3_PYMT_ENQ_REQ_T *)reqBuf, &resp, &lRespSize,sql_context);
+		
+		userlog("Return Code : %d lRespSize: %d",nReturn,lRespSize);
+		
+		if(resp == NULL)
+		{
+			free(resp);
+			userlog("Failed to execute the service - Response NULL ");
+			return E_FAIL;
+		}
+
+		fptr = fopen("d:\\ijpn\\log\\hg3enqresp.txt","wb");
+		fwrite(resp, lRespSize,1,fptr); //2500
+		fclose(fptr);
+
+		userlog("before free reqBuf");
+		reqBuf = NULL;
+		free(reqBuf);
+		userlog("after free reqBuf");
+
+		//Return response buffer
+		*pDataResp = SafeArrayCreateVector( VT_UI1, 0, lRespSize);
+		//Get a pointer to the safe array. Locks the array.
+		SafeArrayAccessData(*pDataResp, (void**)&pucRespData );
+		resp->header.error_code = nReturn;
+		userlog("after assign error_code");
+
+		//Copy the memory into the safearray
+		memcpy(pucRespData, resp, lRespSize);
+		SafeArrayUnaccessData(*pDataResp);
+
+		// if(resp == NULL || lRespSize < 1000)
+		// {
+		// 	free(resp); //need to remark this to prevent hang
+		// 	userlog("resp freed");
+		// }
+        userlog("Before free resp");
+		resp = NULL;
+		free(resp); //need to remark this to prevent hang	
+		
+		userlog("Successfully executed");
+
+	}
+	catch(...)
+	//catch(_com_error e)
+	{
+		//strcpy(szError, e.ErrorMessage());
+		userlog("Jpnhg3_Pymt_Enq Failed. Exception ERROR");
+
+		// reqBuf = NULL;
+		// free(reqBuf);
+		// resp = NULL;
+		// free(resp); 
+
+		// userlog("Jpnhg3_Pymt_Enq Failed. after free");
+		
+		// // //added by samsuri on 13 mar 2023
+		// lSize = sizeof(JPNHG3_PYMT_ENQ_RESP_T);	
+		// req = (JPNHG3_PYMT_ENQ_REQ_T *)malloc(lSize);
+		// memcpy(req, pucReqData, lSize);
+
+		// strcpy(resp->header.user_id, req->header.user_id);
+		// strcpy(resp->header.workstation_id, req->header.workstation_id);
+		// strcpy(resp->header.branch_code, req->header.branch_code);
+		// strcpy(resp->header.application_id, req->header.application_id);		
+		// resp->header.error_code = 21607;
+
+		// memcpy(pucRespData, resp, lRespSize);
+		// SafeArrayUnaccessData(*pDataResp);
+
+		// userlog("Jpnhg3_Pymt_Enq Failed. after SafeArrayUnaccessData");
+		// userlog("Jpnhg3_Pymt_Enq Failed. application_id: %s branch_code %s error_code: %d",resp->header.application_id,
+		// 		resp->header.branch_code,resp->header.error_code);
+
+
 	}
 
-	fptr = fopen("d:\\ijpn\\log\\hg3enqresp.txt","wb");
-	fwrite(resp, 300,1,fptr);
-	fclose(fptr);
-
-	free(reqBuf);
-
-	//Return response buffer
-	*pDataResp = SafeArrayCreateVector( VT_UI1, 0, lRespSize);
-	
-	//Get a pointer to the safe array. Locks the array.
-	SafeArrayAccessData(*pDataResp, (void**)&pucRespData );
-	resp->header.error_code = nReturn;
-	//Copy the memory into the safearray
-	memcpy(pucRespData, resp, lRespSize);
-	SafeArrayUnaccessData(*pDataResp);
-	free(resp);
-	#ifdef DEBUG
-		userlog("Successfully executed");
-	#endif
 	return S_OK;
 }

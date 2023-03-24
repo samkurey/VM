@@ -1117,7 +1117,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 	userlog("get_appl_det: start check USK_COMPOUND_FEE applid: %s",applid);
 
 	EXEC SQL
-	SELECT USKREMARK, PANELREMARK 
+	SELECT APPEALREMARK, SSCREMARK 
 	INTO :hv_uskRemark:hv_uskRemark_ind, :hv_panelRemark:hv_panelRemark_ind 
 	FROM USK_COMPOUND_FEE 
 	WHERE APPLID = :applid; 

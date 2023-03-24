@@ -542,22 +542,22 @@ int li_jpn_update_p(LI_P_HEADER_T header, LI_PUT_FIN_DATA_T put_fin_data,
 // Added this on 25/06/2010 for CR 211 for Release 3.18 for My Tentera
 
 	//userlog("li_jpn_upd: upd_appnt_demo_info : Release 3.18");
-	//added by samsuri on 6 dec 2022
+	//added by samsuri on 6 dec 2022: SKP006/PM/2022
 	userlog("req.afis_1n_misc.police_army_id - [%c]", req.afis_1n_misc.police_army_id);
 
 	if(req.afis_1n_misc.police_army_id == 'T') 
 	{
-		//added by samsuri on 6 dec 2022
+		//added by samsuri on 6 dec 2022: SKP006/PM/2022
 		userlog("My Tentera : KT ind - [%s]", req.afis_1n_misc.kt_ind);
 		userlog("My Tentera : rjind - [%s]", req.rjind);
 
-		//added by samsuri on 6 dec 2022
+		//added by samsuri on 6 dec 2022: SKP006/PM/2022
 		if(strcmp(req.afis_1n_misc.kt_ind,"KT") == 0)
 		{
 			add_one_fc_field(FID_KT_IND_CD, &temp_ptr, (char *)req.afis_1n_misc.kt_ind,
 			TYPE_CHAR_ARR, error_code);
 		}
-		//added by samsuri on 6 dec 2022
+		//added by samsuri on 6 dec 2022: SKP006/PM/2022
 		if(strcmp(req.rjind, "RJ")== 0)
 		{
 		ret = add_one_fc_field(FID_RJIND, &temp_ptr,  req.rjind,	
@@ -596,11 +596,11 @@ int li_jpn_update_p(LI_P_HEADER_T header, LI_PUT_FIN_DATA_T put_fin_data,
 		/* KT Indicator */
 		//if((req.afis_1n_misc.kt_ind[0] != '\0') && (req.afis_1n_misc.kt_ind[0] != ' '))
 
-		//added by samsuri on 6 dec 2022
+		//added by samsuri on 6 dec 2022: SKP006/PM/2022
 		userlog("My Tentera : KT ind - [%s]", req.afis_1n_misc.kt_ind);
 		userlog("My Tentera : rjind - [%s]", req.rjind);
 
-		//modified by samsuri on 6 dec 2022
+		//modified by samsuri on 6 dec 2022: SKP006/PM/2022
 		if(strcmp(req.afis_1n_misc.kt_ind,"KT") == 0 || ((req.afis_1n_misc.kt_ind[0] != '\0') && (req.afis_1n_misc.kt_ind[0] != ' ')))
 		{
 		add_one_fc_field(FID_KT_IND_CD, &temp_ptr, (char *)req.afis_1n_misc.kt_ind,
@@ -609,7 +609,7 @@ int li_jpn_update_p(LI_P_HEADER_T header, LI_PUT_FIN_DATA_T put_fin_data,
 
 		/* Rjindicator */
 		//if((req.rjind[0] != '\0') && (req.rjind[0] != ' '))
-		//modified by samsuri on 6 dec 2022
+		//modified by samsuri on 6 dec 2022: SKP006/PM/2022
 		if(strcmp(req.rjind, "RJ")== 0 || ((req.rjind[0] != '\0') && (req.rjind[0] != ' ')))
 		{
 		ret = add_one_fc_field(FID_RJIND, &temp_ptr,  req.rjind,	
@@ -636,6 +636,8 @@ int li_jpn_update_p(LI_P_HEADER_T header, LI_PUT_FIN_DATA_T put_fin_data,
 	ret = add_one_fc_field(FID_RJENDDATE, &temp_ptr,  temp_char_arr,	
 					TYPE_CHAR_ARR, error_code);
 	}
+
+	userlog("li_jpn_update : req.jpn_doc_no - [%s]", req.jpn_doc_no); //added by samsuri on 21 dec 2022
 
 	/* Jpn doc number */
 	if((req.jpn_doc_no[0] != '\0') && (req.jpn_doc_no[0] != ' '))

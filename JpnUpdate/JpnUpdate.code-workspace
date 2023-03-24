@@ -5,6 +5,21 @@
 		},
 		{
 			"path": "../COMMON_FILES"
+		},
+		{
+			"path": "../li_jpn_update"
+		},
+		{
+			"path": "../li_nrs_update"
+		},
+		{
+			"path": "../liupdategmpcstat"
+		},
+		{
+			"path": "../li_mykad_issuance"
+		},
+		{
+			"path": "../jpn_update_payment"
 		}
 	],
 	"settings": {}

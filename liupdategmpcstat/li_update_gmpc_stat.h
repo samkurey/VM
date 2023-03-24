@@ -60,7 +60,8 @@ typedef struct li_update_gmpc_stat_req
 	int  lostcntcrime;  
 	int  lostcntdis;    
 
-
+	char  email[101];   // added by samsuri on 20 oct 2022
+	
 } LI_UPDATE_GMPC_STAT_REQ_T;
 
 

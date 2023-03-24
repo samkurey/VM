@@ -132,12 +132,13 @@ extern "C" int update_cardstatus_to_retained(CREATE_APPLNT_REQ_T *,void * ctx); 
 
 //uncomment imports below before Build.
 
-//#import  "JpnUpdate.tlb" no_namespace
-//#import  "ImmUpdate.tlb" no_namespace
-//#import  "PdrmUpdate.tlb" no_namespace
-//#import  "GenerateKpt.tlb" no_namespace
-//#import  "JpjUpdSpCaller.tlb" no_namespace
-
+/*
+#import  "JpnUpdate.tlb" no_namespace
+#import  "ImmUpdate.tlb" no_namespace
+#import  "PdrmUpdate.tlb" no_namespace
+#import  "GenerateKpt.tlb" no_namespace
+#import  "JpjUpdSpCaller.tlb" no_namespace
+*/
 
 /*#import  "AfisUpdate.tlb" no_namespace 
 //#import  "JpjUpdate.tlb" no_namespace */
@@ -1041,7 +1042,23 @@ sql_context pcCtx; // Modification for IJPN
 		
 #endif
 
-	
+	EXEC SQL UPDATE APPL_TXN
+		SET PAYMSERNO = :pay_sr_no,
+		TXNCANCELCODE = :txn_cancel_code,
+		LICCLASS = :lic_class,
+		QCFLAG = :qc_flag,
+		LICVALIDPERIOD = :lic_validity
+		WHERE APPLID = :appl_id
+		AND TXNCODE = :txn_code;
+
+		userlog("insert_txn_recs : AFTER UPDATE APPL_TXN SQLCODE: %d",SQLCODE);
+
+		// EXEC SQL DELETE FROM APPL_TXN
+		// 	WHERE APPLID = :appl_id
+		// 	AND TXNCODE = :txn_code;
+
+	if(SQLCODE == 1403)
+	{
 		EXEC SQL INSERT INTO APPL_TXN (APPLID, TXNSERNO, TXNCODE, 
 								TXNCANCELCODE, LICTYPE, LICCLASS, 
 								LICUSAGECODE, LICVALIDPERIOD, PAYMSERNO,
@@ -1051,7 +1068,12 @@ sql_context pcCtx; // Modification for IJPN
 				:lic_type:lic_type_ind, :lic_class:lic_class_ind, :lic_usage:lic_usage_ind, 
 				:lic_validity:lic_validity_ind,  :pay_sr_no:pay_sr_no_ind, 
 				:qc_flag:qc_flag_ind, TO_DATE(:txn_date:txn_date_ind, 'DDMMYYYY'), 'N');
-				 
+
+
+		userlog("insert_txn_recs : AFTER INSERT INTO APPL_TXN SQLCODE: %d",SQLCODE);
+
+	}
+
 		if(SQLCODE != 0 && SQLCODE != -1)
 		{
 #ifdef DEBUG

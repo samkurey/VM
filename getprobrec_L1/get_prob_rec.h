@@ -25,7 +25,8 @@ int get_probl_record_recs(char lappl_id[20], PROBL_RECORD_T *prob_details,void *
 
 int check_id_type(char *id_type,void * ctx);
 
-int update_probl_record(char *appl_id,char updstat,void * ctx);
+//int update_probl_record(char *appl_id,char updstat,void * ctx);
+int update_probl_record(char *appl_id, char *sscBranch, char updstat, void * ctx);
 
 int get_addr_info_rec(char *, ADDRESS_INFO_T *,int *addr_info_flag, void * ctx);
 
