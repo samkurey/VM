@@ -101,78 +101,78 @@ int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq,
 	memset(resp, '\0', resp_len);
 
 	
-	userlog("JPNHG3_PYMT_REV_UPD : req->header.application_id:%s:",req->header.application_id);
-	userlog("JPNHG3_PYMT_REV_UPD : req->header.branch_code:%s:", req->header.branch_code);
-	userlog("JPNHG3_PYMT_REV_UPD : req->header.service_id:%d:", req->header.service_id);
-	userlog("JPNHG3_PYMT_REV_UPD : req->header.user_id:%s:", req->header.user_id);
-	userlog("JPNHG3_PYMT_REV_UPD : req->header.workstation_id:%s:", req->header.workstation_id);
-	userlog("JPNHG3_PYMT_REV_UPD : req->applid:%s:",req->applid);			
-	userlog("JPNHG3_PYMT_REV_UPD : req->oldapplid:%s:",req->oldapplid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->kptno:%s:",req->kptno);
-	userlog("JPNHG3_PYMT_REV_UPD : req->origamt:%.2f:",req->origamt);
-	userlog("JPNHG3_PYMT_REV_UPD : req->paidamt:%.2f:",req->paidamt);
-	userlog("JPNHG3_PYMT_REV_UPD : req->txncode:%s:",req->txncode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->legtxncode:%s:",req->legtxncode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->txnserno:%c:",req->txnserno);
-	userlog("JPNHG3_PYMT_REV_UPD : req->agencyrevncode:%d:",req->agencyrevncode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->supvuid:%s:",req->supvuid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->supvremarks:%s:",req->supvremarks);
-	userlog("JPNHG3_PYMT_REV_UPD : req->problreasoncode:%s:",req->problreasoncode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->formname:%s:",req->formname);
-	userlog("JPNHG3_PYMT_REV_UPD : req->userid:%s:",req->userid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->wsid:%s:",req->wsid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->timestamp:%s:",req->timestamp);
-	userlog("JPNHG3_PYMT_REV_UPD : req->indicator1:%s:",req->indicator1);
-	userlog("JPNHG3_PYMT_REV_UPD : req->indicator2:%s:",req->indicator2);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->header.application_id:%s:",req->header.application_id);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->header.branch_code:%s:", req->header.branch_code);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->header.service_id:%d:", req->header.service_id);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->header.user_id:%s:", req->header.user_id);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->header.workstation_id:%s:", req->header.workstation_id);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->applid:%s:",req->applid);			
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->oldapplid:%s:",req->oldapplid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->kptno:%s:",req->kptno);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->origamt:%.2f:",req->origamt);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->paidamt:%.2f:",req->paidamt);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->txncode:%s:",req->txncode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->legtxncode:%s:",req->legtxncode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->txnserno:%c:",req->txnserno);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->agencyrevncode:%d:",req->agencyrevncode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->supvuid:%s:",req->supvuid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->supvremarks:%s:",req->supvremarks);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->problreasoncode:%s:",req->problreasoncode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->formname:%s:",req->formname);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->userid:%s:",req->userid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->wsid:%s:",req->wsid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->timestamp:%s:",req->timestamp);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->indicator1:%s:",req->indicator1);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->indicator2:%s:",req->indicator2);
 
 	//added by samsuri on 20 sept 2022 - USK COMPUND FEE
 	userlog("\n-------------------USK RECEIVED DATA----------------");
-	userlog("JPNHG3_PYMT_REV_UPD : req->uskApplid:%s:",req->uskApplid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->uskOldApplid:%s:",req->uskOldApplid);
-	userlog("JPNHG3_PYMT_REV_UPD : req->txnSerNo: %d", req->txnSerNo);
-	userlog("JPNHG3_PYMT_REV_UPD : req->idType:%s:",req->idType);
-	userlog("JPNHG3_PYMT_REV_UPD : req->idNo: %s", req->idNo);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->gmpcName: %s", req->gmpcName);
-	userlog("JPNHG3_PYMT_REV_UPD : req->cardLostCount: %d", req->cardLostCount);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->lostReasonCode: %s", req->lostReasonCode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->CF: %.2f", req->CF);
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealDate: %s", req->appealDate);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealBranch: %s", req->appealBranch);
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealUserID: %s", req->appealUserID);
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealRemark: %s", req->appealRemark);
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealPercent: %.2f", req->appealPercent);
-	userlog("JPNHG3_PYMT_REV_UPD : req->amtToPay: %.2f", req->amtToPay);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->appealStatus: %s", req->appealStatus);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->sscBranch: %s", req->sscBranch);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->sscUserID: %s", req->sscUserID);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->sscWsID: %s", req->sscWsID);	
-	userlog("JPNHG3_PYMT_REV_UPD : req->sscDateTime: %s", req->sscDateTime);
-	userlog("JPNHG3_PYMT_REV_UPD : req->sscRemark: %s", req->sscRemark);
-	userlog("JPNHG3_PYMT_REV_UPD : req->payReceipt: %s", req->payReceipt);
-	userlog("JPNHG3_PYMT_REV_UPD : req->payBranch: %s", req->payBranch);
-	userlog("JPNHG3_PYMT_REV_UPD : req->payUserID: %s", req->payUserID);
-	userlog("JPNHG3_PYMT_REV_UPD : req->payDateTime: %s", req->payDateTime);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->uskApplid:%s:",req->uskApplid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->uskOldApplid:%s:",req->uskOldApplid);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->txnSerNo: %d", req->txnSerNo);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->idType:%s:",req->idType);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->idNo: %s", req->idNo);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->gmpcName: %s", req->gmpcName);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->cardLostCount: %d", req->cardLostCount);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->lostReasonCode: %s", req->lostReasonCode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->CF: %.2f", req->CF);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealDate: %s", req->appealDate);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealBranch: %s", req->appealBranch);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealUserID: %s", req->appealUserID);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealRemark: %s", req->appealRemark);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealPercent: %.2f", req->appealPercent);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->amtToPay: %.2f", req->amtToPay);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->appealStatus: %s", req->appealStatus);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->sscBranch: %s", req->sscBranch);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->sscUserID: %s", req->sscUserID);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->sscWsID: %s", req->sscWsID);	
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->sscDateTime: %s", req->sscDateTime);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->sscRemark: %s", req->sscRemark);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->payReceipt: %s", req->payReceipt);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->payBranch: %s", req->payBranch);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->payUserID: %s", req->payUserID);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->payDateTime: %s", req->payDateTime);
 
 	userlog("\n-------------------OUTSTAND TXN FEE RECEIVED DATA----------------");
-	userlog("JPNHG3_PYMT_REV_UPD : req->OutStandTxnSerNo: %d", req->OutStandTxnSerNo);
-	userlog("JPNHG3_PYMT_REV_UPD : req->OutStandFeeType: %s", req->OutStandFeeType);
-	userlog("JPNHG3_PYMT_REV_UPD : req->OutStandFeeAmt: %.2f", req->OutStandFeeAmt);
-	userlog("JPNHG3_PYMT_REV_UPD : req->OutStandAgencyRevnCode: %d", req->OutStandAgencyRevnCode);
-	userlog("JPNHG3_PYMT_REV_UPD : req->OutStandSendGSC: %s", req->OutStandSendGSC);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->OutStandTxnSerNo: %d", req->OutStandTxnSerNo);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->OutStandFeeType: %s", req->OutStandFeeType);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->OutStandFeeAmt: %.2f", req->OutStandFeeAmt);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->OutStandAgencyRevnCode: %d", req->OutStandAgencyRevnCode);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->OutStandSendGSC: %s", req->OutStandSendGSC);
 
 	userlog("\n-------------------PROBL RECORD RECEIVED DATA----------------");
-	userlog("JPNHG3_PYMT_REV_UPD : req->prob_stat: %c", req->prob_stat);
-	userlog("JPNHG3_PYMT_REV_UPD : req->gUser1: %s", req->gUser1);		
-	userlog("JPNHG3_PYMT_REV_UPD : req->gUser1TimeStamp: %s", req->gUser1TimeStamp);
-	userlog("JPNHG3_PYMT_REV_UPD : req->gUser2: %s", req->gUser2);		
-	userlog("JPNHG3_PYMT_REV_UPD : req->gUser2TimeStamp: %s", req->gUser2TimeStamp);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->prob_stat: %c", req->prob_stat);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->gUser1: %s", req->gUser1);		
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->gUser1TimeStamp: %s", req->gUser1TimeStamp);
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->gUser2: %s", req->gUser2);		
+	userlog("JPNHG3_PYMT_REV_UPD L1 : req->gUser2TimeStamp: %s", req->gUser2TimeStamp);
 
 	resp->header = req->header;
 			
 	if((ret_val = check_header(req->header,ctx)) != SUCCESS)
 	{
 	#ifdef DEBUG
-			userlog("JPNHG3_PYMT_REV_UPD : check header failed");
+			userlog("JPNHG3_PYMT_REV_UPD L1 : check header failed");
 	#endif
 		strcpy(prog_log.remarks,"JPNHG3_PYMT_ENQ : check header failed");
 		excep_log.termination_flag = 'Y';
@@ -186,24 +186,24 @@ int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq,
 				return ret_val;
 	}
 	#ifdef DEBUG
-			userlog("JPNHG3_PYMT_REV_UPD :check header Successful");
+			userlog("JPNHG3_PYMT_REV_UPD L1 :check header Successful");
 	#endif
 
 	
 
 	#ifdef DEBUG
-		userlog("JPNHG3_PYMT_REV_UPD :");		
+		userlog("JPNHG3_PYMT_REV_UPD L1 :");		
 	#endif
 	
 	
 	#ifdef DEBUG
-		userlog("JPNHG3_PYMT_REV_UPD :Before the enq_processing function");
+		userlog("JPNHG3_PYMT_REV_UPD L1 :Before the enq_processing function");
 	#endif
 
 		
 		if(SUCCESS != gscbbegin_trans(ctx))
 		{
-			userlog("JPNHG3_PYMT_REV_UPD : Begin transaction failed!!");
+			userlog("JPNHG3_PYMT_REV_UPD L1 : Begin transaction failed!!");
 		
 			*pRespSize = resp_len;			
 			*pResp = resp;
@@ -215,7 +215,7 @@ int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq,
 		if(ret_val != SUCCESS)
 		{
 		#ifdef DEBUG
-			userlog("JPNHG3_PYMT_REV_UPD :enq_processing function failed");
+			userlog("JPNHG3_PYMT_REV_UPD L1 :enq_processing function failed");
 		#endif
 		strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD : enq_processing function failed");
 		strcpy(excep_log.error_msg,"JPNHG3_PYMT_REV_UPD : enq_processing function failed");
@@ -232,7 +232,7 @@ int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq,
 		{
 			if(SUCCESS != gscbcommit_trans(ctx))
 			{
-				userlog("JPNHG3_PYMT_REV_UPD : Commit transaction failed!!");
+				userlog("JPNHG3_PYMT_REV_UPD L1 : Commit transaction failed!!");
 			
 				*pRespSize = resp_len;			
 				*pResp = resp;
@@ -242,7 +242,7 @@ int Jpnhg3_Pymt_Rev_Upd(JPNHG3_PYMT_REV_UPD_REQ_T *pReq,
 
 	#ifdef DEBUG
 		userlog(" ");
-		userlog("JPNHG3_PYMT_REV_UPD :Service Completed");
+		userlog("JPNHG3_PYMT_REV_UPD L1 :Service Completed");
 		userlog(" ");
 	#endif
 	
@@ -451,7 +451,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 	//problem record - first usk
 	if(hv_txnSerNo == 1 && req->gUser1[0] != '\0')
 	{
-		userlog("JPNHG3_PYMT_REV_UPD: inside guser1 update");
+		userlog("JPNHG3_PYMT_REV_UPD L1: inside guser1 update");
 		hv_prob_stat = req->prob_stat;
 		strcpy((char*)hv_gUser1.arr,req->gUser1);
 		setlen(hv_gUser1);
@@ -463,15 +463,15 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			WHERE APPLID = :hv_uskOldApplid AND PROBLREASONCODE = 'E0001'; 
 
 		if (SQLCODE != 0 && SQLCODE != 1403)
-			userlog("JPNHG3_PYMT_REV_UPD : UPDATE on PROBL_RECORD failed : %s", SQLMSG);		
+			userlog("JPNHG3_PYMT_REV_UPD L1 : UPDATE on PROBL_RECORD failed : %s", SQLMSG);		
 		else
-			userlog("JPNHG3_PYMT_REV_UPD : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
 
 	}
 
 	if(hv_txnSerNo > 0 && req->gUser2[0] != '\0')
 	{
-		userlog("JPNHG3_PYMT_REV_UPD: inside guser2 update hv_uskOldApplid: %s ",hv_uskOldApplid.arr);	
+		userlog("JPNHG3_PYMT_REV_UPD L1: inside guser2 update hv_uskOldApplid: %s ",hv_uskOldApplid.arr);	
 		hv_prob_stat = req->prob_stat;
 		strcpy((char*)hv_gUser2.arr,req->gUser2);
 		setlen(hv_gUser2);
@@ -484,9 +484,9 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			WHERE APPLID = :hv_uskOldApplid AND PROBLREASONCODE = 'E0001'; 
 
 		if (SQLCODE != 0 && SQLCODE != 1403)
-			userlog("JPNHG3_PYMT_REV_UPD : UPDATE on PROBL_RECORD failed : %s", SQLMSG);		
+			userlog("JPNHG3_PYMT_REV_UPD L1 : UPDATE on PROBL_RECORD failed : %s", SQLMSG);		
 		else
-			userlog("JPNHG3_PYMT_REV_UPD : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
 
 	}
 
@@ -498,7 +498,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 		if(SQLCODE != 0)
 		{
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) :No record for Deletion on OUTSTAND_TXN_FEE : %s", SQLMSG);
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) :No record for Deletion on OUTSTAND_TXN_FEE : %s", SQLMSG);
 		}
 
 		EXEC SQL INSERT INTO OUTSTAND_TXN_FEE(
@@ -511,7 +511,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			if(sqlca.sqlcode != 0)
 			{
 			#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", sqlmsg);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", sqlmsg);
 			#endif
 					strcpy(prog_log.remarks,"transaction_processing() Insert into OUTSTAND_TXN_FEE failed ");
 					sprintf(excep_log.error_msg, "transaction_processing() Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
@@ -523,7 +523,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					return INSERT_ERROR;
 			}
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
 			#endif
 
 	}
@@ -536,7 +536,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 	// if(SQLCODE != 0 && SQLCODE != 1403)
 	// {
-	// 	userlog("JPNHG3_PYMT_REV_UPD : SELECT on USK_COMPOUND_FEE failed : %s", SQLMSG);
+	// 	userlog("JPNHG3_PYMT_REV_UPD L1 : SELECT on USK_COMPOUND_FEE failed : %s", SQLMSG);
 	// }
 	
 	//if(hv_txnSerNo == Ori_txnSerNo)
@@ -547,9 +547,9 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			AND TXNSERNO = :hv_txnSerNo;
 
 		if (SQLCODE != 0 && SQLCODE != 1403)
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) :No record for Deletion on USK_COMPOUND_FEE : %s", SQLMSG);
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) :No record for Deletion on USK_COMPOUND_FEE : %s", SQLMSG);
 		else
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : After try delete from USK_COMPOUND_FEE - %s", SQLMSG);
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : After try delete from USK_COMPOUND_FEE - %s", SQLMSG);
 	}
 
 	if(hv_uskApplid.arr[0] != '\0')
@@ -612,7 +612,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		strcpy(sqlmsg, SQLMSG);
 		if(sqlca.sqlcode != 0)
 		{	
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into USK_COMPOUND_FEE failed : %s", sqlmsg);
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into USK_COMPOUND_FEE failed : %s", sqlmsg);
 	
 			strcpy(prog_log.remarks,"transaction_processing() Insert into USK_COMPOUND_FEE failed ");
 			sprintf(excep_log.error_msg, "transaction_processing() Insert into USK_COMPOUND_FEE failed : %s", SQLMSG);
@@ -623,7 +623,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					
 			return INSERT_ERROR;
 		}		
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into USK_COMPOUND_FEE");		
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into USK_COMPOUND_FEE");		
 	}
 
 	//------------------------------------APPL_TXN--------------------------------
@@ -633,23 +633,23 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				WHERE APPLID = :hv_uskOldApplid AND TXNCODE = '403'; 
 
 		if (SQLCODE != 0 && SQLCODE != 1403)
-			userlog("JPNHG3_PYMT_REV_UPD : UPDATE LICCLASS on APPL_TXN failed : %s", SQLMSG);		
+			userlog("JPNHG3_PYMT_REV_UPD L1 : UPDATE LICCLASS on APPL_TXN failed : %s", SQLMSG);		
 		else
-			userlog("JPNHG3_PYMT_REV_UPD : LICCLASS UPDATED to %s on APPL_TXN - %d",hv_lostReasonCode.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : LICCLASS UPDATED to %s on APPL_TXN - %d",hv_lostReasonCode.arr, SQLCODE);
 
 	}
 
 	//------------------------------------PROBL_RECORD--------------------------------
 	if((hv_amtToPay < 1 && hv_uskApplid.arr[0] != '\0') || hv_gUser2.arr[0] != '\0' )
 	{
-		userlog("JPNHG3_PYMT_REV_UPD  : SET GENKPT = 'P' because hv_amtToPay: %f hv_gUser2.arr: %s",hv_amtToPay,hv_gUser2.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1  : SET GENKPT = 'P' because hv_amtToPay: %f hv_gUser2.arr: %s",hv_amtToPay,hv_gUser2.arr);
 		EXEC SQL UPDATE PROBL_RECORD SET GENKPT = 'P'
 			WHERE APPLID = :hv_uskOldApplid AND PROBLREASONCODE = 'E0001'; 
 
 		if (SQLCODE != 0 && SQLCODE != 1403)
 		{
 		
-				userlog("JPNHG3_PYMT_REV_UPD : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+				userlog("JPNHG3_PYMT_REV_UPD L1 : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
 		
 				// strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed ");
 				// sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed : %s", SQLMSG);
@@ -661,7 +661,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				// return UPDATE_ERROR;
 		}
 		else
-			userlog("JPNHG3_PYMT_REV_UPD : Record UPDATED GENKPT = 'P' on PROBL_RECORD - %d", SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : Record UPDATED GENKPT = 'P' on PROBL_RECORD - %d", SQLCODE);
 
 		//------------------------------------OUTSTAND_TXN_FEE--------------------------------
 		// EXEC SQL UPDATE OUTSTAND_TXN_FEE SET FEEAMT=0
@@ -674,10 +674,10 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 		if(SQLCODE != 0 && SQLCODE != 1403)
 		{
-			userlog("JPNHG3_PYMT_REV_UPD : DELETE on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
 		}
 		else
-			userlog("JPNHG3_PYMT_REV_UPD : Record DELETED from OUTSTAND_TXN_FEE - %d", SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : Record DELETED from OUTSTAND_TXN_FEE - %d", SQLCODE);
 
 	}
 
@@ -700,14 +700,14 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				AND ENQTYPE IS NULL
 				AND SSCBRANCHCODE=:hv_sscBranch;
 
-			userlog("JPNHG3_PYMT_REV_UPD : DELETE APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
 
 			EXEC SQL INSERT INTO APPNT_PROBL_DATA(
 			APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
 			VALUES( 
 			:hv_uskOldApplid, :hv_sscBranch, 'N', SYSDATE, NULL);
 
-			userlog("JPNHG3_PYMT_REV_UPD : INSERT APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
 		}
 
 		// if(strcmp(hv_sscBranch.arr,"101999")!=0 && strcmp(hv_sscBranch.arr,"161003")!=0)
@@ -718,14 +718,14 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				AND ENQTYPE IS NULL
 				AND SSCBRANCHCODE='101999';
 
-			userlog("JPNHG3_PYMT_REV_UPD : DELETE APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
 
 			EXEC SQL INSERT INTO APPNT_PROBL_DATA(
 			APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
 			VALUES( 
 			:hv_uskApplid, :hv_GQDBranch, 'N', SYSDATE, NULL); //samsuri: please change to 161003 for production
 
-			userlog("JPNHG3_PYMT_REV_UPD : INSERT APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
 		}
 
 		// //resend back data to SSC Branch only
@@ -739,7 +739,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		// 	{
 		// 		if(SQLCODE == 1403)
 		// 		{
-		// 			userlog("JPNHG3_PYMT_REV_UPD  : no record in APPNT_PROBL_DATA  : %s", SQLMSG);
+		// 			userlog("JPNHG3_PYMT_REV_UPD L1  : no record in APPNT_PROBL_DATA  : %s", SQLMSG);
 
 		// 			EXEC SQL INSERT INTO APPNT_PROBL_DATA(
 		// 			APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
@@ -748,22 +748,22 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 		// 			if(SQLCODE != 0)
 		// 			{
-		// 				userlog("JPNHG3_PYMT_REV_UPD : INSERT INTO APPNT_PROBL_DATA failed : %s", SQLMSG);
+		// 				userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT INTO APPNT_PROBL_DATA failed : %s", SQLMSG);
 		// 			}
 		// 			else
 		// 			{
-		// 				userlog("JPNHG3_PYMT_REV_UPD : INSERT INTO APPNT_PROBL_DATA Success : %s", SQLMSG);
+		// 				userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT INTO APPNT_PROBL_DATA Success : %s", SQLMSG);
 		// 			}					
 		// 		}
 					
 		// 		else
 		// 		{
-		// 			userlog("JPNHG3_PYMT_REV_UPD : UPDATE on APPNT_PROBL_DATA failed : %s", SQLMSG);
+		// 			userlog("JPNHG3_PYMT_REV_UPD L1 : UPDATE on APPNT_PROBL_DATA failed : %s", SQLMSG);
 		// 		}				
 		// 	}
 		// 	else
 		// 	{
-		// 		userlog("JPNHG3_PYMT_REV_UPD  : Record UPDATED from APPNT_PROBL_DATA - %s", SQLMSG);
+		// 		userlog("JPNHG3_PYMT_REV_UPD L1  : Record UPDATED from APPNT_PROBL_DATA - %s", SQLMSG);
 		// 	}					
 		// }
 	}
@@ -776,26 +776,26 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 
 	#ifdef DEBUG
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->applid: %s",req->applid);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : applid: %s",applid.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->oldapplid: %s",req->oldapplid);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : oldapplid: %s",oldapplid.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->kptno: %s",req->kptno);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : kptno: %s",kptno.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : req->txncode: %s",req->txncode);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : txncode: %s",txncode.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : origamt: %.2f",origamt);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : paidamt: %.2f",paidamt);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : legtxncode: %s",legtxncode.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : txnserno: %c",txnserno);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : agencyrevncode: %d",arcode);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : supvuid: %s",supvuid.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : supvremarks: %s",supvremarks.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : problreasoncode: %s",problreasoncode.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : formname: %s",fname.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : userid: %s",userid.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : wsid: %s",wsid.arr);
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : timestamp: %s",timestamp.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->applid: %s",req->applid);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : applid: %s",applid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->oldapplid: %s",req->oldapplid);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : oldapplid: %s",oldapplid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->kptno: %s",req->kptno);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : kptno: %s",kptno.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->txncode: %s",req->txncode);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : txncode: %s",txncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : origamt: %.2f",origamt);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : paidamt: %.2f",paidamt);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : legtxncode: %s",legtxncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : txnserno: %c",txnserno);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : agencyrevncode: %d",arcode);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : supvuid: %s",supvuid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : supvremarks: %s",supvremarks.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : problreasoncode: %s",problreasoncode.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : formname: %s",fname.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : userid: %s",userid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : wsid: %s",wsid.arr);
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : timestamp: %s",timestamp.arr);
 	#endif
 
 	if(strncmp((char *)txncode.arr,"919",3) == 0)  // This is payment update
@@ -810,7 +810,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		if(sqlca.sqlcode != 0)
 		{
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select count from APPNT_HG3_FEE_INFO");
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select count from APPNT_HG3_FEE_INFO");
 			#endif
 			strcpy(prog_log.remarks,"transaction_processing() failed while select count from APPNT_HG3_FEE_INFO");
 			sprintf(excep_log.error_msg,"transaction_processing() failed while select count from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
@@ -821,7 +821,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			return SELECT_ERROR;
 		}
 		#ifdef DEBUG
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO, pcount : %d",pcount);
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO, pcount : %d",pcount);
 		#endif
 
 
@@ -836,14 +836,14 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 		
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : After SELECT FROM APPNT_JPN_INFO, sqlca.sqlcode : %d",sqlca.sqlcode);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : After SELECT FROM APPNT_JPN_INFO, sqlca.sqlcode : %d",sqlca.sqlcode);
 				#endif
 				sqlmsg[0] = '\0';
 				strcpy(sqlmsg, SQLMSG);
 				if(sqlca.sqlcode != 0)
 				{
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD  : transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO");
+						userlog("JPNHG3_PYMT_REV_UPD L1  : transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO");
 					#endif
 					strcpy(prog_log.remarks,"transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO");
 					sprintf(excep_log.error_msg,"transaction_processing() failed while select gmpcshortname1,2,3 from APPNT_JPN_INFO:%s ",sqlmsg);
@@ -859,16 +859,16 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				wsid.arr[wsid.len] = '\0'; userid.arr[userid.len] = '\0';
 				timestamp.arr[timestamp.len] = '\0';
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, name :%s:",name.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address1 :%s:",address1.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address2 :%s:",address2.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, address3 :%s:",address3.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, postcode :%s:",postcode.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, statecode :%s:",statecode.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, citycode :%d:",citycode);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, userid :%s:",userid.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, wsid :%s:",wsid.arr);
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_JPN_INFO, timestamp :%s:",timestamp.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, name :%s:",name.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, address1 :%s:",address1.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, address2 :%s:",address2.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, address3 :%s:",address3.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, postcode :%s:",postcode.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, statecode :%s:",statecode.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, citycode :%d:",citycode);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, userid :%s:",userid.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, wsid :%s:",wsid.arr);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_JPN_INFO, timestamp :%s:",timestamp.arr);
 				#endif
 
 			EXEC SQL INSERT INTO APPNT_HG3_FEE_INFO(
@@ -883,7 +883,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_HG3_FEE_INFO failed : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPNT_HG3_FEE_INFO failed : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_HG3_FEE_INFO failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_HG3_FEE_INFO failed : %s", SQLMSG);
@@ -895,7 +895,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_HG3_FEE_INFO");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPNT_HG3_FEE_INFO");
 				#endif
 
 
@@ -907,7 +907,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN failed : %s", SQLMSG);
@@ -919,7 +919,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_TXN");
 				#endif
 
 
@@ -932,7 +932,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN_FEE failed : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPL_TXN_FEE failed : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN_FEE failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN_FEE failed : %s", SQLMSG);
@@ -944,7 +944,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN_FEE");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_TXN_FEE");
 				#endif
 
 
@@ -961,7 +961,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(W) : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(W) : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_FEE_REDUCTION failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_FEE_REDUCTION failed : %s", SQLMSG);
@@ -973,7 +973,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(W)");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(W)");
 				#endif
 
 			}			
@@ -989,7 +989,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(R) : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPL_FEE_REDUCTION failed(R) : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_FEE_REDUCTION failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_FEE_REDUCTION failed : %s", SQLMSG);
@@ -1001,7 +1001,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(R)");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_FEE_REDUCTION(R)");
 				#endif
 			}
 
@@ -1018,7 +1018,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 				#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
 				#endif
 						strcpy(prog_log.remarks,"transaction_processing() Insert into SUPERVISOR_REMARKS failed ");
 						sprintf(excep_log.error_msg, "transaction_processing() Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
@@ -1030,7 +1030,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						return INSERT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
 				#endif
 
 			}
@@ -1046,7 +1046,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			// 	if (SQLCODE != 0 && SQLCODE != 1403)
 			// 	{
 			// 	#ifdef DEBUG
-			// 			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
+			// 			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : UPDATE on PROBL_RECORD failed : %s", SQLMSG);
 			// 	#endif
 			// 			strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed ");
 			// 			sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() UPDATE on PROBL_RECORD failed : %s", SQLMSG);
@@ -1058,7 +1058,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			// 			return DELETE_ERROR;
 			// 	}
 			// 	#ifdef DEBUG
-			// 		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
+			// 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record UPDATED on PROBL_RECORD - %d", SQLCODE);
 			// 	#endif
 
 
@@ -1073,7 +1073,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			// 	if(SQLCODE != 0)
 			// 	{
 			// 	#ifdef DEBUG
-			// 			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+			// 			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
 			// 	#endif
 			// 			strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed ");
 			// 			sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
@@ -1085,7 +1085,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			// 			return DELETE_ERROR;
 			// 	}
 			// 	#ifdef DEBUG
-			// 		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
+			// 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
 			// 	#endif
 
 			// }
@@ -1102,7 +1102,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			if(sqlca.sqlcode != 0)
 			{
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select sscbranchcode from APPLICATION :%s", sqlmsg);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select sscbranchcode from APPLICATION :%s", sqlmsg);
 				#endif
 				strcpy(prog_log.remarks,"transaction_processing() failed while select sscbranchcode from APPLICATION");
 				sprintf(excep_log.error_msg,"transaction_processing() failed while select sscbranchcode from APPLICATION:%s ",sqlmsg);
@@ -1113,7 +1113,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				return SELECT_ERROR;
 			}
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION");
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPLICATION");
 			#endif
 
 
@@ -1130,7 +1130,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select SENDFLAG from APPNT_PROBL_DATA :%s", sqlmsg);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select SENDFLAG from APPNT_PROBL_DATA :%s", sqlmsg);
 					#endif
 					strcpy(prog_log.remarks,"transaction_processing() failed while select SENDFLAG from APPNT_PROBL_DATA");
 					sprintf(excep_log.error_msg,"transaction_processing() failed while select SENDFLAG from APPNT_PROBL_DATA:%s ",sqlmsg);
@@ -1141,7 +1141,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					//return SELECT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_PROBL_DATA");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_PROBL_DATA");
 				#endif
 
 
@@ -1156,7 +1156,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_PROBL_DATA failed(if) : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPNT_PROBL_DATA failed(if) : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1168,7 +1168,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
 					#endif
 
 				}
@@ -1182,7 +1182,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						if(SQLCODE != 0)
 						{
 						#ifdef DEBUG
-								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+								userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
 						#endif
 								strcpy(prog_log.remarks,"JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed ");
 								sprintf(excep_log.error_msg, "JPNHG3_PYMT_REV_UPD  : transaction_processing() Deletion on OUTSTAND_TXN_FEE failed : %s", SQLMSG);
@@ -1194,7 +1194,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 								return DELETE_ERROR;
 						}
 						#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record deleted from OUTSTAND_TXN_FEE - %d", SQLCODE);
 						#endif
 
 
@@ -1206,7 +1206,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						if(sqlca.sqlcode != 0)
 						{
 						#ifdef DEBUG
-								userlog("JPNHG3_PYMT_REV_UPD  : transaction_processing() Insert into APPNT_PROBL_DATA failed(else) : %s", SQLMSG);
+								userlog("JPNHG3_PYMT_REV_UPD L1  : transaction_processing() Insert into APPNT_PROBL_DATA failed(else) : %s", SQLMSG);
 						#endif
 								strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
 								sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1218,7 +1218,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 								return INSERT_ERROR;
 						}
 						#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
 						#endif
 
 					}
@@ -1241,7 +1241,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		strcpy((char*)happlid.arr,req->header.application_id);		
 		setlen(happlid);
 			#ifdef DEBUG		
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : happlid: %s",happlid.arr);
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : happlid: %s",happlid.arr);
 			#endif
 
 		oapplid.arr[0] = '\0';
@@ -1256,7 +1256,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		if(sqlca.sqlcode != 0)
 		{
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select OLDAPPLID from APPNT_HG3_FEE_INFO :%s", sqlmsg);
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select OLDAPPLID from APPNT_HG3_FEE_INFO :%s", sqlmsg);
 			#endif
 			strcpy(prog_log.remarks,"transaction_processing() failed while select SENDFLAG from APPNT_HG3_FEE_INFO");
 			sprintf(excep_log.error_msg,"transaction_processing() failed while select SENDFLAG from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
@@ -1267,14 +1267,14 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			return SELECT_ERROR;
 		}
 		#ifdef DEBUG
-			userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
+			userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
 		#endif
 
 
 		if(oapplid.arr[0] == '\0')
 		{
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : No record found for HG3 payment");
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : No record found for HG3 payment");
 			#endif
 			ret_code = 70002; 
 			return ret_code;  // no record found for HG3 payment
@@ -1292,7 +1292,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			if(sqlca.sqlcode != 0)
 			{
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select count from APPLICATION :%s", sqlmsg);
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select count from APPLICATION :%s", sqlmsg);
 				#endif
 				strcpy(prog_log.remarks,"transaction_processing() failed while select count from APPLICATION");
 				sprintf(excep_log.error_msg,"transaction_processing() failed while select count from APPLICATION:%s ",sqlmsg);
@@ -1303,14 +1303,14 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				return SELECT_ERROR;
 			}
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION count: %d",acount);
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPLICATION count: %d",acount);
 			#endif
 
 
 			if(acount == 0)
 			{
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Application already approved");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Application already approved");
 				#endif
 				ret_code = 70003; 
 				return ret_code;  // application already approved
@@ -1326,7 +1326,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select TXNSERNO from APPL_TXN :%s", sqlmsg);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select TXNSERNO from APPL_TXN :%s", sqlmsg);
 					#endif
 					strcpy(prog_log.remarks,"transaction_processing() failed while select TXNSERNO from APPL_TXN");
 					sprintf(excep_log.error_msg,"transaction_processing() failed while select TXNSERNO from APPL_TXN:%s ",sqlmsg);
@@ -1337,7 +1337,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					return SELECT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPL_TXN");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPL_TXN");
 				#endif
 
 				EXEC SQL SELECT ORIGAMT,AGENCYREVNCODE INTO :oorigamt,:oarcode
@@ -1351,7 +1351,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select from APPNT_HG3_FEE_INFO :%s", sqlmsg);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select from APPNT_HG3_FEE_INFO :%s", sqlmsg);
 					#endif
 					strcpy(prog_log.remarks,"transaction_processing() failed while select from APPNT_HG3_FEE_INFO");
 					sprintf(excep_log.error_msg,"transaction_processing() failed while select from APPNT_HG3_FEE_INFO:%s ",sqlmsg);
@@ -1362,7 +1362,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					return SELECT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_HG3_FEE_INFO");
 				#endif
 
 
@@ -1374,7 +1374,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() Insert into OUTSTAND_TXN_FEE failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() Insert into OUTSTAND_TXN_FEE failed : %s", SQLMSG);
@@ -1386,7 +1386,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into OUTSTAND_TXN_FEE");
 					#endif
 
 
@@ -1399,7 +1399,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPL_TXN failed : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() Insert into APPL_TXN failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() Insert into APPL_TXN failed : %s", SQLMSG);
@@ -1411,7 +1411,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPL_TXN");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_TXN");
 					#endif
 
 
@@ -1425,7 +1425,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update PAYMENT_INFO failed : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : update PAYMENT_INFO failed : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() update PAYMENT_INFO failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() update PAYMENT_INFO failed : %s", SQLMSG);
@@ -1437,7 +1437,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into PAYMENT_INFO");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record updated into PAYMENT_INFO");
 					#endif
 
 
@@ -1452,7 +1452,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() Insert into SUPERVISOR_REMARKS failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() Insert into SUPERVISOR_REMARKS failed : %s", SQLMSG);
@@ -1464,7 +1464,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into SUPERVISOR_REMARKS");
 					#endif
 
 
@@ -1477,7 +1477,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					if(sqlca.sqlcode != 0)
 					{
 					#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update PROBL_RECORD failed : %s", SQLMSG);
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : update PROBL_RECORD failed : %s", SQLMSG);
 					#endif
 							strcpy(prog_log.remarks,"transaction_processing() update PROBL_RECORD failed ");
 							sprintf(excep_log.error_msg, "transaction_processing() update PROBL_RECORD failed : %s", SQLMSG);
@@ -1489,7 +1489,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							return INSERT_ERROR;
 					}
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into PROBL_RECORD");
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record updated into PROBL_RECORD");
 					#endif
 
 
@@ -1506,7 +1506,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				if(sqlca.sqlcode != 0)
 				{
 					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : failed while select from APPLICATION :%s", sqlmsg);
+						userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : failed while select from APPLICATION :%s", sqlmsg);
 					#endif
 					strcpy(prog_log.remarks,"transaction_processing() failed while select from APPLICATION");
 					sprintf(excep_log.error_msg,"transaction_processing() failed while select from APPLICATION:%s ",sqlmsg);
@@ -1517,7 +1517,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 					return SELECT_ERROR;
 				}
 				#ifdef DEBUG
-					userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPLICATION");
+					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPLICATION");
 				#endif
 
 
@@ -1531,7 +1531,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						if(sqlca.sqlcode != 0)
 						{
 						#ifdef DEBUG
-								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed : %s", SQLMSG);
+								userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed : %s", SQLMSG);
 						#endif
 								strcpy(prog_log.remarks,"transaction_processing() select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed ");
 								sprintf(excep_log.error_msg, "transaction_processing() select SENDFLAG, ENQTYPE from APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1543,7 +1543,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 								return INSERT_ERROR;
 						}
 						#ifdef DEBUG
-							userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record selected from APPNT_PROBL_DATA");
+							userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record selected from APPNT_PROBL_DATA");
 						#endif
 
 					if((sflag == '\0') && (etype == '\0'))  // no record found
@@ -1556,7 +1556,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 							if(sqlca.sqlcode != 0)
 							{
 							#ifdef DEBUG
-									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Insert into APPNT_PROBL_DATA failed(R) : %s", SQLMSG);
+									userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Insert into APPNT_PROBL_DATA failed(R) : %s", SQLMSG);
 							#endif
 									strcpy(prog_log.remarks,"transaction_processing() Insert into APPNT_PROBL_DATA failed ");
 									sprintf(excep_log.error_msg, "transaction_processing() Insert into APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1568,7 +1568,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 									return INSERT_ERROR;
 							}
 							#ifdef DEBUG
-								userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
+								userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPNT_PROBL_DATA");
 							#endif
 					}
 					else
@@ -1587,7 +1587,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 								if(sqlca.sqlcode != 0)
 								{
 								#ifdef DEBUG
-										userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
+										userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
 								#endif
 										strcpy(prog_log.remarks,"transaction_processing() update APPNT_PROBL_DATA failed ");
 										sprintf(excep_log.error_msg, "transaction_processing() update APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1599,7 +1599,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 										return INSERT_ERROR;
 								}
 								#ifdef DEBUG
-									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into APPNT_PROBL_DATA(Y)");
+									userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record updated into APPNT_PROBL_DATA(Y)");
 								#endif
 
 						}
@@ -1615,7 +1615,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 								if(sqlca.sqlcode != 0)
 								{
 								#ifdef DEBUG
-										userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
+										userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : update APPNT_PROBL_DATA failed : %s", SQLMSG);
 								#endif
 										strcpy(prog_log.remarks,"transaction_processing() update APPNT_PROBL_DATA failed ");
 										sprintf(excep_log.error_msg, "transaction_processing() update APPNT_PROBL_DATA failed : %s", SQLMSG);
@@ -1627,7 +1627,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 										return INSERT_ERROR;
 								}
 								#ifdef DEBUG
-									userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Record updated into APPNT_PROBL_DATA(N)");
+									userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record updated into APPNT_PROBL_DATA(N)");
 								#endif							
 							
 						}
@@ -1636,7 +1636,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 			}
 
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : Reversal successful");
+				userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Reversal successful");
 			#endif
 		ret_code = 0;
 		return ret_code;  // reversal success
@@ -1646,7 +1646,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 	
 
 	#ifdef DEBUG
-		userlog("JPNHG3_PYMT_REV_UPD (transaction_processing) : max applid after select: %s",applid.arr);		
+		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : max applid after select: %s",applid.arr);		
 	#endif
 
 	if(hv_gUser2.arr[0] != '\0')
