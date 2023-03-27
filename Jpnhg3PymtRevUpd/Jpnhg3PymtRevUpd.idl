@@ -6,20 +6,25 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
+
+//BE3A4848-46C5-4C60-89D5-59B5BC04D58B - old
+//ECB2CD3B-FCA1-437C-822F-33C4056B07C7 - new
 	[
 		object,
-		uuid(BE3A4848-46C5-4C60-89D5-59B5BC04D58B),
+		uuid(ECB2CD3B-FCA1-437C-822F-33C4056B07C7),
 		dual,
-		helpstring("IJpnhg3PymtRevUpdService Interface"),
+		helpstring("IJpnhg3PymtRevUpdServiceL1 Interface"),
 		pointer_default(unique)
 	]
-	interface IJpnhg3PymtRevUpdService : IDispatch
+	interface IJpnhg3PymtRevUpdServiceL1 : IDispatch
 	{
 		[helpstring("method Execute")] HRESULT Execute([in]SAFEARRAY (unsigned char) pDataReq, [out/*,retval*/]SAFEARRAY (unsigned char) *pDataResp);
 	};
 
+//6A545162-D86C-445D-9416-DFB910C44B71 - OLD
+//92842A69-483A-46B7-9487-6ECECE628D81 - NEW
 [
-	uuid(6A545162-D86C-445D-9416-DFB910C44B71),
+	uuid(92842A69-483A-46B7-9487-6ECECE628D81),
 	version(1.0),
 	helpstring("Jpnhg3PymtRevUpd 1.0 Type Library")
 ]
@@ -28,12 +33,14 @@ library JPNHG3PYMTREVUPDLib
 	importlib("stdole32.tlb");
 	importlib("stdole2.tlb");
 
+//5F777A0A-F539-468F-8654-2173EEDCEFC7 - OLD
+//05C319F0-5A61-4722-87E1-7D3EC21C862C - NEW
 	[
-		uuid(5F777A0A-F539-468F-8654-2173EEDCEFC7),
-		helpstring("Jpnhg3PymtRevUpdService Class")
+		uuid(05C319F0-5A61-4722-87E1-7D3EC21C862C),
+		helpstring("Jpnhg3PymtRevUpdService_L1 Class")
 	]
-	coclass Jpnhg3PymtRevUpdService
+	coclass Jpnhg3PymtRevUpdService_L1
 	{
-		[default] interface IJpnhg3PymtRevUpdService;
+		[default] interface IJpnhg3PymtRevUpdServiceL1;
 	};
 };

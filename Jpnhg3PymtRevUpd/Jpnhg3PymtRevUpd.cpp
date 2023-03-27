@@ -17,7 +17,7 @@
 CComModule _Module;
 
 BEGIN_OBJECT_MAP(ObjectMap)
-OBJECT_ENTRY(CLSID_Jpnhg3PymtRevUpdService, CJpnhg3PymtRevUpdService)
+OBJECT_ENTRY(CLSID_Jpnhg3PymtRevUpdService_L1, CJpnhg3PymtRevUpdService)
 END_OBJECT_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

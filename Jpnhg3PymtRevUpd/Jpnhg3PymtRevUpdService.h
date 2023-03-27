@@ -10,9 +10,9 @@
 // CJpnhg3PymtRevUpdService
 class ATL_NO_VTABLE CJpnhg3PymtRevUpdService : 
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CJpnhg3PymtRevUpdService, &CLSID_Jpnhg3PymtRevUpdService>,
+	public CComCoClass<CJpnhg3PymtRevUpdService, &CLSID_Jpnhg3PymtRevUpdService_L1>,
 	public IObjectControl,
-	public IDispatchImpl<IJpnhg3PymtRevUpdService, &IID_IJpnhg3PymtRevUpdService, &LIBID_JPNHG3PYMTREVUPDLib>
+	public IDispatchImpl<IJpnhg3PymtRevUpdServiceL1, &IID_IJpnhg3PymtRevUpdServiceL1, &LIBID_JPNHG3PYMTREVUPDLib>
 {
 
 private:
@@ -30,7 +30,7 @@ DECLARE_PROTECT_FINAL_CONSTRUCT()
 DECLARE_NOT_AGGREGATABLE(CJpnhg3PymtRevUpdService)
 
 BEGIN_COM_MAP(CJpnhg3PymtRevUpdService)
-	COM_INTERFACE_ENTRY(IJpnhg3PymtRevUpdService)
+	COM_INTERFACE_ENTRY(IJpnhg3PymtRevUpdServiceL1)
 	COM_INTERFACE_ENTRY(IObjectControl)
 	COM_INTERFACE_ENTRY(IDispatch)
 END_COM_MAP()
@@ -44,7 +44,7 @@ public:
 	CComPtr<IObjectContext> m_spObjectContext;
 
 
-// IJpnhg3PymtRevUpdService
+// IJpnhg3PymtRevUpdServiceL1
 public:
 	STDMETHOD(Execute)(/*[in]*/SAFEARRAY *pDataReq,/*[out,retval]*/SAFEARRAY **pDataResp);
 };

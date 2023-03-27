@@ -2,9 +2,9 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Thu Dec 10 15:49:02 2020
+/* at Mon Mar 27 12:37:15 2023
  */
-/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtRevUpd\Jpnhg3PymtRevUpd.idl:
+/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtRevUpd_L1\Jpnhg3PymtRevUpd.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
     error checks: allocation ref bounds_check enum stub_data 
 */
@@ -55,14 +55,14 @@ extern const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString;
    GUID={0x00020400,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
 
 
-/* Object interface: IJpnhg3PymtRevUpdService, ver. 0.0,
-   GUID={0xBE3A4848,0x46C5,0x4C60,{0x89,0xD5,0x59,0xB5,0xBC,0x04,0xD5,0x8B}} */
+/* Object interface: IJpnhg3PymtRevUpdServiceL1, ver. 0.0,
+   GUID={0xECB2CD3B,0xFCA1,0x437C,{0x82,0x2F,0x33,0xC4,0x05,0x6B,0x07,0xC7}} */
 
 
 extern const MIDL_STUB_DESC Object_StubDesc;
 
 
-extern const MIDL_SERVER_INFO IJpnhg3PymtRevUpdService_ServerInfo;
+extern const MIDL_SERVER_INFO IJpnhg3PymtRevUpdServiceL1_ServerInfo;
 
 #pragma code_seg(".orpc")
 extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[1];
@@ -91,7 +91,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0   /* Reserved5 */
     };
 
-static const unsigned short IJpnhg3PymtRevUpdService_FormatStringOffsetTable[] = 
+static const unsigned short IJpnhg3PymtRevUpdServiceL1_FormatStringOffsetTable[] = 
     {
     (unsigned short) -1,
     (unsigned short) -1,
@@ -100,32 +100,32 @@ static const unsigned short IJpnhg3PymtRevUpdService_FormatStringOffsetTable[] =
     0
     };
 
-static const MIDL_SERVER_INFO IJpnhg3PymtRevUpdService_ServerInfo = 
+static const MIDL_SERVER_INFO IJpnhg3PymtRevUpdServiceL1_ServerInfo = 
     {
     &Object_StubDesc,
     0,
     __MIDL_ProcFormatString.Format,
-    &IJpnhg3PymtRevUpdService_FormatStringOffsetTable[-3],
+    &IJpnhg3PymtRevUpdServiceL1_FormatStringOffsetTable[-3],
     0,
     0,
     0,
     0
     };
 
-static const MIDL_STUBLESS_PROXY_INFO IJpnhg3PymtRevUpdService_ProxyInfo =
+static const MIDL_STUBLESS_PROXY_INFO IJpnhg3PymtRevUpdServiceL1_ProxyInfo =
     {
     &Object_StubDesc,
     __MIDL_ProcFormatString.Format,
-    &IJpnhg3PymtRevUpdService_FormatStringOffsetTable[-3],
+    &IJpnhg3PymtRevUpdServiceL1_FormatStringOffsetTable[-3],
     0,
     0,
     0
     };
 
-CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtRevUpdServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtRevUpdServiceL1ProxyVtbl = 
 {
-    &IJpnhg3PymtRevUpdService_ProxyInfo,
-    &IID_IJpnhg3PymtRevUpdService,
+    &IJpnhg3PymtRevUpdServiceL1_ProxyInfo,
+    &IID_IJpnhg3PymtRevUpdServiceL1,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
@@ -133,11 +133,11 @@ CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtRevUpdServiceProxyVtbl =
     0 /* (void *)-1 /* IDispatch::GetTypeInfo */ ,
     0 /* (void *)-1 /* IDispatch::GetIDsOfNames */ ,
     0 /* IDispatch_Invoke_Proxy */ ,
-    (void *)-1 /* IJpnhg3PymtRevUpdService::Execute */
+    (void *)-1 /* IJpnhg3PymtRevUpdServiceL1::Execute */
 };
 
 
-static const PRPC_STUB_FUNCTION IJpnhg3PymtRevUpdService_table[] =
+static const PRPC_STUB_FUNCTION IJpnhg3PymtRevUpdServiceL1_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -146,12 +146,12 @@ static const PRPC_STUB_FUNCTION IJpnhg3PymtRevUpdService_table[] =
     NdrStubCall2
 };
 
-CInterfaceStubVtbl _IJpnhg3PymtRevUpdServiceStubVtbl =
+CInterfaceStubVtbl _IJpnhg3PymtRevUpdServiceL1StubVtbl =
 {
-    &IID_IJpnhg3PymtRevUpdService,
-    &IJpnhg3PymtRevUpdService_ServerInfo,
+    &IID_IJpnhg3PymtRevUpdServiceL1,
+    &IJpnhg3PymtRevUpdServiceL1_ServerInfo,
     8,
-    &IJpnhg3PymtRevUpdService_table[-3],
+    &IJpnhg3PymtRevUpdServiceL1_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
 
@@ -926,19 +926,19 @@ static const MIDL_TYPE_FORMAT_STRING __MIDL_TypeFormatString =
 
 const CInterfaceProxyVtbl * _Jpnhg3PymtRevUpd_ProxyVtblList[] = 
 {
-    ( CInterfaceProxyVtbl *) &_IJpnhg3PymtRevUpdServiceProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IJpnhg3PymtRevUpdServiceL1ProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * _Jpnhg3PymtRevUpd_StubVtblList[] = 
 {
-    ( CInterfaceStubVtbl *) &_IJpnhg3PymtRevUpdServiceStubVtbl,
+    ( CInterfaceStubVtbl *) &_IJpnhg3PymtRevUpdServiceL1StubVtbl,
     0
 };
 
 PCInterfaceName const _Jpnhg3PymtRevUpd_InterfaceNamesList[] = 
 {
-    "IJpnhg3PymtRevUpdService",
+    "IJpnhg3PymtRevUpdServiceL1",
     0
 };
 
