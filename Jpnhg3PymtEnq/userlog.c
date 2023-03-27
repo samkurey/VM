@@ -12,7 +12,7 @@ void userlog(char* szFormatString, ...)
 	va_list args;
 	char szFileName[50] = {0};
 
-	strcpy(szFileName, "D:\\IJPN\\Log\\Jpnhg3PymtEnq_");
+	strcpy(szFileName, "D:\\IJPN\\Log\\Jpnhg3PymtEnqL1_");
 	strcat(szFileName, get_date());
 	strcat(szFileName, ".log");
 
