@@ -2,9 +2,9 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Thu Dec 10 15:48:24 2020
+/* at Fri Mar 24 15:48:36 2023
  */
-/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.idl:
+/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtEnq_L1\Jpnhg3PymtEnq.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
     error checks: allocation ref bounds_check enum stub_data 
 */
@@ -55,14 +55,14 @@ extern const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString;
    GUID={0x00020400,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
 
 
-/* Object interface: IJpnhg3PymtEnqService, ver. 0.0,
-   GUID={0x4A115E47,0xB717,0x461C,{0xBF,0x08,0x1C,0x82,0x29,0x55,0x23,0xDC}} */
+/* Object interface: IJpnhg3PymtEnqService_L1, ver. 0.0,
+   GUID={0x4072112A,0x5146,0x4568,{0x92,0x77,0xA8,0xB9,0x56,0x29,0xED,0xC9}} */
 
 
 extern const MIDL_STUB_DESC Object_StubDesc;
 
 
-extern const MIDL_SERVER_INFO IJpnhg3PymtEnqService_ServerInfo;
+extern const MIDL_SERVER_INFO IJpnhg3PymtEnqService_L1_ServerInfo;
 
 #pragma code_seg(".orpc")
 extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[1];
@@ -91,7 +91,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0   /* Reserved5 */
     };
 
-static const unsigned short IJpnhg3PymtEnqService_FormatStringOffsetTable[] = 
+static const unsigned short IJpnhg3PymtEnqService_L1_FormatStringOffsetTable[] = 
     {
     (unsigned short) -1,
     (unsigned short) -1,
@@ -100,32 +100,32 @@ static const unsigned short IJpnhg3PymtEnqService_FormatStringOffsetTable[] =
     0
     };
 
-static const MIDL_SERVER_INFO IJpnhg3PymtEnqService_ServerInfo = 
+static const MIDL_SERVER_INFO IJpnhg3PymtEnqService_L1_ServerInfo = 
     {
     &Object_StubDesc,
     0,
     __MIDL_ProcFormatString.Format,
-    &IJpnhg3PymtEnqService_FormatStringOffsetTable[-3],
+    &IJpnhg3PymtEnqService_L1_FormatStringOffsetTable[-3],
     0,
     0,
     0,
     0
     };
 
-static const MIDL_STUBLESS_PROXY_INFO IJpnhg3PymtEnqService_ProxyInfo =
+static const MIDL_STUBLESS_PROXY_INFO IJpnhg3PymtEnqService_L1_ProxyInfo =
     {
     &Object_StubDesc,
     __MIDL_ProcFormatString.Format,
-    &IJpnhg3PymtEnqService_FormatStringOffsetTable[-3],
+    &IJpnhg3PymtEnqService_L1_FormatStringOffsetTable[-3],
     0,
     0,
     0
     };
 
-CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtEnqServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtEnqService_L1ProxyVtbl = 
 {
-    &IJpnhg3PymtEnqService_ProxyInfo,
-    &IID_IJpnhg3PymtEnqService,
+    &IJpnhg3PymtEnqService_L1_ProxyInfo,
+    &IID_IJpnhg3PymtEnqService_L1,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
@@ -133,11 +133,11 @@ CINTERFACE_PROXY_VTABLE(8) _IJpnhg3PymtEnqServiceProxyVtbl =
     0 /* (void *)-1 /* IDispatch::GetTypeInfo */ ,
     0 /* (void *)-1 /* IDispatch::GetIDsOfNames */ ,
     0 /* IDispatch_Invoke_Proxy */ ,
-    (void *)-1 /* IJpnhg3PymtEnqService::Execute */
+    (void *)-1 /* IJpnhg3PymtEnqService_L1::Execute */
 };
 
 
-static const PRPC_STUB_FUNCTION IJpnhg3PymtEnqService_table[] =
+static const PRPC_STUB_FUNCTION IJpnhg3PymtEnqService_L1_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -146,12 +146,12 @@ static const PRPC_STUB_FUNCTION IJpnhg3PymtEnqService_table[] =
     NdrStubCall2
 };
 
-CInterfaceStubVtbl _IJpnhg3PymtEnqServiceStubVtbl =
+CInterfaceStubVtbl _IJpnhg3PymtEnqService_L1StubVtbl =
 {
-    &IID_IJpnhg3PymtEnqService,
-    &IJpnhg3PymtEnqService_ServerInfo,
+    &IID_IJpnhg3PymtEnqService_L1,
+    &IJpnhg3PymtEnqService_L1_ServerInfo,
     8,
-    &IJpnhg3PymtEnqService_table[-3],
+    &IJpnhg3PymtEnqService_L1_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
 
@@ -926,19 +926,19 @@ static const MIDL_TYPE_FORMAT_STRING __MIDL_TypeFormatString =
 
 const CInterfaceProxyVtbl * _Jpnhg3PymtEnq_ProxyVtblList[] = 
 {
-    ( CInterfaceProxyVtbl *) &_IJpnhg3PymtEnqServiceProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IJpnhg3PymtEnqService_L1ProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * _Jpnhg3PymtEnq_StubVtblList[] = 
 {
-    ( CInterfaceStubVtbl *) &_IJpnhg3PymtEnqServiceStubVtbl,
+    ( CInterfaceStubVtbl *) &_IJpnhg3PymtEnqService_L1StubVtbl,
     0
 };
 
 PCInterfaceName const _Jpnhg3PymtEnq_InterfaceNamesList[] = 
 {
-    "IJpnhg3PymtEnqService",
+    "IJpnhg3PymtEnqService_L1",
     0
 };
 

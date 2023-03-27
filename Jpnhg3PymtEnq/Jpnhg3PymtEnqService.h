@@ -12,7 +12,7 @@ class ATL_NO_VTABLE CJpnhg3PymtEnqService :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CJpnhg3PymtEnqService, &CLSID_Jpnhg3PymtEnqService>,
 	public IObjectControl,
-	public IDispatchImpl<IJpnhg3PymtEnqService, &IID_IJpnhg3PymtEnqService, &LIBID_JPNHG3PYMTENQLib>
+	public IDispatchImpl<IJpnhg3PymtEnqService_L1, &IID_IJpnhg3PymtEnqService_L1, &LIBID_JPNHG3PYMTENQLib>
 {
 
 private:
@@ -30,7 +30,7 @@ DECLARE_PROTECT_FINAL_CONSTRUCT()
 DECLARE_NOT_AGGREGATABLE(CJpnhg3PymtEnqService)
 
 BEGIN_COM_MAP(CJpnhg3PymtEnqService)
-	COM_INTERFACE_ENTRY(IJpnhg3PymtEnqService)
+	COM_INTERFACE_ENTRY(IJpnhg3PymtEnqService_L1)
 	COM_INTERFACE_ENTRY(IObjectControl)
 	COM_INTERFACE_ENTRY(IDispatch)
 END_COM_MAP()

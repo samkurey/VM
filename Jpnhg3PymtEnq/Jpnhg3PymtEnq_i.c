@@ -5,9 +5,9 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Thu Dec 10 15:48:24 2020
+/* at Fri Mar 24 15:48:36 2023
  */
-/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtEnq\Jpnhg3PymtEnq.idl:
+/* Compiler settings for D:\MTSComponents_context\Jpnhg3PymtEnq_L1\Jpnhg3PymtEnq.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
     error checks: allocation ref bounds_check enum stub_data 
 */
@@ -35,13 +35,22 @@ typedef struct _IID
 typedef IID CLSID;
 #endif // CLSID_DEFINED
 
-const IID IID_IJpnhg3PymtEnqService = {0x4A115E47,0xB717,0x461C,{0xBF,0x08,0x1C,0x82,0x29,0x55,0x23,0xDC}};
+	//4A115E47-B717-461C-BF08-1C82295523DC - ASAL
+	//4072112A-5146-4568-9277-A8B95629EDC9 - NEW 
+
+const IID IID_IJpnhg3PymtEnqService_L1 = {0x4072112A,0x5146,0x4568,{0x92,0x77,0xA8,0xB9,0x56,0x29,0xED,0xC9}};
 
 
-const IID LIBID_JPNHG3PYMTENQLib = {0xCA78620E,0x4294,0x4CA6,{0xB6,0xD3,0x19,0x35,0xD9,0x0A,0xF5,0xFB}};
+	//CA78620E-4294-4CA6-B6D3-1935D90AF5FB - ASAL
+	//AB53332E-DBDF-46F3-BEEB-40F41DF096CD - NEW
+
+const IID LIBID_JPNHG3PYMTENQLib = {0xAB53332E,0xDBDF,0x46F3,{0xBE,0xEB,0x40,0xF4,0x1D,0xF0,0x96,0xCD}};
+
+		//749E1A93-8DE2-412A-8AD6-72B7FFA32F2C - asal
+		//F4467448-9F31-499E-8B8A-D0D4FEE28B82 - new
 
 
-const CLSID CLSID_Jpnhg3PymtEnqService = {0x749E1A93,0x8DE2,0x412A,{0x8A,0xD6,0x72,0xB7,0xFF,0xA3,0x2F,0x2C}};
+const CLSID CLSID_Jpnhg3PymtEnqService = {0xF4467448,0x9F31,0x499E,{0x8B,0x8A,0xD0,0xD4,0xFE,0xE2,0x8B,0x82}};
 
 
 #ifdef __cplusplus

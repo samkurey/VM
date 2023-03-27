@@ -47,8 +47,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEBUG" /FR /FD /GZ /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEBUG" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x4409 /d "_DEBUG"
 # ADD RSC /l 0x4409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -154,9 +153,10 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ReleaseMinDependency"
 # PROP Intermediate_Dir "ReleaseMinDependency"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /GX /ZI /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /D "DEBUG" /FD /c
 # ADD BASE RSC /l 0x4409 /d "NDEBUG"
 # ADD RSC /l 0x4409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -164,11 +164,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mtx.lib mtxguid.lib oraSQX10.LIB oraSQL10.LIB delayimp.lib HTPIJPNCPIC.lib /nologo /subsystem:windows /dll /incremental:yes /machine:I386 /out:"D:/ijpn/bin/Jpnhg3PymtEnq_L1.dll"
+# SUBTRACT LINK32 /pdb:none
 # Begin Custom Build - Performing registration
 OutDir=.\ReleaseMinDependency
-TargetPath=.\ReleaseMinDependency\Jpnhg3PymtEnq.dll
-InputPath=.\ReleaseMinDependency\Jpnhg3PymtEnq.dll
+TargetPath=\ijpn\bin\Jpnhg3PymtEnq_L1.dll
+InputPath=\ijpn\bin\Jpnhg3PymtEnq_L1.dll
 SOURCE="$(InputPath)"
 
 "$(OutDir)\regsvr32.trg" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -381,6 +382,16 @@ InputName=Jpnhg3PymtEnq_DB
 !ELSEIF  "$(CFG)" == "Jpnhg3PymtEnq - Win32 Release MinSize"
 
 !ELSEIF  "$(CFG)" == "Jpnhg3PymtEnq - Win32 Release MinDependency"
+
+# Begin Custom Build
+InputDir=.
+InputPath=.\Jpnhg3PymtEnq_DB.pc
+InputName=Jpnhg3PymtEnq_DB
+
+"$(InputDir)\$(InputName).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	proc $(InputDir)\$(InputName) unsafe_null=yes dbms=v8 sqlcheck=full parse=full  userid=gscb/gscb@gscbbcm include="D:\MTSComponents_context\COMMON_FILES" sys_include="D:\Program Files\Microsoft Visual Studio\VC98\Include" sys_include="D:\oracle\product\10.2.0\db_1\precomp\public" sys_include="D:\oracle\product\10.2.0\db_1\oci\include"
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "Jpnhg3PymtEnq - Win32 Unicode Release MinSize"
 

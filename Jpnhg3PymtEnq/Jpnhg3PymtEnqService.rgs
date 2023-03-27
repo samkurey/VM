@@ -1,26 +1,26 @@
 HKCR
 {
-	Jpnhg3PymtEnq.Jpnhg3PymtEnqService.1 = s 'Jpnhg3PymtEnqService Class'
+	Jpnhg3PymtEnqL1.Jpnhg3PymtEnqService_L1.1 = s 'Jpnhg3PymtEnqService_L1 Class'
 	{
-		CLSID = s '{749E1A93-8DE2-412A-8AD6-72B7FFA32F2C}'
+		CLSID = s '{F4467448-9F31-499E-8B8A-D0D4FEE28B82}'
 	}
-	Jpnhg3PymtEnq.Jpnhg3PymtEnqService = s 'Jpnhg3PymtEnqService Class'
+	Jpnhg3PymtEnqL1.Jpnhg3PymtEnqService_L1 = s 'Jpnhg3PymtEnqService_L1 Class'
 	{
-		CLSID = s '{749E1A93-8DE2-412A-8AD6-72B7FFA32F2C}'
-		CurVer = s 'Jpnhg3PymtEnq.Jpnhg3PymtEnqService.1'
+		CLSID = s '{F4467448-9F31-499E-8B8A-D0D4FEE28B82}'
+		CurVer = s 'Jpnhg3PymtEnqL1.Jpnhg3PymtEnqService_L1.1'
 	}
 	NoRemove CLSID
 	{
-		ForceRemove {749E1A93-8DE2-412A-8AD6-72B7FFA32F2C} = s 'Jpnhg3PymtEnqService Class'
+		ForceRemove {F4467448-9F31-499E-8B8A-D0D4FEE28B82} = s 'Jpnhg3PymtEnqService_L1 Class'
 		{
-			ProgID = s 'Jpnhg3PymtEnq.Jpnhg3PymtEnqService.1'
-			VersionIndependentProgID = s 'Jpnhg3PymtEnq.Jpnhg3PymtEnqService'
+			ProgID = s 'Jpnhg3PymtEnqL1.Jpnhg3PymtEnqService_L1.1'
+			VersionIndependentProgID = s 'Jpnhg3PymtEnqL1.Jpnhg3PymtEnqService_L1'
 			ForceRemove 'Programmable'
 			InprocServer32 = s '%MODULE%'
 			{
 				val ThreadingModel = s 'Apartment'
 			}
-			'TypeLib' = s '{CA78620E-4294-4CA6-B6D3-1935D90AF5FB}'
+			'TypeLib' = s '{AB53332E-DBDF-46F3-BEEB-40F41DF096CD}'
 		}
 	}
 }
