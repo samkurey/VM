@@ -20,7 +20,7 @@ typedef struct jpn_update_req_s
 typedef struct jpn_update_resp_s
 {
 	HEADER_T header;
-	char kptNo[13]; //added by samsuri on 29 Dec 2022
+	//char kptNo[13]; //added by samsuri on 29 Dec 2022
 
 } JPN_UPDATE_RESP_T;
 

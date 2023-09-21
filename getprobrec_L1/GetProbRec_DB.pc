@@ -2354,7 +2354,7 @@ int update_probl_record(char *appl_id, char *sscBranch, char updstat, void * ctx
 		userlog("get_prob_rec L1 : update_probl_record : Updated the ENQFLAG in PROBL_RECORD to Y successfully");
 	#endif
 
-	strcpy((char*)hv_GQDBranch.arr,"101999"); //replace to prod branchcode later
+	strcpy((char*)hv_GQDBranch.arr,"101999"); //replace to prod branchcode later 161003 for production
 	setlen(hv_GQDBranch);
 
 	//ADDED by samsuri on 27 feb 2023	

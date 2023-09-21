@@ -204,7 +204,7 @@ int Jpn_Update(JPN_UPDATE_REQ_T *pReq,
 
 	/* Copy header info from request to response */
 	resp->header = req->header;
-	strcpy(resp->kptNo,"NO"); //added by samsuri on 29 dec 2022
+	//strcpy(resp->kptNo,"NO"); //added by samsuri on 29 dec 2022
 
 #ifdef DEBUG
 	userlog("JPN_UPDATE : Copied content of header from request to response");
@@ -603,18 +603,18 @@ when there is no payment data to be sent, req from vasanth */
 						}
 
 						//added by samsuri on 29 dec 2022----------------
-						userlog("Inside send to webservice - payment 1");
-						EXEC SQL SELECT KPTNO INTO :kptNo
-						FROM APPLICATION
-						WHERE APPLID = :appl_id AND APPLID IN 
-						(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+						// userlog("Inside send to webservice - payment 1");
+						// EXEC SQL SELECT KPTNO INTO :kptNo
+						// FROM APPLICATION
+						// WHERE APPLID = :appl_id AND APPLID IN 
+						// (SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
 							
-						if (SQLCODE != 0)
-						{
-							userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-						}
-						userlog("kptNo is: %s",kptNo);
-						strcpy(resp->kptNo,kptNo);
+						// if (SQLCODE != 0)
+						// {
+						// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+						// }
+						// userlog("kptNo is: %s",kptNo);
+						// strcpy(resp->kptNo,kptNo);
 						//--------------------finish added
 
 
@@ -657,17 +657,17 @@ when there is no payment data to be sent, req from vasanth */
 							}
 
 							//added by samsuri on 29 dec 2022----------------
-							userlog("Inside send to webservice - tangguh");
-							EXEC SQL SELECT KPTNO INTO :kptNo
-									FROM APPLICATION
-								WHERE APPLID = :appl_id;
+							// userlog("Inside send to webservice - tangguh");
+							// EXEC SQL SELECT KPTNO INTO :kptNo
+							// 		FROM APPLICATION
+							// 	WHERE APPLID = :appl_id;
 								
-							if (SQLCODE != 0)
-							{
-								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-							}
-							userlog("kptNo is: %s",kptNo);
-							strcpy(resp->kptNo,kptNo);
+							// if (SQLCODE != 0)
+							// {
+							// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							// }
+							// userlog("kptNo is: %s",kptNo);
+							// strcpy(resp->kptNo,kptNo);
 							//--------------------finish added
 
 
@@ -794,18 +794,18 @@ when there is no payment data to be sent, req from vasanth */
 
 							}
 							//added by samsuri on 29 dec 2022----------------
-							userlog("Inside send to webservice - payment 2");
-							EXEC SQL SELECT KPTNO INTO :kptNo
-							FROM APPLICATION
-							WHERE APPLID = :appl_id AND APPLID IN 
-							(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+							// userlog("Inside send to webservice - payment 2");
+							// EXEC SQL SELECT KPTNO INTO :kptNo
+							// FROM APPLICATION
+							// WHERE APPLID = :appl_id AND APPLID IN 
+							// (SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
 								
-							if (SQLCODE != 0)
-							{
-								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-							}
-							userlog("kptNo is: %s",kptNo);
-							strcpy(resp->kptNo,kptNo);
+							// if (SQLCODE != 0)
+							// {
+							// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							// }
+							// userlog("kptNo is: %s",kptNo);
+							// strcpy(resp->kptNo,kptNo);
 							//--------------------finish added
 
 							/* Update the Payment update flag to YES */
@@ -1029,18 +1029,18 @@ when there is no payment data to be sent, req from vasanth */
 							}
 
 							//added by samsuri on 29 dec 2022----------------
-							userlog("Inside send to webservice - payment 3");
-							EXEC SQL SELECT KPTNO INTO :kptNo
-							FROM APPLICATION
-							WHERE APPLID = :appl_id AND APPLID IN 
-							(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+							// userlog("Inside send to webservice - payment 3");
+							// EXEC SQL SELECT KPTNO INTO :kptNo
+							// FROM APPLICATION
+							// WHERE APPLID = :appl_id AND APPLID IN 
+							// (SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
 								
-							if (SQLCODE != 0)
-							{
-								userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-							}
-							userlog("kptNo is: %s",kptNo);
-							strcpy(resp->kptNo,kptNo);
+							// if (SQLCODE != 0)
+							// {
+							// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+							// }
+							// userlog("kptNo is: %s",kptNo);
+							// strcpy(resp->kptNo,kptNo);
 							//--------------------finish added
 
 							if (SUCCESS == ret_code)
@@ -1338,18 +1338,18 @@ when there is no payment data to be sent, req from vasanth */
 								}
 
 								//added by samsuri on 29 dec 2022----------------
-								userlog("Inside send to webservice - payment 4");
-								EXEC SQL SELECT KPTNO INTO :kptNo
-								FROM APPLICATION
-								WHERE APPLID = :appl_id AND APPLID IN 
-								(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+								// userlog("Inside send to webservice - payment 4");
+								// EXEC SQL SELECT KPTNO INTO :kptNo
+								// FROM APPLICATION
+								// WHERE APPLID = :appl_id AND APPLID IN 
+								// (SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
 									
-								if (SQLCODE != 0)
-								{
-									userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-								}
-								userlog("kptNo is: %s",kptNo);
-								strcpy(resp->kptNo,kptNo);
+								// if (SQLCODE != 0)
+								// {
+								// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+								// }
+								// userlog("kptNo is: %s",kptNo);
+								// strcpy(resp->kptNo,kptNo);
 								//--------------------finish added
 
 
@@ -1467,18 +1467,18 @@ when there is no payment data to be sent, req from vasanth */
 				}
 
 				//added by samsuri on 29 dec 2022----------------
-				userlog("Inside send to webservice - payment 5");
-				EXEC SQL SELECT KPTNO INTO :kptNo
-				FROM APPLICATION
-				WHERE APPLID = :appl_id AND APPLID IN 
-				(SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
+				// userlog("Inside send to webservice - payment 5");
+				// EXEC SQL SELECT KPTNO INTO :kptNo
+				// FROM APPLICATION
+				// WHERE APPLID = :appl_id AND APPLID IN 
+				// (SELECT APPLID FROM APPL_TXN WHERE TXNCODE IN ('901','914'));
 					
-				if (SQLCODE != 0)
-				{
-					userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
-				}
-				userlog("kptNo is: %s",kptNo);
-				strcpy(resp->kptNo,kptNo);
+				// if (SQLCODE != 0)
+				// {
+				// 	userlog("update_leg_application_stat : Selecting KPTNO FROM APPLICATION failed : %s", SQLMSG);
+				// }
+				// userlog("kptNo is: %s",kptNo);
+				// strcpy(resp->kptNo,kptNo);
 				//--------------------finish added
 
 				/* Update the Payment update flag to YES */
@@ -4733,7 +4733,7 @@ comment ended 26/01/2010 */
 		EXEC SQL SELECT PAIDAMT,ORIGAMT INTO :la_feeamt,:lo_feeamt
 			FROM APPNT_HG3_FEE_INFO
 			WHERE OLDAPPLID = :appl_id
-			AND APPLID = (SELECT MAX(APPLID) FROM APPNT_HG3_FEE_INFO WHERE OLDAPPLID = :appl_id);
+			AND APPLID = (SELECT MAX(APPLID) FROM APPNT_HG3_FEE_INFO WHERE OLDAPPLID = :appl_id AND USERID IS NOT NULL ); //MODIFED BY SAMSURI ADD USERID CHECK
 
 			if((sqlca.sqlcode != 0) && (sqlca.sqlcode != 1403))
 			{
@@ -4994,8 +4994,8 @@ comment ended 26/01/2010 */
 	EXEC SQL SELECT APRVLDOCNO, NAMECHGCODE, TO_CHAR(NAMEREGDATE, 'DDMMYYYY'),
 			 LEGAPPLID, SPONSORIDNO, RELATIONCODE, COLLCENTER, TO_CHAR(CARDCOLLDATE,'DDMMYYYY'),
 			 APPLPRIORITY,APPLSTAT,TO_CHAR(TIMESTAMP,'DDMMYYYY'), //TO_CHAR(APPLDATE,'DDMMYYYY') changed this on 06/11/06
-			 SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14) // EMAIL added by samsuri on 20 oct 2022
-			 //SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14),EMAIL // EMAIL added by samsuri on 20 oct 2022: REMARKED AS NOT READY TO DEPLOY
+			 //SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14) // EMAIL added by samsuri on 20 oct 2022
+			 SPONSORIDTYPE, BRANCHCODE,SUBSTR(CONTACTNO,1,14),EMAIL // EMAIL added by samsuri on 20 oct 2022: REMARKED AS NOT READY TO DEPLOY
 		 INTO :name_appr_ref_num:name_appr_ref_num_ind,
 			  :name_chg_reason_code:name_chg_reason_code_ind,
 			  :name_reg_date:name_reg_date_ind,
@@ -5005,8 +5005,8 @@ comment ended 26/01/2010 */
 			  :appl_status:appl_status_ind,:appldate:appldate_ind,
 			  :sponsoridtype:sponsoridtype_ind,
 			  :a_branch_code:a_branch_code_ind,
-			  :telephone_no:telephone_no_ind // email added by samsuri on 20 oct 2022
-			  //:telephone_no:telephone_no_ind,:email:email_ind // email added by samsuri on 20 oct 2022
+			  //:telephone_no:telephone_no_ind // email added by samsuri on 20 oct 2022
+			  :telephone_no:telephone_no_ind,:email:email_ind // email added by samsuri on 20 oct 2022
 		 FROM  APPLICATION 
 		 WHERE APPLID = :appl_id;
 
@@ -8068,12 +8068,12 @@ int upd_card_details(JPN_UPDATE_REQ_T *req, int msgid, char request_flag,LI_P_HE
 	/* Added appldate & userid commenting below query, changed on 10/05/2004 */
 	telephone_no[0] = '\0';
 	EXEC SQL SELECT KPTNO, APPLSTAT, TO_CHAR(APPLDATE,'DDMMYYYY'), 
-		USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14)
-		//USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14),EMAIL //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
+		//USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14)
+		USERID, TO_CHAR(TIMESTAMP,'DDMMYYYY'),SUBSTR(CONTACTNO,1,14),EMAIL //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
 		INTO :kpt_no:kpt_no_ind, :applstat:applstat_ind,
 			 :appl_date:appl_date_ind,:appln_staff_id:appln_staff_id_ind,
-			 :tstamp:tstamp_ind,:telephone_no:telephone_no_ind
-			 //:tstamp:tstamp_ind,:telephone_no:telephone_no_ind,email:email_ind //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
+			 //:tstamp:tstamp_ind,:telephone_no:telephone_no_ind
+			 :tstamp:tstamp_ind,:telephone_no:telephone_no_ind,email:email_ind //ADDED BY SAMSURI ON 20 OCT 2022. REMARKED AS NOT READY TO DEPLOY
 		FROM APPLICATION
 		WHERE APPLID = :appl_id;
 
@@ -12892,11 +12892,11 @@ int get_appnt_jpn_info_data(HEADER_T header, LI_NRS_UPDATE_REQ_T *nrs_data,void 
 
 
 	EXEC SQL SELECT RTRIM(IDTYPE), IDNO, TO_CHAR(APPLDATE,'DDMMYYYY'),CONTACTNO, LEGAPPLID, BRANCHCODE, 
-		USERID,APPLPRIORITY
-		//USERID,APPLPRIORITY,EMAIL //added by samsuri on 20 oct 2022 , REMARKED AS NOT READY TO DEPLOY
+		//USERID,APPLPRIORITY
+		USERID,APPLPRIORITY,EMAIL //added by samsuri on 20 oct 2022 , REMARKED AS NOT READY TO DEPLOY
         INTO :idtype:idtype_ind,:idno:idno_ind,:reg_date:reg_date_ind,:telephone_no:telephone_no_ind,:appl_no:appl_no_ind,
-			  :branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind
-			  //:branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind,email:email_ind //added by samsuri on 20 oct 2022, NOT READY
+			  //:branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind
+			  :branch_code:branch_code_ind,operator_id:operator_id_ind,:indicator2:indicator2_ind,email:email_ind //added by samsuri on 20 oct 2022, NOT READY
 		FROM APPLICATION
 		WHERE APPLID = :applid;
 

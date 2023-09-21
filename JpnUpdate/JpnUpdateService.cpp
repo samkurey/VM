@@ -79,42 +79,42 @@ void CJpnUpdateService::Deactivate()
 //added by samsuri on 29 dec 2022---------------
 //purpose: to update temporary doc number to host via java webservice
 //-------------------------------------------------------------------
-void callWebservice(char* kptNo)
-{
-	CoInitialize(NULL);
+// void callWebservice(char* kptNo)
+// {
+// 	CoInitialize(NULL);
 
-	try
-	{
-		IIJPNAtlComNetPtr pFunction;
-		pFunction.CreateInstance(__uuidof(ClsIJPN));
+// 	try
+// 	{
+// 		IIJPNAtlComNetPtr pFunction;
+// 		pFunction.CreateInstance(__uuidof(ClsIJPN));
 		
-		//BSTR myInput = ::SysAllocString(L"790715086151");	
-		BSTR myInput =  _com_util::ConvertStringToBSTR(kptNo);
+// 		//BSTR myInput = ::SysAllocString(L"790715086151");	
+// 		BSTR myInput =  _com_util::ConvertStringToBSTR(kptNo);
 		
 
-		BSTR result = pFunction->UpdateTempDocNo(myInput);
-		//char str[250];
-		//memset(str,0,250);
+// 		BSTR result = pFunction->UpdateTempDocNo(myInput);
+// 		//char str[250];
+// 		//memset(str,0,250);
 
-		char *p= _com_util::ConvertBSTRToString(result);
-		//strcpy(testDest,p );
+// 		char *p= _com_util::ConvertBSTRToString(result);
+// 		//strcpy(testDest,p );
 
-		//sprintf(str, "UpdateTempDocNo result: %s",  p);
-		userlog("UpdateTempDocNo result: %s",  p);
+// 		//sprintf(str, "UpdateTempDocNo result: %s",  p);
+// 		userlog("UpdateTempDocNo result: %s",  p);
 
-		//free memory here
-		delete[] p;
-		::SysFreeString(myInput);
-		::SysFreeString(result);	
-	}
-	catch(_com_error e)
-	{
-		userlog("Exception error in callWebservice: %s",e.ErrorMessage());
+// 		//free memory here
+// 		delete[] p;
+// 		::SysFreeString(myInput);
+// 		::SysFreeString(result);	
+// 	}
+// 	catch(_com_error e)
+// 	{
+// 		userlog("Exception error in callWebservice: %s",e.ErrorMessage());
 		
-	}
+// 	}
 
-	CoUninitialize();		
-}
+// 	CoUninitialize();		
+// }
 
 
 STDMETHODIMP CJpnUpdateService::Execute(SAFEARRAY *pDataReq, SAFEARRAY **pDataResp)

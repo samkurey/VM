@@ -429,15 +429,20 @@ int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *req, JPNHG3_PYMT_ENQ_RESP_T *resp, voi
 		if(sqlca.sqlcode != 0)
 		{
 			#ifdef DEBUG
-				userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select genkpt from PROBL_RECORD");
+				userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select genkpt from PROBL_RECORD. sqlmsg:%s ",sqlmsg);
 			#endif
-			strcpy(prog_log.remarks,"enq_processing() failed while select genkpt from PROBL_RECORD");
-			sprintf(excep_log.error_msg,"enq_processing() failed while select genkpt from PROBL_RECORD:%s ",sqlmsg);
-			excep_log.termination_flag = 'Y';
-			excep_log.severity = FATAL;
-			log_error(ctx);
 
-			return SELECT_ERROR;
+			ret_code = 70001;
+			return ret_code;  // no record found for HG3 payment	
+
+			//samsuri remark below code, use above return value
+			// strcpy(prog_log.remarks,"enq_processing() failed while select genkpt from PROBL_RECORD");
+			// sprintf(excep_log.error_msg,"enq_processing() failed while select genkpt from PROBL_RECORD:%s ",sqlmsg);
+			// excep_log.termination_flag = 'Y';
+			// excep_log.severity = FATAL;
+			// log_error(ctx);
+
+			//return SELECT_ERROR;
 		}
 
 		#ifdef DEBUG
@@ -563,94 +568,6 @@ int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *req, JPNHG3_PYMT_ENQ_RESP_T *resp, voi
 				resp->agencyrevncode = arcode;
 				resp->OutStandTxnSerNo = OutStandtxnSerNo;
 
-				ccenter.arr[0] = '\0';
-				EXEC SQL SELECT COLLCENTER INTO :ccenter FROM APPLICATION
-					WHERE APPLID = :applid;
-
-				ccenter.arr[ccenter.len] = '\0';
-
-				sqlmsg[0] = '\0';
-				strcpy(sqlmsg, SQLMSG);
-				if(sqlca.sqlcode != 0)
-				{
-					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select ccenter from APPLICATION");
-					#endif
-					strcpy(prog_log.remarks,"enq_processing() failed while select ccenter from APPLICATION");
-					sprintf(excep_log.error_msg,"enq_processing() failed while select ccenter from APPLICATION:%s ",sqlmsg);
-					excep_log.termination_flag = 'Y';
-					excep_log.severity = FATAL;
-					log_error(ctx);
-
-					return SELECT_ERROR;
-				}
-
-				#ifdef DEBUG				
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPLICATION collcenter: %s",ccenter.arr);		
-				#endif
-
-				strcpy(resp->collcenter,(char*)ccenter.arr);
-
-				citycode = 0; name.arr[0] = '\0'; address1.arr[0] = '\0';
-				EXEC SQL SELECT GMPCSHORTNAME1||' '||GMPCSHORTNAME2||' '||GMPCSHORTNAME3,
-					ADDRESS1, ADDRESS2, ADDRESS3,POSTCODE,STATECODE,CITYCODE INTO
-					:name, :address1, :address2, :address3, :postcode, :statecode, :citycode
-						FROM APPNT_JPN_INFO
-						WHERE APPLID = :applid;
-
-				name.arr[name.len] = '\0';
-				address1.arr[address1.len] = '\0';
-				address2.arr[address2.len] = '\0';
-				address3.arr[address3.len] = '\0';
-				postcode.arr[postcode.len] = '\0';
-				statecode.arr[statecode.len] = '\0';
-
-				sqlmsg[0] = '\0';
-				strcpy(sqlmsg, SQLMSG);
-				if(sqlca.sqlcode != 0)
-				{
-					#ifdef DEBUG
-						userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select name from APPNT_JPN_INFO");
-					#endif
-					strcpy(prog_log.remarks,"enq_processing() failed while select name from APPNT_JPN_INFO");
-					sprintf(excep_log.error_msg,"enq_processing() failed while select name from APPNT_JPN_INFO:%s ",sqlmsg);
-					excep_log.termination_flag = 'Y';
-					excep_log.severity = FATAL;
-					log_error(ctx);
-
-					return SELECT_ERROR;
-				}
-				
-				#ifdef DEBUG				
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO name: %s",name.arr);
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address1: %s",address1.arr);	
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address2: %s",address2.arr);
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address3: %s",address3.arr);
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO postcode: %s",postcode.arr);
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO statecode: %s",statecode.arr);
-					userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO citycode: %d",citycode);
-				#endif
-
-				if(name.arr[0] != '\0')
-				{
-
-					// copy these values into response buffer
-					strcpy(resp->name,(char*)name.arr);
-					strcpy(resp->address1,(char*)address1.arr);
-					strcpy(resp->address2,(char*)address2.arr);
-					strcpy(resp->address3,(char*)address3.arr);
-					strcpy(resp->postcode,(char*)postcode.arr);
-					strcpy(resp->statecode,(char*)statecode.arr);
-					resp->citycode = citycode;
-
-					ret_code = 0;
-					return ret_code;
-				}
-				else
-				{
-					ret_code = 70001;
-					return ret_code;
-				}
 
 			}
 			else
@@ -660,7 +577,7 @@ int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *req, JPNHG3_PYMT_ENQ_RESP_T *resp, voi
 			}
 
 			ret_code = 0;
-			return ret_code;
+			//return ret_code;
 		}
 		else
 		{
@@ -668,8 +585,99 @@ int enq_processing(JPNHG3_PYMT_ENQ_REQ_T *req, JPNHG3_PYMT_ENQ_RESP_T *resp, voi
 				userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : In the else part for genkpt not P, not U  condition : %c",genkpt);		
 			#endif
 			ret_code = 0;//samsuri change from 70001 to 0
+			//return ret_code;
+		}
+
+		//samsuri move it here
+		ccenter.arr[0] = '\0';
+		EXEC SQL SELECT COLLCENTER INTO :ccenter FROM APPLICATION
+			WHERE APPLID = :applid;
+
+		ccenter.arr[ccenter.len] = '\0';
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select ccenter from APPLICATION");
+			#endif
+			strcpy(prog_log.remarks,"enq_processing() failed while select ccenter from APPLICATION");
+			sprintf(excep_log.error_msg,"enq_processing() failed while select ccenter from APPLICATION:%s ",sqlmsg);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error(ctx);
+
+			return SELECT_ERROR;
+		}
+
+		#ifdef DEBUG				
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPLICATION collcenter: %s",ccenter.arr);		
+		#endif
+
+		strcpy(resp->collcenter,(char*)ccenter.arr);
+
+		citycode = 0; name.arr[0] = '\0'; address1.arr[0] = '\0';
+		EXEC SQL SELECT GMPCSHORTNAME1||' '||GMPCSHORTNAME2||' '||GMPCSHORTNAME3,
+			ADDRESS1, ADDRESS2, ADDRESS3,POSTCODE,STATECODE,CITYCODE INTO
+			:name, :address1, :address2, :address3, :postcode, :statecode, :citycode
+				FROM APPNT_JPN_INFO
+				WHERE APPLID = :applid;
+
+		name.arr[name.len] = '\0';
+		address1.arr[address1.len] = '\0';
+		address2.arr[address2.len] = '\0';
+		address3.arr[address3.len] = '\0';
+		postcode.arr[postcode.len] = '\0';
+		statecode.arr[statecode.len] = '\0';
+
+		sqlmsg[0] = '\0';
+		strcpy(sqlmsg, SQLMSG);
+		if(sqlca.sqlcode != 0)
+		{
+			#ifdef DEBUG
+				userlog("JPNHG3_PYMT_ENQ L1  : enq_processing() failed while select name from APPNT_JPN_INFO");
+			#endif
+			strcpy(prog_log.remarks,"enq_processing() failed while select name from APPNT_JPN_INFO");
+			sprintf(excep_log.error_msg,"enq_processing() failed while select name from APPNT_JPN_INFO:%s ",sqlmsg);
+			excep_log.termination_flag = 'Y';
+			excep_log.severity = FATAL;
+			log_error(ctx);
+
+			return SELECT_ERROR;
+		}
+		
+		#ifdef DEBUG				
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO name: %s",name.arr);
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address1: %s",address1.arr);	
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address2: %s",address2.arr);
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO address3: %s",address3.arr);
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO postcode: %s",postcode.arr);
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO statecode: %s",statecode.arr);
+			userlog("JPNHG3_PYMT_ENQ L1 (enq_processing) : after select from APPNT_JPN_INFO citycode: %d",citycode);
+		#endif
+
+		if(name.arr[0] != '\0')
+		{
+
+			// copy these values into response buffer
+			strcpy(resp->name,(char*)name.arr);
+			strcpy(resp->address1,(char*)address1.arr);
+			strcpy(resp->address2,(char*)address2.arr);
+			strcpy(resp->address3,(char*)address3.arr);
+			strcpy(resp->postcode,(char*)postcode.arr);
+			strcpy(resp->statecode,(char*)statecode.arr);
+			resp->citycode = citycode;
+
+			ret_code = 0;
 			return ret_code;
 		}
+		else
+		{
+			ret_code = 70001;
+			return ret_code;
+		}
+
 
 	}
 	

@@ -72,13 +72,13 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 
 	#ifdef DEBUG
 		/* print input data to be used for debugging */
-		userlog("GMPC_ENQUIRY: gsc_no %s:",req->header.branch_code);
-		userlog("GMPC_ENQUIRY: user_id %s:",req->header.user_id);
-		userlog("GMPC_ENQUIRY: workstation_id %s:",req->header.workstation_id);
-		userlog("GMPC_ENQUIRY: kptno %s:",req->kptno);
-		userlog("GMPC_ENQUIRY: version %d:",req->version);
-		userlog("GMPC_ENQUIRY: idtype %s:",req->idtype);
-		userlog("GMPC_ENQUIRY: idno %s:",req->idno);
+		userlog("GMPC_ENQUIRY L2: gsc_no %s:",req->header.branch_code);
+		userlog("GMPC_ENQUIRY L2: user_id %s:",req->header.user_id);
+		userlog("GMPC_ENQUIRY L2: workstation_id %s:",req->header.workstation_id);
+		userlog("GMPC_ENQUIRY L2: kptno %s:",req->kptno);
+		userlog("GMPC_ENQUIRY L2: version %d:",req->version);
+		userlog("GMPC_ENQUIRY L2: idtype %s:",req->idtype);
+		userlog("GMPC_ENQUIRY L2: idno %s:",req->idno);
 	#endif
 
 	strcpy(curr_date_time, get_date_time());
@@ -105,7 +105,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	excep_log.termination_flag = 'Y';	
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: before check_header: workstation id: %s:", req->header.workstation_id);
+		userlog("GMPC_ENQUIRY L2: before check_header: workstation id: %s:", req->header.workstation_id);
 	#endif
 
 	ret_val = 0;
@@ -113,7 +113,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	if((ret_val = check_header(req->header,ctx)) != SUCCESS)
 	{
 		#ifdef DEBUG
-			userlog("GMPC_ENQUIRY: After Check header Failed");
+			userlog("GMPC_ENQUIRY L2: After Check header Failed");
 		#endif
 		strcpy(prog_log.remarks,"GMPC_ENQUIRY : check header failed");
 		sprintf(excep_log.error_msg,"GMPC_ENQUIRY : check header failed");
@@ -126,7 +126,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	}
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY : After check_header");
+		userlog("GMPC_ENQUIRY L2: After check_header");
 	#endif
 
 	resp_len = sizeof(GMPC_ENQUIRY_RESP_T);
@@ -136,7 +136,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	{
 		#ifdef DEBUG
 			/* print input data to be used for debugging */
-			userlog("GMPC_ENQUIRY: Allocation of memory Failed");
+			userlog("GMPC_ENQUIRY L2: Allocation of memory Failed");
 		#endif
 		strcpy(prog_log.remarks,"GMPC_ENQUIRY : Service failed due to RESP_BUF_ERR");
 		sprintf(excep_log.error_msg,"GMPC_ENQUIRY :Service failed due to RESP_BUF_ERR ");
@@ -158,7 +158,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 		{
 			#ifdef DEBUG
 				/* print input data to be used for debugging */
-				userlog("GMPC_ENQUIRY: Service failed due to absence of input kptno or (idtype/idno))");
+				userlog("GMPC_ENQUIRY L2: Service failed due to absence of input kptno or (idtype/idno))");
 			#endif
 			strcpy(prog_log.remarks,"GMPC_ENQUIRY : Service failed due to absence of kptno (idtype/idno)");
 			sprintf(excep_log.error_msg,"GMPC_ENQUIRY :Service failed due to absence of input kptno (idtype/idno)");
@@ -178,7 +178,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 			ret_val = get_kptno(req, &match_cnt,ctx);
 			
 			#ifdef DEBUG
-				userlog("GMPC_ENQUIRY: KPTNO is :%d:",ret_val);
+				userlog("GMPC_ENQUIRY L2: KPTNO is :%d:",ret_val);
 			#endif
 
 			if(ret_val == MULTI_REC_FOUND)
@@ -192,7 +192,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 				{
 					#ifdef DEBUG
 						/* print input data to be used for debugging */
-						userlog("GMPC_ENQUIRY: Reallocation of memory Failed");
+						userlog("GMPC_ENQUIRY L2: Reallocation of memory Failed");
 					#endif
 					strcpy(prog_log.remarks,"GMPC_ENQUIRY : Service failed due to RESP_BUF_ERR at Reallocation");
 					sprintf(excep_log.error_msg,"GMPC_ENQUIRY :Service failed due to RESP_BUF_ERR at Reallocation");
@@ -227,20 +227,20 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 				}
 
 				#ifdef DEBUG
-					userlog("GMPC_ENQUIRY: multi_rec_cnt is :%d:", resp->multi_rec_cnt);
-					userlog("GMPC_ENQUIRY: KPTNO is :%s:", matches->kptno);
-					userlog("GMPC_ENQUIRY: VERSION is :%d:", matches->version);
-					userlog("GMPC_ENQUIRY: GENDER is :%c:", matches->gender);
-					userlog("GMPC_ENQUIRY: NAME is :%s:", matches->name);
+					userlog("GMPC_ENQUIRY L2: multi_rec_cnt is :%d:", resp->multi_rec_cnt);
+					userlog("GMPC_ENQUIRY L2: KPTNO is :%s:", matches->kptno);
+					userlog("GMPC_ENQUIRY L2: VERSION is :%d:", matches->version);
+					userlog("GMPC_ENQUIRY L2: GENDER is :%c:", matches->gender);
+					userlog("GMPC_ENQUIRY L2: NAME is :%s:", matches->name);
 					matches++;
-					userlog("GMPC_ENQUIRY: KPTNO is :%s:", matches->kptno);
-					userlog("GMPC_ENQUIRY: VERSION is :%d:", matches->version);
-					userlog("GMPC_ENQUIRY: GENDER is :%c:", matches->gender);
-					userlog("GMPC_ENQUIRY: NAME is :%s:", matches->name);
+					userlog("GMPC_ENQUIRY L2: KPTNO is :%s:", matches->kptno);
+					userlog("GMPC_ENQUIRY L2: VERSION is :%d:", matches->version);
+					userlog("GMPC_ENQUIRY L2: GENDER is :%c:", matches->gender);
+					userlog("GMPC_ENQUIRY L2: NAME is :%s:", matches->name);
 				#endif
 
 				#ifdef DEBUG
-					userlog("GMPC_ENQUIRY :Completed Successfully");
+					userlog("GMPC_ENQUIRY L2:Completed Successfully");
 				#endif
 				strcpy(prog_log.remarks,"GMPC_ENQUIRY: Completed Successfully");
 				log_exit(ctx);
@@ -263,7 +263,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 			}
 
 			#ifdef DEBUG
-				userlog("GMPC_ENQUIRY: KPTNO is :%s:", req->kptno);
+				userlog("GMPC_ENQUIRY L2: KPTNO is :%s:", req->kptno);
 			#endif
 
 		}
@@ -284,8 +284,8 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	}
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: After get max card version KPTNO is :%s:", req->kptno);
-		userlog("GMPC_ENQUIRY: After get max card version OLDKPTNO is :%s:", resp->oldkptno);
+		userlog("GMPC_ENQUIRY L2: After get max card version KPTNO is :%s:", req->kptno);
+		userlog("GMPC_ENQUIRY L2: After get max card version OLDKPTNO is :%s:", resp->oldkptno);
 	#endif
 	strcpy(resp->kptno, req->kptno);
 	resp->version = req->version;
@@ -293,7 +293,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	orig_resp = resp;
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: Before get_rec_numbers");
+		userlog("GMPC_ENQUIRY L2: Before get_rec_numbers");
 	#endif
 
 	ret_val = 0;
@@ -307,7 +307,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	}
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: After get_rec_numbers");
+		userlog("GMPC_ENQUIRY L2: After get_rec_numbers");
 	#endif
 
 	resp_len = sizeof(GMPC_ENQUIRY_RESP_T);
@@ -335,7 +335,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	{
 		#ifdef DEBUG
 			/* print input data to be used for debugging */
-			userlog("GMPC_ENQUIRY: Reallocation of memory Failed");
+			userlog("GMPC_ENQUIRY L2: Reallocation of memory Failed");
 		#endif
 		strcpy(prog_log.remarks,"GMPC_ENQUIRY : Service failed due to RESP_BUF_ERR at Reallocation");
 		sprintf(excep_log.error_msg,"GMPC_ENQUIRY :Service failed due to RESP_BUF_ERR at Reallocation ");
@@ -400,14 +400,14 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 
 */
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: Before get_blklst_data");
+		userlog("GMPC_ENQUIRY L2: Before get_blklst_data");
 	#endif
 	
 	ret_val = 0;
 	if((ret_val = get_blklst_data(resp,ctx)) != SUCCESS)
 	{
 		#ifdef DEBUG
-			userlog("GMPC_ENQUIRY: \nAfter get_blklst_data Failed");
+			userlog("GMPC_ENQUIRY L2: \nAfter get_blklst_data Failed");
 		#endif
 		strcpy(prog_log.remarks,"GMPC_ENQUIRY : get_blklst_data() Failed");
 		sprintf(excep_log.error_msg,"GMPC_ENQUIRY :get_blklst_data() Failed");
@@ -428,13 +428,13 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 	if(resp->applstat != ISSUED)
 	{
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY: Before get_outstand_payment");
+		userlog("GMPC_ENQUIRY L2: Before get_outstand_payment");
 	#endif
 		ret_val = 0;
 		if((ret_val = get_outstand_payment(resp,ctx)) != SUCCESS)
 		{
 		#ifdef DEBUG
-			userlog("GMPC_ENQUIRY: \nAfter get_outstand_payment Failed");
+			userlog("GMPC_ENQUIRY L2: \nAfter get_outstand_payment Failed");
 		#endif
 			strcpy(prog_log.remarks,"GMPC_ENQUIRY : get_outstand_payment() Failed");
 			sprintf(excep_log.error_msg,"GMPC_ENQUIRY :get_outstand_payment() Failed");
@@ -601,7 +601,7 @@ int GMPC_Enquiry(GMPC_ENQUIRY_REQ_T *pReq,
 
 
 	#ifdef DEBUG
-		userlog("GMPC_ENQUIRY :Completed Successfully");
+		userlog("GMPC_ENQUIRY L2:Completed Successfully");
 	#endif
 		strcpy(prog_log.remarks,"GMPC_ENQUIRY: Completed Successfully");
 		log_exit(ctx);
@@ -1102,9 +1102,9 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 	EXEC SQL CONTEXT USE :pcCtx;// Modification for IJPN
 
 	#ifdef DEBUG
-		userlog("get_appl_det: kptno is:%s:", enq_resp->kptno);
-		userlog("get_appl_det: Version is:%d:", enq_resp->version);
-		userlog("get_appl_det: APPLID is:%s:", enq_resp->applid);
+		userlog("get_appl_det L2: kptno is:%s:", enq_resp->kptno);
+		userlog("get_appl_det L2: Version is:%d:", enq_resp->version);
+		userlog("get_appl_det L2: APPLID is:%s:", enq_resp->applid);
 	#endif
 
 	strcpy(applid, enq_resp->applid);
@@ -1114,7 +1114,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 	hv_applremarks.arr[0] = '\0';
 	
 	//added by samsuri on 17 oct 2022
-	userlog("get_appl_det: start check USK_COMPOUND_FEE applid: %s",applid);
+	userlog("get_appl_det L2: start check USK_COMPOUND_FEE applid: %s",applid);
 
 	EXEC SQL
 	SELECT APPEALREMARK, SSCREMARK 
@@ -1122,30 +1122,30 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 	FROM USK_COMPOUND_FEE 
 	WHERE APPLID = :applid; 
 
-	userlog("get_appl_det: finish check USK_COMPOUND_FEE applid: %s",applid);
+	userlog("get_appl_det L2: finish check USK_COMPOUND_FEE applid: %s",applid);
 
 	sqlmsg[0] = '\0';
 	strcpy(sqlmsg, SQLMSG);
 	if(SQLCODE)
 	{
-		userlog("get_appl_det :Select USK_COMPOUND_FEE warning: %s",sqlmsg);
+		userlog("get_appl_det L2:Select USK_COMPOUND_FEE warning: %s",sqlmsg);
 	}
 
 	setnull(hv_uskRemark); //added by samsuri on 13 oct 2022
 	setnull(hv_panelRemark); //added by samsuri on 13 oct 2022
 
 	//added by samsuri on 13 oct 2022
-	userlog("GMPC_ENQUIRY : enq_resp->uskRemark hv_uskRemark_ind %d", hv_uskRemark_ind);
+	userlog("GMPC_ENQUIRY L2: enq_resp->uskRemark hv_uskRemark_ind %d", hv_uskRemark_ind);
 	if(hv_uskRemark_ind != -1)
 	{
 		strcpy(enq_resp->uskRemark, hv_uskRemark.arr);
-		userlog("GMPC_ENQUIRY : enq_resp->uskRemark: %s", enq_resp->uskRemark);
+		userlog("GMPC_ENQUIRY L2: enq_resp->uskRemark: %s", enq_resp->uskRemark);
 	}
 
 	if(hv_panelRemark_ind != -1)
 	{
 		strcpy(enq_resp->panelRemark, hv_panelRemark.arr);
-		userlog("GMPC_ENQUIRY : enq_resp->panelRemark: %s", enq_resp->panelRemark);
+		userlog("GMPC_ENQUIRY L2: enq_resp->panelRemark: %s", enq_resp->panelRemark);
 	}
 	//end added
 
@@ -1203,7 +1203,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			AND   TXNCODE IN ('306','406');
 
 		#ifdef DEBUG
-			userlog("get_appl_det: nCount is:%d:", nCount);		
+			userlog("get_appl_det L2: nCount is:%d:", nCount);		
 		#endif
 
 		if(nCount > 0)
@@ -1212,7 +1212,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			EXEC SQL SELECT APRVLDOCNO INTO :apprvldocno FROM APPLICATION WHERE 
 				APPLID = :applid;
 			#ifdef DEBUG
-				userlog("get_appl_det: apprvldocno is:%s:", apprvldocno.arr);		
+				userlog("get_appl_det L2: apprvldocno is:%s:", apprvldocno.arr);		
 			#endif
 
 			apprvldocno.arr[apprvldocno.len] = '\0';
@@ -1225,7 +1225,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 					   (SELECT KPTNO FROM APPLICATION WHERE APPLID = :applid);
 
 				#ifdef DEBUG
-					userlog("get_appl_det: hv_gmpcname is:%s:", hv_gmpcname.arr);		
+					userlog("get_appl_det L2: hv_gmpcname is:%s:", hv_gmpcname.arr);		
 				#endif
 			}
 
@@ -1352,7 +1352,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		// around 40 lines of new code
 
 		#ifdef DEBUG
-			userlog("get_appl_det : Before selecing Actremarks from PROBL_RECORD");
+			userlog("get_appl_det L2: Before selecing Actremarks from PROBL_RECORD");
 		#endif
 
 		remarks.arr[0] = '\0'; actremarks.arr[0] = '\0'; arlen=0;
@@ -1372,7 +1372,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		if(SQLCODE)
 		{
 			#ifdef DEBUG
-				userlog("get_appl_det : opening remarks_cur failed = %s", SQLMSG);
+				userlog("get_appl_det L2: opening remarks_cur failed = %s", SQLMSG);
 			#endif
 			return CURSOR_OPEN_ERROR;
 		}
@@ -1389,7 +1389,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			if(SQLCODE)
 			{
 				#ifdef DEBUG
-					userlog("get_appl_det : fetching remarks_cur failed = %s", SQLMSG);
+					userlog("get_appl_det L2: fetching remarks_cur failed = %s", SQLMSG);
 				#endif
 				return CURSOR_FETCH_ERROR;
 			}
@@ -1397,9 +1397,9 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			setnull(actremarks);
 
 			#ifdef DEBUG
-				userlog("get_appl_det : Actremarks from PROBL_RECORD = %s", actremarks.arr);
-				//userlog("get_appl_det : arlen = %d", arlen);
-				//userlog("get_appl_det : actremarks.len = %d", actremarks.len);
+				userlog("get_appl_det L2: Actremarks from PROBL_RECORD = %s", actremarks.arr);
+				//userlog("get_appl_det L2: arlen = %d", arlen);
+				//userlog("get_appl_det L2: actremarks.len = %d", actremarks.len);
 			#endif
          
 			if(i==0)
@@ -1422,7 +1422,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 					 strncat(remarks.arr,actremarks.arr,actremarks.len);
 				  }
 					//#ifdef DEBUG
-					//	userlog("get_appl_det : remarks.arr = %s", remarks.arr);
+					//	userlog("get_appl_det L2: remarks.arr = %s", remarks.arr);
 					//#endif
 				}
 			}
@@ -1438,7 +1438,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		if (SQLCODE)
 		{
 			#ifdef DEBUG
-				userlog("get_appl_det : closing remarks_cur failed = %s", SQLMSG);
+				userlog("get_appl_det L2: closing remarks_cur failed = %s", SQLMSG);
 			#endif
 			return CURSOR_CLOSE_ERROR;
 		}
@@ -1449,14 +1449,14 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			remarks.arr[arlen+4] = '\0';  // semicolon and space added twice to remarks.arr above so is the addition of 4 here
 
 		#ifdef DEBUG
-			userlog("get_appl_det : Applicant actremarks from PROBL_RECORD = %s", remarks.arr);
+			userlog("get_appl_det L2: Applicant actremarks from PROBL_RECORD = %s", remarks.arr);
 		#endif
 
 		if((remarks.arr[0] != ' ') && (remarks.arr[0] != '\0'))
 		{
 			strcpy(enq_resp->applremarks, remarks.arr);
 			#ifdef DEBUG
-				userlog("get_appl_det : Applicant remarks = %s", enq_resp->applremarks);
+				userlog("get_appl_det L2: Applicant remarks = %s", enq_resp->applremarks);
 			#endif
 		}
 		else
@@ -1590,7 +1590,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			#ifdef DEBUG
 				userlog("enq_resp->appldate",enq_resp->appldate);
 				userlog("enq_resp->applremarks ",enq_resp->applremarks);
-				userlog("get_appl_det: Select appl detials failed ");
+				userlog("get_appl_det L2: Select appl detials failed ");
 			#endif
 			//return SELECT_ERROR; //Commented for IJPN
 	}
@@ -1640,7 +1640,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		// 40 lines of code
 		
 		#ifdef DEBUG
-			userlog("get_appl_det : Before selecing Actremarks from PROBL_RECORD");
+			userlog("get_appl_det L2: Before selecing Actremarks from PROBL_RECORD");
 		#endif
 
 		remarks.arr[0] = '\0'; actremarks.arr[0] = '\0'; arlen=0;
@@ -1660,7 +1660,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		if(SQLCODE)
 		{
 			#ifdef DEBUG
-				userlog("get_appl_det : opening remarks_cur1 failed = %s", SQLMSG);
+				userlog("get_appl_det L2: opening remarks_cur1 failed = %s", SQLMSG);
 			#endif
 			return CURSOR_OPEN_ERROR;
 		}
@@ -1677,7 +1677,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			if(SQLCODE)
 			{
 				#ifdef DEBUG
-					userlog("get_appl_det : fetching remarks_cur1 failed = %s", SQLMSG);
+					userlog("get_appl_det L2: fetching remarks_cur1 failed = %s", SQLMSG);
 				#endif
 				return CURSOR_FETCH_ERROR;
 			}
@@ -1685,9 +1685,9 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			setnull(actremarks);
 
 			#ifdef DEBUG
-				userlog("get_appl_det : Actremarks from PROBL_RECORD = %s", actremarks.arr);
-				//userlog("get_appl_det : arlen = %d", arlen);
-				//userlog("get_appl_det : actremarks.len = %d", actremarks.len);
+				userlog("get_appl_det L2: Actremarks from PROBL_RECORD = %s", actremarks.arr);
+				//userlog("get_appl_det L2: arlen = %d", arlen);
+				//userlog("get_appl_det L2: actremarks.len = %d", actremarks.len);
 			#endif
          
 			if(i==0)
@@ -1710,7 +1710,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 					 strncat(remarks.arr,actremarks.arr,actremarks.len);
 				  }
 					//#ifdef DEBUG
-					//	userlog("get_appl_det : remarks.arr = %s", remarks.arr);
+					//	userlog("get_appl_det L2: remarks.arr = %s", remarks.arr);
 					//#endif
 				}
 			}
@@ -1726,7 +1726,7 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 		if (SQLCODE)
 		{
 			#ifdef DEBUG
-				userlog("get_appl_det : closing remarks_cur1 failed = %s", SQLMSG);
+				userlog("get_appl_det L2: closing remarks_cur1 failed = %s", SQLMSG);
 			#endif
 			return CURSOR_CLOSE_ERROR;
 		}
@@ -1737,14 +1737,14 @@ int get_appl_det(GMPC_ENQUIRY_RESP_T **resp,void * ctx)
 			remarks.arr[arlen+4] = '\0';  // semicolon and space added twice to remarks.arr above so is the addition of 4 here
 
 		#ifdef DEBUG
-			userlog("get_appl_det : Applicant actremarks from PROBL_RECORD = %s", remarks.arr);
+			userlog("get_appl_det L2: Applicant actremarks from PROBL_RECORD = %s", remarks.arr);
 		#endif
 
 		if((remarks.arr[0] != ' ') && (remarks.arr[0] != '\0'))
 		{
 			strcpy(enq_resp->applremarks, remarks.arr);
 			#ifdef DEBUG
-				userlog("get_appl_det : Applicant remarks = %s", enq_resp->applremarks);
+				userlog("get_appl_det L2: Applicant remarks = %s", enq_resp->applremarks);
 			#endif
 		}
 		else
@@ -3794,7 +3794,7 @@ int get_appnt_jpn_info(char *applid, APPNT_JPN_INFO_T *appnt_jpn_info,char *kptn
 			AND   TXNCODE IN ('306','406');
 
 		#ifdef DEBUG
-			userlog("get_appl_det: nCount is:%d:", nCount);		
+			userlog("get_appl_det L2: nCount is:%d:", nCount);		
 		#endif
 
 		if(nCount > 0)
@@ -3803,7 +3803,7 @@ int get_appnt_jpn_info(char *applid, APPNT_JPN_INFO_T *appnt_jpn_info,char *kptn
 			EXEC SQL SELECT APRVLDOCNO INTO :apprvldocno FROM APPLICATION WHERE 
 				APPLID = :applid;
 			#ifdef DEBUG
-				userlog("get_appl_det: apprvldocno is:%s:", apprvldocno.arr);		
+				userlog("get_appl_det L2: apprvldocno is:%s:", apprvldocno.arr);		
 			#endif
 
 			apprvldocno.arr[apprvldocno.len] = '\0';
@@ -3822,9 +3822,9 @@ int get_appnt_jpn_info(char *applid, APPNT_JPN_INFO_T *appnt_jpn_info,char *kptn
 				lgmpcshortname3.arr[lgmpcshortname3.len] = '\0';
 
 				#ifdef DEBUG
-					userlog("get_appl_det: lgmpcshortname1 is:%s:", lgmpcshortname1.arr);
-					userlog("get_appl_det: lgmpcshortname2 is:%s:", lgmpcshortname2.arr);		
-					userlog("get_appl_det: lgmpcshortname3 is:%s:", lgmpcshortname3.arr);		
+					userlog("get_appl_det L2: lgmpcshortname1 is:%s:", lgmpcshortname1.arr);
+					userlog("get_appl_det L2: lgmpcshortname2 is:%s:", lgmpcshortname2.arr);		
+					userlog("get_appl_det L2: lgmpcshortname3 is:%s:", lgmpcshortname3.arr);		
 				#endif
 
 				strcpy(appnt_jpn_info->gmpcshortname1,lgmpcshortname1.arr);

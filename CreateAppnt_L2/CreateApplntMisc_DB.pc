@@ -875,6 +875,20 @@ sql_context pcCtx; // Modification for IJPN
 				  (SELECT MAX(CARDVERSIONNO)-2 FROM CARD_STATUS 
 				     WHERE KPTNO = :kpt_no);    // Added this condition on 10/05/2007
 
+		if (SQLCODE != 0 && !NO_DATA_FOUND)
+			{
+		
+				userlog("insert_into_card_blacklist : Select from CARD_STATUS failed for KPT %s: %s", kpt_no, SQLMSG);
+		
+				strcpy(prog_log.remarks,"insert_into_card_blacklist: Select from CARD_STATUS failed ");
+				sprintf(excep_log.error_msg, "insert_into_card_blacklist: Select from CARD_STATUS failed for KPT %s : %s", kpt_no, SQLMSG);
+				excep_log.termination_flag = YES;
+				excep_log.severity = FATAL;
+
+				log_error(ctx);
+				
+				return SELECT_ERROR;
+			}
 		if (NO_DATA_FOUND)
 		{
 			strcpy(prog_log.remarks,"insert_into_card_blacklist: No Active card exists for the applicant");

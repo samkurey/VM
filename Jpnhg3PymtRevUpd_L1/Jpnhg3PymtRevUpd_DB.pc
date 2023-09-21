@@ -435,7 +435,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 	setlen(hv_payUserID);
 	strcpy((char*)hv_payDateTime.arr,req->payDateTime);
 	setlen(hv_payDateTime);
-	strcpy((char*)hv_GQDBranch.arr,"101999");
+	strcpy((char*)hv_GQDBranch.arr,"161003"); //please chang to production branch when deploy: 161003
 	setlen(hv_GQDBranch);
 
 
@@ -700,32 +700,36 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 				AND ENQTYPE IS NULL
 				AND SSCBRANCHCODE=:hv_sscBranch;
 
-			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA hv_uskOldApplid: %s hv_sscBranch: %s result : %d",
+					hv_uskOldApplid.arr,hv_sscBranch.arr, SQLCODE);
 
 			EXEC SQL INSERT INTO APPNT_PROBL_DATA(
 			APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
 			VALUES( 
 			:hv_uskOldApplid, :hv_sscBranch, 'N', SYSDATE, NULL);
 
-			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA hv_uskOldApplid: %s result : %d",hv_uskOldApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA hv_uskOldApplid: %s hv_sscBranch: %s result : %d",
+			hv_uskOldApplid.arr,hv_sscBranch.arr, SQLCODE);
 		}
 
 		// if(strcmp(hv_sscBranch.arr,"101999")!=0 && strcmp(hv_sscBranch.arr,"161003")!=0)
 		{
 			//resend back data to SSC Branch
 			EXEC SQL DELETE FROM APPNT_PROBL_DATA
-				WHERE APPLID = :hv_uskApplid //AND SENDFLAG='Y' 
+				WHERE APPLID = :hv_uskOldApplid //AND SENDFLAG='Y'  -initially hv_uskApplid
 				AND ENQTYPE IS NULL
-				AND SSCBRANCHCODE='101999';
+				AND SSCBRANCHCODE=:hv_GQDBranch;
 
-			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : DELETE APPNT_PROBL_DATA applid: %s hv_GQDBranch: %s result : %d",
+			hv_uskOldApplid.arr,hv_GQDBranch.arr, SQLCODE);
 
 			EXEC SQL INSERT INTO APPNT_PROBL_DATA(
 			APPLID, SSCBRANCHCODE, SENDFLAG, TIMESTAMP, ENQTYPE)
 			VALUES( 
-			:hv_uskApplid, :hv_GQDBranch, 'N', SYSDATE, NULL); //samsuri: please change to 161003 for production
+			:hv_uskOldApplid, :hv_GQDBranch, 'N', SYSDATE, NULL); //samsuri: please change to 161003 for production
 
-			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA applid: %s result : %d",hv_uskApplid.arr, SQLCODE);
+			userlog("JPNHG3_PYMT_REV_UPD L1 : INSERT APPNT_PROBL_DATA applid: %s hv_GQDBranch: %s result : %d",
+			hv_uskOldApplid.arr,hv_GQDBranch.arr, SQLCODE);
 		}
 
 		// //resend back data to SSC Branch only
@@ -776,6 +780,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 
 
 	#ifdef DEBUG
+		userlog("----------------------REQUEST DATA--------------------------------------------- ");
 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->applid: %s",req->applid);
 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : applid: %s",applid.arr);
 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : req->oldapplid: %s",req->oldapplid);
@@ -914,9 +919,9 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 						excep_log.termination_flag = YES;
 						excep_log.severity = FATAL;
 
-						log_error(ctx);
+						//log_error(ctx); //SAMSURI REMARK THIS
 								
-						return INSERT_ERROR;
+						//return INSERT_ERROR; //SAMSURI REMARK THIS
 				}
 				#ifdef DEBUG
 					userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : Record inserted into APPL_TXN");
@@ -1649,10 +1654,7 @@ int transaction_processing(JPNHG3_PYMT_REV_UPD_REQ_T *req, JPNHG3_PYMT_REV_UPD_R
 		userlog("JPNHG3_PYMT_REV_UPD L1 (transaction_processing) : max applid after select: %s",applid.arr);		
 	#endif
 
-	if(hv_gUser2.arr[0] != '\0')
-	{
 
-	}
 
 	return SUCCESS;
 }
